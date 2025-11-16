@@ -79,5 +79,22 @@
       "role": "admin",
       "isActive": true
     }
+  ],
+  "entidades": [
+    {
+      "id": 1,
+      "entity": "SANTANDER RIO",
+      "type": "BANCO"
+    },
+    {
+      "id": 2,
+      "entity": "NARANJA X",
+      "type": "BILLETERA"
+    },
+    {
+      "id": 3,
+      "entity": "MERCADO PAGO",
+      "type": "BILLETERA"
+    }
   ]
 }

@@ -17,6 +17,14 @@ export const Menu: React.FC<HorizontalMenuProps> = ({ items }) => {
     setOpenSubmenu(null);
   };
 
+  const handleClick = (href?: string) => {
+    if (href) {
+      // onItemClick(href); // Captura el evento y pasa el href
+    } else if (href) {
+      window.location.href = href; // Fallback si no hay manejador
+    }
+  };
+
   return (
     <nav className="horizontal-menu">
       <ul className="menu-list">
