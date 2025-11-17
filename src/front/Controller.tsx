@@ -1,5 +1,7 @@
+import { ftruncate } from 'fs';
 import db from '../data/database.json';
-import { Entidad } from './interfaces/Entidades';
+import { EF } from '../data/server/EntidadesFinancieras';
+import { Entidad } from '../interfaces/Entidades';
 
 export function Controller(document: any) {
     let content: any = "Contenido";
@@ -12,7 +14,9 @@ export function Controller(document: any) {
 
     // /cat/1
     if (hrefValue.indexOf("cat/1") == 1) {
-        let data: Entidad[] = db.entidades;
+
+        let entidades = new EF().GetAll();
+        let data: Entidad[] = entidades;
         console.log(data)
         content =  DataTable(data);
     }

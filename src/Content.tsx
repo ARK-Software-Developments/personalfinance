@@ -1,4 +1,4 @@
-import { MenuItem } from "./front/interfaces/MenuItem";
+import { MenuItem } from "./interfaces/MenuItem";
 import { Menu } from "./front/Menu";
 import db from "./data/database.json"
 import { Controller } from "./front/Controller";

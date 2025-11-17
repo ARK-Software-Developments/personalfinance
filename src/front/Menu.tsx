@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MenuItem } from './interfaces/MenuItem';
+import { MenuItem } from '../interfaces/MenuItem';
 
 // Props del componente
 interface HorizontalMenuProps {
