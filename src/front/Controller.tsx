@@ -1,48 +1,24 @@
-import { ftruncate } from 'fs';
-import db from '../data/database.json';
-import { EF } from '../data/server/EntidadesFinancieras';
-import { Entidad } from '../interfaces/Entidades';
+import { EntitiesController } from "./modules/EntitiesController";
+
 
 export function Controller(document: any) {
-    let content: any = "Contenido";
-    let hrefValue = document.location.pathname;
+  let content: any = "Contenido";
+  let hrefValue = document.location.pathname;
 
-    // Verificar si el elemento existe y capturar el href
-    if (!hrefValue) {
-        return 'No se encontró ningún enlace.';
-    }
+  // Verificar si el elemento existe y capturar el href
+  if (!hrefValue) {
+    return 'No se encontró ningún enlace.';
+  }
 
-    // /cat/1
-    if (hrefValue.indexOf("cat/1") == 1) {
+  // /cat/1
+  if (hrefValue.indexOf("cat/1") == 1) {
 
-        let entidades = new EF().GetAll();
-        let data: Entidad[] = entidades;
-        console.log(data)
-        content =  DataTable(data);
-    }
+    content = EntitiesController(document);
 
-    return content;
+  };
+
+  return content;
 };
 
-const DataTable = (data: Entidad[]) => {
-  return (
-    <table border={1} style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>ENTIDAD</th>
-          <th>TIPO</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item: Entidad) => (
-          <tr key={item.id}>
-            <td>{item.id}</td>
-            <td>{item.entity}</td>
-            <td>{item.type}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
+
+

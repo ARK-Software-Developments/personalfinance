@@ -82,19 +82,47 @@
   ],
   "entidades": [
     {
-      "id": 1,
-      "entity": "SANTANDER RIO",
-      "type": "BANCO"
-    },
-    {
-      "id": 2,
-      "entity": "NARANJA X",
-      "type": "BILLETERA"
-    },
-    {
-      "id": 3,
-      "entity": "MERCADO PAGO",
-      "type": "BILLETERA"
+      "meta": {
+        "method": "get",
+        "operation": "/entities"
+      },
+      "data": [
+        {
+          "id": 1,
+          "entity": "SANTANDER RIO",
+          "entitytype": "RIO"
+        },
+        {
+          "id": 2,
+          "entity": "NARANJA X",
+          "entitytype": "NX"
+        },
+        {
+          "id": 3,
+          "entity": "MERCADO PAGO/CREDITO",
+          "entitytype": "MP"
+        },
+        {
+          "id": 4,
+          "entity": "UALA",
+          "entitytype": "UA"
+        },
+        {
+          "id": 5,
+          "entity": "SATOSHITANGO",
+          "entitytype": "ST"
+        },
+        {
+          "id": 6,
+          "entity": "IOL",
+          "entitytype": "IOL"
+        },
+        {
+          "id": 7,
+          "entity": "PERSONAL PLAY",
+          "entitytype": "PPY"
+        }
+      ]
     }
   ]
 }
