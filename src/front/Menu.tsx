@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { MenuItem } from '../interfaces/MenuItem';
-
-// Props del componente
-interface HorizontalMenuProps {
-  items: MenuItem[];
-}
+import { HorizontalMenuProps } from '../interfaces/HorizontalMenuProps';
 
 export const Menu: React.FC<HorizontalMenuProps> = ({ items }) => {
+
+  //console.log("Menu items:", items);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleMouseEnter = (label: string) => {
@@ -30,22 +27,22 @@ export const Menu: React.FC<HorizontalMenuProps> = ({ items }) => {
       <ul className="menu-list">
         {items.map((item) => (
           <li
-            key={item.label}
+            key={item.nombre}
             className="menu-item"
-            onMouseEnter={() => handleMouseEnter(item.label)}
+            onMouseEnter={() => handleMouseEnter(item.nombre)}
             onMouseLeave={handleMouseLeave}
-            title={item.title}
+            title={item.titulo}
           >
-            {item.href ? (
-              <a href={item.href}>{item.label}</a>
+            {item.accion ? (
+              <a href={item.accion}>{item.nombre}</a>
             ) : (
-              <span>{item.label}</span>
+              <span>{item.nombre}</span>
             )}
-            {item.subItems && (
-              <ul className={`submenu ${openSubmenu === item.label ? 'open' : ''}`}>
-                {item.subItems.map((subItem) => (
-                  <li key={subItem.label} className="submenu-item" title={subItem.title}>
-                    <a href={subItem.href}>{subItem.label}</a>
+            {item.subMenu && (
+              <ul className={`submenu ${openSubmenu === item.nombre ? 'open' : ''}`}>
+                {item.subMenu.map((subItem) => (
+                  <li key={subItem.nombre} className="submenu-item" title={subItem.titulo}>
+                    <a href={subItem.accion}>{subItem.nombre}</a>
                   </li>
                 ))}
               </ul>

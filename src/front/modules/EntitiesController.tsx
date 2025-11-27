@@ -1,9 +1,61 @@
 import { Entidad } from "../../interfaces/Entidad";
 import { GeneralResponse } from "../../interfaces/GeneralResponse";
 import db from "../../data/database.json"
-import { EF } from "../../data/server/EntidadesFinancieras";
+import { ApiService } from "../../data/server/ApiService";
 
 const BASE_URL = `${process.env.REACT_APP_PUBLIC_URL}:${process.env.REACT_APP_PORT}/cat/1`;
+
+
+
+export function EntitiesController(document: any) {
+
+    let content: any = "No hay contenido para mostrar.";
+
+    
+
+
+    let generalResponse: GeneralResponse = db.entidades[0];
+
+    console.log("Event:", generalResponse);
+
+    if (document.location.pathname.indexOf("/entity/") > 0) {
+        let data = generalResponse.data as Entidad[];
+        let id = parseInt(document.location.pathname.split("/")[5]);
+        let readOnly = document.location.pathname.indexOf("/update/") > 0 ? false : true;
+        content = Formulario(data.find(item => item.id === id) as Entidad, readOnly);
+    }
+    else {
+        content = DataTable(generalResponse.data as Entidad[]);
+    }
+
+    return content;
+};
+
+const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('¡Se hizo clic en el botón!');
+    let operacion = null;
+    switch (event.currentTarget.innerHTML) {
+        case 'Ver':
+            operacion = `/entity/view/${event.currentTarget.parentElement?.id}`;
+            break;
+
+        case 'Editar':
+            operacion = `/entity/update/${event.currentTarget.parentElement?.id}`;
+            break;
+
+        case 'Eliminar':
+            operacion = `/entity/delete/${event.currentTarget.parentElement?.id}`;
+            break;
+
+        default:
+            break;
+    }
+
+    window.location.href = `${BASE_URL}${operacion}`;
+
+    // Puedes acceder a propiedades del evento si es necesario
+    // event.preventDefault();
+};
 
 const Input = (defaultValue: any, readOnly: boolean, label: string, id: string, hidden: boolean) => {
     if (readOnly) {
@@ -96,53 +148,4 @@ const DataTable = (data: Entidad[]) => {
             </tbody>
         </table>
     );
-};
-
-export function EntitiesController(document: any) {
-
-    let content: any = "No hay contenido para mostrar.";
-
-    let dbMysqlConn = new EF().GetAll();
-
-    let generalResponse: GeneralResponse = db.entidades[0];
-
-    console.log("Event:", generalResponse);
-
-    if (document.location.pathname.indexOf("/entity/") > 0) {        
-        let data = generalResponse.data as Entidad[];
-        let id = parseInt(document.location.pathname.split("/")[5]);
-        let readOnly = document.location.pathname.indexOf("/update/") > 0 ? false : true;
-        content = Formulario(data.find(item => item.id === id) as Entidad, readOnly);
-    }
-    else {
-        content = DataTable(generalResponse.data as Entidad[]);
-    }
-
-    return content;
-};
-
-const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('¡Se hizo clic en el botón!');
-    let operacion = null;
-    switch (event.currentTarget.innerHTML) {
-        case 'Ver':
-            operacion = `/entity/view/${event.currentTarget.parentElement?.id}`;
-            break;
-
-        case 'Editar':
-            operacion = `/entity/update/${event.currentTarget.parentElement?.id}`;
-            break;
-
-        case 'Eliminar':
-            operacion = `/entity/delete/${event.currentTarget.parentElement?.id}`;
-            break;
-
-        default:
-            break;
-    }
-
-    window.location.href = `${BASE_URL}${operacion}`;
-
-    // Puedes acceder a propiedades del evento si es necesario
-    // event.preventDefault();
 };

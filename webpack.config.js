@@ -13,4 +13,14 @@ module.exports = {
             return middlewares;
         },
     },
+    resolve: {
+        fallback: {
+            "zlib": require.resolve("browserify-zlib"),
+            "querystring": false,
+            "crypto": require.resolve("crypto-browserify"),
+            "stream": require.resolve("stream-browserify"),
+            "timers": require.resolve("timers-browserify"),
+            // Add fallbacks for other Node.js modules if needed (e.g., "crypto", "stream", "http")
+        }
+    }
 }
