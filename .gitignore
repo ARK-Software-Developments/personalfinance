@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 /bin/Debug/net8.0
 /obj
+/.vs/PersonalFinance
+/bin/Release/net8.0
