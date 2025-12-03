@@ -1,0 +1,72 @@
+﻿@using PersonalFinance.Models.Pedidos
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<Pedido>
+@{
+    ViewBag.Title = "Gestión de Pedidos";
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/style.css">
+
+<div class="text-center">
+    <h1 class="display-4">@ViewBag.Message</h1>
+    <p>Listado de pedidos del año actual.</p>
+</div>
+
+<div class="tab-content">
+    <table class="table myaccordion table-hover" id="accordion">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Numero</th>
+                <th scope="col">Fecha de Pedido</th>
+                <th scope="col">Fecha de Recibido</th>
+                <th scope="col">Monto Total</th>
+                <th scope="col">Tipo/Recurso/Marca</th>
+                <th scope="col">Estado</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model)
+            {
+                <tr>
+                    <th scope="row">@pedido.Id</th>
+                    <td>@pedido.Numero</td>
+                    <td>@pedido.FechaPedido</td>
+                    <td>@pedido.FechaRecibido</td>
+                    <td>@pedido.MontoTotal</td>
+                    <td>@pedido.TipoRecurso</td>
+                    <td>@pedido.Estado</td>
+                    <td data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="collapsed">
+                        <i class="fa" aria-hidden="false"></i>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" id="collapseOne" class="collapse acc" data-parent="#accordion">
+                        @foreach (var detalle in pedido.Detalles)
+                        {
+                            <p class="p2">Numero de Orden: <label class="label2"> @detalle.Id</label></p>
+                            <p class="p2">Detalle: <label class="label2"> @detalle.ProductoDetalle</label></p>
+                            <p class="p2">Descripcion: <label class="label2"> @detalle.Descripcion</label></p>
+                            <p class="p2">Codigo de producto: <label class="label2"> @detalle.CodigoProducto</label></p>
+                            <p class="p2">Cantidad: <label class="label2"> @detalle.Cantidad</label></p>
+                            <p class="p2">Monto unitario: <label class="label2"> @detalle.MontoUnitario</label></p>
+                            <p class="p2">Sub total: <label class="label2"> @detalle.Subtotal</label></p>
+                            <p class="p2">Para: <label class="label2"> @detalle.Para</label></p>
+                            <p class="p2">Estado: <label class="label2"> @detalle.Estado</label></p>
+                        }
+                    </td>
+                </tr>
+            }
+
+            
+        </tbody>
+    </table>
+</div>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/main.js"></script>
