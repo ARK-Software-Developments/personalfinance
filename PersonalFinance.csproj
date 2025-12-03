@@ -12,4 +12,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\IT\ark\PersonalFinancialProject\personalfinance\.editorconfig" />
+  </ItemGroup>
+
 </Project>

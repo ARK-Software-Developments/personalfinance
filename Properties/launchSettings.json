@@ -13,8 +13,9 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5050",
+      "applicationUrl": "http://localhost:90",
       "environmentVariables": {
+        "APP_NAME": "personalfinance",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
@@ -22,8 +23,9 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7100;http://localhost:5050",
+      "applicationUrl": "https://localhost:90;http://localhost:90",
       "environmentVariables": {
+        "APP_NAME": "personalfinance",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
@@ -31,6 +33,17 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
+        "APP_NAME": "personalfinance",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "personalfinance": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:90;http://localhost:90",
+      "environmentVariables": {
+        "APP_NAME": "personalfinance",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
