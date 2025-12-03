@@ -14,7 +14,7 @@ namespace PersonalFinance.Controllers
         private readonly ILogger<PedidosController> _logger;
         private readonly HttpClient _httpClient;
         private readonly string _urlPedido = "https://localhost:443/api/v1/orders/getall";
-        private readonly string _urlPedidoDetalles = "https://localhost:443/api/v1/ordersdetails/get/";
+        private readonly string _urlPedidoDetalles = "https://localhost:443/api/v1/ordersdetails/getorderid/";
 
         public PedidosController(ILogger<PedidosController> logger, IHttpClientFactory httpClientFactory)
         {
