@@ -76,9 +76,10 @@ p {
   margin-top: 0;
   margin-bottom: 1rem; }
 
-.p2 {
+.dv2 {
     margin-top: 0;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0;
+    height: 20px;
 }
 
 abbr[title],
@@ -2053,8 +2054,8 @@ textarea.form-control {
   user-select: none;
   background-color: transparent;
   border: 1px solid transparent;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
   line-height: 1.5;
   border-radius: 0.25rem;
   -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
@@ -2080,15 +2081,19 @@ textarea.form-control {
 a.btn.disabled,
 fieldset:disabled a.btn {
   pointer-events: none; }
-
+/*#007bff */
 .btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff; }
-  .btn-primary:hover {
     color: #fff;
-    background-color: #0069d9;
-    border-color: #0062cc; }
+    background-color: #2F8F2F;
+    border-color: #007bff;
+}
+    /*#0069d9 */
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #44BD44;
+        border-color: #0062cc;
+    }
   .btn-primary:focus, .btn-primary.focus {
     -webkit-box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
     box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5); }
@@ -8237,6 +8242,9 @@ h1, h2, h3, h4, h5,
   .table tbody td .fa {
     font-size: 12px;
     color: #28a745; }
+    .table tbody td .fae {
+        color: #fff;
+    }
 
 [data-toggle="collapse"] .fa:before {
   content: "\f062";
@@ -8263,6 +8271,41 @@ h1, h2, h3, h4, h5,
       -webkit-transition: none;
       -o-transition: none;
       transition: none; } }
+
+  /****/
+[data-toggle="collapse"] .fae:before {
+    content: "\f062";
+    font-family: "FontAwesome";
+    font-style: normal;
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-toggle="collapse"] .fae:before {
+        -webkit-transition: none;
+        -o-transition: none;
+        transition: none;
+    }
+}
+
+[data-toggle="collapse"].collapsed .fae:before {
+    content: "\f063";
+    font-family: "FontAwesome";
+    font-style: normal;
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-toggle="collapse"].collapsed .fae:before {
+        -webkit-transition: none;
+        -o-transition: none;
+        transition: none;
+    }
+}
 
 [data-toggle="collapse"] {
   background: #ececec !important; }

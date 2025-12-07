@@ -1,8 +1,8 @@
+namespace PersonalFinance.Controllers;
+
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinance.Models;
-
-namespace PersonalFinance.Controllers;
 
 public class HomeController : Controller
 {

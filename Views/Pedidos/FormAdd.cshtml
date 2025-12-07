@@ -1,0 +1,65 @@
+﻿@using PersonalFinance.Models.Pedidos
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    ViewBag.Title = "Pedido";
+    var fechaActual = DateTime.Now.ToString("yyyy-MM-dd");
+    Pedido pedido = ViewBag.Pedido;
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- STYLE CSS -->
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-4">@ViewBag.Title</h1>
+    <p>Formulario de Pedido.</p>
+</div>
+
+<form method="post" asp-controller="Pedidos" asp-action="FormAdd">
+    <div class="form-group">
+
+        <div class="form-group">
+            <span class="form-label">Fecha Pedido:</span>
+            <input id="FechaPedido" name="FechaPedido" class="form-control" type="date" data-language='es' value="@fechaActual" required>
+        </div>
+
+        <div class="form-group">
+            <span class="form-label">Fecha Recibido:</span>
+            <input id="FechaRecibido" name="FechaRecibido" class="form-control" type="date" data-language='es' value="@fechaActual" required>
+        </div>
+
+        <label for="name">Monto Total:</label>
+        <input type="number" min="0.00" max="10000.00" step="0.01" id="name" name="name" class="form-control" value="" required />
+
+        <div class="form-group">
+            <span class="form-label">Tipo Recurso:</span>
+            <select class="form-control" id="TipoRecurso" name="TipoRecurso" required>
+                <option>AVON</option>
+                <option>NATURA</option>
+                <option>VIOLETA</option>
+            </select>
+            <span class="select-arrow"></span>
+        </div>
+
+        <div class="form-group">
+            <span class="form-label">Estado:</span>
+            <select class="form-control" id="Estado" name="Estado" required>
+                <option>PENDIENTE</option>
+                <option selected="selected">PEDIDO</option>
+                <option>PAGADO</option>
+                <option>RECIBIDO</option>
+            </select>
+            <span class="select-arrow"></span>
+        </div>
+
+    </div>
+    <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="Index" name="action" value="generar">Generar</button>
+</form>
+
+<p></p>
+
+<a href="/Pedidos" class="btn btn-primary">Volver</a>
