@@ -1,0 +1,164 @@
+﻿@using PersonalFinance.Models.Pedidos
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    ViewBag.Title = "Formulario de Edición de Detalle del Pedido";
+
+    Pedido pedido = ViewBag.Pedido;
+    List<Estado> estados = ViewBag.Estados;
+    var fechaPedido = pedido.FechaPedido?.ToString("yyyy-MM-dd");
+    var fechaRecibido = pedido.FechaRecibido?.ToString("yyyy-MM-dd");
+
+    var listaItems = new List<SelectListItem>();
+    foreach(var e in estados)
+    {
+        listaItems.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = (pedido.Estado.Nombre == e.Nombre ? true : false)
+        });
+    }
+
+    var paraItems = new List<SelectListItem>()
+    {
+        new SelectListItem()
+        {
+            Value = "ARK", Text = "ARK", Selected = (pedido.Detalles[0].Estado.Nombre == "ARK" ? true : false),
+        },
+        new SelectListItem()
+        {
+            Value = "ANA", Text = "ANA", Selected = (pedido.Detalles[0].Estado.Nombre == "ANA" ? true : false),
+        }
+    };
+
+    ViewBag.Items = listaItems;
+
+    var imgTipo = pedido.TipoRecurso == "AVON" ? "avon.png" : "natura.png";
+    var cssTipo = pedido.TipoRecurso == "AVON" ? "height: 80px; width: 150px" : "height: 80px; width: 135px";
+
+
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioEstado() {
+                console.log("donde sale");
+                console.log($('#Estado :selected').val());
+
+                $('#EstadoSel').val($('#Estado :selected').val());
+            };
+
+</script>
+
+<div class="text-center">
+    <h1 class="display-4">@ViewBag.Title</h1>
+    <p>Formulario de Detalles del Pedido.</p>
+</div>
+
+<form method="post" asp-controller="Pedidos" asp-action="FormAddDetail">
+    <div class="form-group">
+        <table class="table table-primary">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Id:</span>
+                        <input id="PedidoId" name="Id" class="form-control" type="number" value="@pedido.Detalles[0].Id" required readonly>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">PedidoId:</span>
+                        <input id="PedidoId" name="PedidoId" class="form-control" type="number" value="@pedido.Id" required readonly>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Marca:</span>
+                        <select class="form-control" id="Marca" name="Marca" required>
+                            <option selected>@pedido.Detalles[0].Marca</option>
+                        </select>
+                        <span class="select-arrow"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Código Producto:</span>
+                        <input id="CodigoProducto" name="CodigoProducto" class="form-control" value="@pedido.Detalles[0].CodigoProducto" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Para:</span>
+                        <select class="form-control" id="Para" name="Para" asp-for="@pedido.Detalles[0].Para" asp-items="@paraItems" required>
+                                                   
+                        </select>
+                        <span class="select-arrow"></span>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Cantidad:</span>
+                        <input id="Cantidad" name="Cantidad" class="form-control" type="number" value="@pedido.Detalles[0].Cantidad" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label" for="name">Monto Unitario:</span>
+                        <input id="MontoUnitario" name="MontoUnitario" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@pedido.Detalles[0].MontoUnitario" required />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label" for="name">Sub Total:</span>
+                        <input id="Subtotal" name="Subtotal" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@pedido.Detalles[0].Subtotal" required />
+                    </div>
+                </td>
+
+                <td>
+                    <div class="form-group">
+                        <div class="form-group">
+                        <span class="form-label">Estado:</span>
+                            <select class="form-control" id="Estado" name="Estado" onchange="CambioEstado()" required>
+                            <option>PENDIENTE</option>
+                                <option selected="selected">@pedido.Detalles[0].Estado.Nombre</option>
+                            <option>PAGADO</option>
+                            <option>RECIBIDO</option>
+                        </select>
+                        <span class="select-arrow"></span>
+                            <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Nombre" hidden>
+                    </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <span class="form-label">Descripción:</span>
+                        <input id="Descripcion" name="Descripcion" class="form-control" value="@pedido.Detalles[0].Descripcion" required>
+                    </div>
+                </td>
+                <td colspan="2">
+                    <div class="form-group">
+                        <span class="form-label">Detalle:</span>
+                        <input id="ProductoDetalle" name="ProductoDetalle" class="form-control" value="@pedido.Detalles[0].ProductoDetalle" required>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <p></p>
+    </div>
+    <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAddDetail" name="action" value="generar">Actualizar Detalle</button>
+</form>
+
+<p></p>
+
+<a href="/Pedidos" class="btn btn-secondary">Volver</a>

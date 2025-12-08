@@ -4,7 +4,7 @@ namespace PersonalFinance.Models.Pedidos;
 
 public class PedidosResponse : GeneralResponse
 {
-    public PedidosResponse () { }
+    public PedidosResponse() { }
 
     [JsonProperty("data")]
     public List<Pedido>? Pedidos { get; set; }

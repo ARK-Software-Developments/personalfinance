@@ -26,7 +26,11 @@
                 <th scope="col">Monto Total</th>
                 <th scope="col">Tipo/Recurso/Marca</th>
                 <th scope="col">Estado</th>
-                <th colspan ="2">&nbsp;</th>
+                <th colspan="2">&nbsp;
+                    <form method="post" asp-controller="Pedidos">
+                        <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAdd" name="action" value="openFormAdd">Add new Order</button>
+                    </form>
+                    </th>
             </tr>
         </thead>
         <tbody>
@@ -34,14 +38,18 @@
             {
                 var collapseN = "#collapse" + @pedido.Id;
                 var collapse = "collapse" + @pedido.Id;
-
+                var imgTipo = @pedido.TipoRecurso == "AVON" ? "avon.png" : "natura.png";
+                var cssTipo = @pedido.TipoRecurso == "AVON" ? "height: 30px; width: 50px" : "height: 35px; width: 45px";
                 <tr>
                     <th scope="row" id="Id">@pedido.Id</th>
                     <td id="Numero">@pedido.Numero</td>
                     <td id="FechaPedido">@pedido.FechaPedido</td>
                     <td id="FechaRecibido">@pedido.FechaRecibido</td>
                     <td id="MontoTotal">@pedido.MontoTotal</td>
-                    <td id="TipoRecurso">@pedido.TipoRecurso</td>
+                    <td id="TipoRecurso" style="display: flex; justify-content: center; align-items: center; height: auto;">
+                        @pedido.TipoRecurso
+                        <img src="~/images/@imgTipo" style="@cssTipo" />
+                    </td>
                     <td id="Estado">@pedido.Estado.Nombre</td>
                     <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                         <i class="fa" aria-hidden="false"></i>
@@ -56,8 +64,7 @@
                             <input type="text" name="TipoRecurso" value="@pedido.TipoRecurso" hidden="hidden" />
                             <input type="text" name="Estado" value="@pedido.Estado" hidden="hidden" />
                             <input type="text" name="Detalles" value="@pedido.Detalles" hidden="hidden" />
-                            <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormEdit" name="action" value="edit">Edit</button>
-                            <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormAdd" name="action" value="add">Add</button>
+                            <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormEdit" name="action" value="openFormEdit">Edit Order</button>          
                         </form>
                     </td>
 
@@ -74,7 +81,7 @@
                             <div class="dv2">Monto unitario: <label class="label2"> @detalle.MontoUnitario</label></div>
                             <div class="dv2">Sub total: <label class="label2"> @detalle.Subtotal</label></div>
                             <div class="dv2">Para: <label class="label2"> @detalle.Para</label></div>
-                            <div class="dv2">Estado: <label class="label2"> @detalle.Estado</label></div>
+                            <div class="dv2">Estado: <label class="label2"> @detalle.Estado.Nombre</label></div>
                         }
                     </td>
                 </tr>

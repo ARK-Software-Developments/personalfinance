@@ -4,8 +4,10 @@
     using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
+    using PersonalFinance.Helper;
     using PersonalFinance.Models;
     using PersonalFinance.Models.Pedidos;
+    using PersonalFinance.Service;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
@@ -15,9 +17,7 @@
     {
         private readonly ILogger<PedidosController> _logger;
         private readonly HttpClient _httpClient;
-        private readonly string _urlPedido = "https://localhost:443/api/v1/orders/getall";
-        private readonly string _urlPedidoDetalles = "https://localhost:443/api/v1/ordersdetails/getorderid/";
-        private readonly string _urlCreate = "https://localhost:443/api/v1/orders/create";
+        private readonly PedidoService _pedidoService;
 
         public PedidosController(ILogger<PedidosController> logger, IHttpClientFactory httpClientFactory)
         {
@@ -27,6 +27,7 @@
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
             };
             _httpClient = new HttpClient(httpClientHandler);
+            _pedidoService = new PedidoService(_httpClient);
         }
 
         [HttpPost]
@@ -36,20 +37,37 @@
             // Por ejemplo, guarda en una base de datos  
 
             ViewBag.Action = action;
+            
+            var dataEstados = HttpContext.Session.GetString("dataEstados");
+            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
+            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
 
-            if (action == "add")
-            {                
-                return Task.FromResult<IActionResult>(View()); // Redirige a otra página
-            }
-            else
+            string dataPedidos = HttpContext.Session.GetString("dataPedidos");
+            PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
+
+            
+            switch (action)
             {
-                var dataPedidos = HttpContext.Session.GetString("dataPedidos");
-                var dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
+                case "add":
+                    return Task.FromResult<IActionResult>(View()); // Redirige a otra página
 
-                var dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
 
-                ViewBag.Pedido = dataPedido;
-                return Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
+                case "openFormEdit":
+
+
+                    var dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
+
+                    ViewBag.Estados = estados;
+                    ViewBag.Pedido = dataPedido;
+
+                    return Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
+
+                default:
+
+                    ViewBag.Estados = estados;
+                    //ViewBag.Pedido = dataPedido;
+
+                    return Task.FromResult<IActionResult>(View("Index", dataPedidosResponse.Pedidos));
             }
             
         }
@@ -60,12 +78,19 @@
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
 
+            var dataEstados = HttpContext.Session.GetString("dataEstados");
+            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
+            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+
+            pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == 2);
+
             ViewBag.Pedido = pedido;
+            ViewBag.Estados = estados;
 
             return Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
         }
 
-        public async Task<IActionResult> Index([FromForm] Pedido pedido, string action)
+        public async Task<IActionResult> Index([FromForm] Pedido pedido, string action, int EstadoSel)
         {
             ViewBag.Message = "Gestión de Pedidos";
 
@@ -73,27 +98,46 @@
 
             PedidosResponse pedidosResponse = new();
 
+            var dataEstados = HttpContext.Session.GetString("dataEstados");
+            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
+
             try
             {
                 switch (action)
                 {
-                    case "add":
-                        await this.Generar(pedido);
-                        pedidosResponse = await this.ObtenerPedidos();
-                        // Pasar los datos a la vista
-                        return View(pedidosResponse.Pedidos);
+                    case "generar":
+
+                        pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == EstadoSel);
+
+                        await this._pedidoService.GenerarPedido(pedido);
+                        HttpContext.Session.Remove("dataPedidos");
+                        break;
+
+                    case "editOrder":
                         
-                    default:
-                        pedidosResponse = await this.ObtenerPedidos();
-                        // Pasar los datos a la vista
-                        return View(pedidosResponse.Pedidos);
+                        pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == EstadoSel);
+                        await this._pedidoService.ActualizarPedido(pedido);
+                        HttpContext.Session.Remove("dataPedidos");
+                        break;
                 }
-                
+
+                var dataPedidos = HttpContext.Session.GetString("dataPedidos");
+
+                if (dataPedidos == null)
+                {
+                    pedidosResponse = await this.ObtenerPedidos();
+                }
+                else
+                {
+                    pedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
+                }
+
+                    return View(pedidosResponse.Pedidos);
+
             }
             catch (Exception ex) 
             {
                 _logger.LogCritical("Exception PedidosController");
-                _logger.LogCritical(_urlPedido);
                 _logger.LogCritical(ex.ToString());
 
                 return View(new List<Pedido>());
@@ -101,104 +145,100 @@
             
         }
 
-        private async Task Generar(Pedido pedido)
+        [HttpPost]
+        public async Task<IActionResult> FormAddDetail([FromForm] Pedido pedido, PedidoDetalle pedidoDetalle, string EstadoSel, string action)
         {
-            PedidosResponse pedidosResponse = new();
+            // Procesa los datos del formulario que están en el objeto 'model'
+            // Por ejemplo, guarda en una base de datos  
+            ViewBag.Message = "Gestión Detalle del Pedidos";
 
-            var jsonContent = JsonConvert.SerializeObject(pedido);
-            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-            // Hacer la solicitud GET a la API
-            HttpResponseMessage response = await _httpClient.PutAsync(_urlCreate, content);
+            string dataPedidos = dataPedidos = HttpContext.Session.GetString("dataPedidos");
+            PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
+            var dataEstados = HttpContext.Session.GetString("dataEstados");
+            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
+            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
 
-            // Ensure the request was successful
-            response.EnsureSuccessStatusCode();
+            Pedido dataPedido;
 
-            if (response.IsSuccessStatusCode)
+            if (action == "generar")
             {
-                // Leer el contenido de la respuesta como una cadena JSON
-                var jsonResponse = await response.Content.ReadAsStringAsync();
+                //
+                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                pedidoDetalle.Estado = estados.Find(e => e.Nombre == EstadoSel);
 
-                // Deserializar la cadena JSON a un objeto o lista de objetos
-                pedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(jsonResponse);
+                await this._pedidoService.GenerarDetalle(pedidoDetalle);
 
+                var pedidosResponse = await this.ObtenerPedidos();
+
+                HttpContext.Session.Remove("dataPedidos");
+                HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
             }
+            else
+            {
+                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
+            }
+
+            ViewBag.Pedido = dataPedido;
+            ViewBag.Estados = estados;
+            return View(ViewBag); // Redirige a otra página
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FormEditDetail([FromForm] Pedido pedido, PedidoDetalle pedidoDetalle, int detalleId, int pedidoId, string action)
+        {
+            // Procesa los datos del formulario que están en el objeto 'model'
+            // Por ejemplo, guarda en una base de datos  
+            ViewBag.Message = "Gestión Detalle del Pedidos";
+
+            string dataPedidos = dataPedidos = HttpContext.Session.GetString("dataPedidos");
+            PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
+            var dataEstados = HttpContext.Session.GetString("dataEstados");
+            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
+            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+
+            Pedido dataPedido;
+
+            if (action == "generar")
+            {
+                //
+                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                pedidoDetalle.Estado = estados.Find(e => e.Nombre == "PENDIENTE");
+
+                await this._pedidoService.GenerarDetalle(pedidoDetalle);
+
+                var pedidosResponse = await this.ObtenerPedidos();
+
+                HttpContext.Session.Remove("dataPedidos");
+                HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
+            }
+            else if (action == "editDetail")
+            {  
+                var dataPedidotmp = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+
+                var detallePedido = dataPedidotmp.Detalles.Find(d => d.Id == detalleId);
+                dataPedidotmp.Detalles.Clear();
+                dataPedidotmp.Detalles.Add(detallePedido);
+
+                dataPedido = dataPedidotmp;
+            }
+            else
+            {
+                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+            }
+
+            ViewBag.Pedido = dataPedido;
+            ViewBag.Estados = estados;
+            return View(ViewBag); // Redirige a otra página
         }
 
         private async Task<PedidosResponse> ObtenerPedidos()
         {
-            PedidosResponse pedidosResponse = new ();
+            PedidosResponse pedidosResponse = new();
+            pedidosResponse = await _pedidoService.Obtener();
 
-            // Hacer la solicitud GET a la API
-            HttpResponseMessage response = await _httpClient.GetAsync(_urlPedido);
+            HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
 
-            // Ensure the request was successful
-            response.EnsureSuccessStatusCode();
-
-            if (response.IsSuccessStatusCode)
-            {
-                // Leer el contenido de la respuesta como una cadena JSON
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-
-                // Deserializar la cadena JSON a un objeto o lista de objetos
-                pedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(jsonResponse);
-
-                var pedidos = new List<Pedido>();
-
-                foreach (var pedido in pedidosResponse.Pedidos)
-                {
-                    pedido.Detalles = await ObtenerDetalles(pedido.Id);
-                    pedidos.Add(pedido);
-                }
-
-                HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
-
-                return pedidosResponse;
-            }
-            else
-            {
-                // Manejar el error si la respuesta no fue exitosa
-                return pedidosResponse;
-            }
-        }
-
-        private async Task<List<PedidoDetalle>> ObtenerDetalles(int idPedido)
-        {
-            _logger.LogInformation("Inicializando ObtenerDetalles");
-            try
-            {
-                var apiUrl = $"{_urlPedidoDetalles}{idPedido}";
-
-                // Hacer la solicitud GET a la API
-                HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
-
-                // Ensure the request was successful
-                response.EnsureSuccessStatusCode();
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // Leer el contenido de la respuesta como una cadena JSON
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-
-                    // Deserializar la cadena JSON a un objeto o lista de objetos
-                    var pedidoDetallesResponse = JsonConvert.DeserializeObject<PedidoDetallesResponse>(jsonResponse);
-
-                    // Pasar los datos a la vista
-                    return pedidoDetallesResponse?.Detalles;
-                }
-                else
-                {
-                    // Manejar el error si la respuesta no fue exitosa
-                    return [];
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical("Exception ObtenerDetalles");
-                _logger.LogCritical(_urlPedidoDetalles);
-                _logger.LogCritical(ex.ToString());
-
-                return [];
-            }
+            return pedidosResponse;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

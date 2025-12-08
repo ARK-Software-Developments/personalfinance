@@ -8315,3 +8315,13 @@ h1, h2, h3, h4, h5,
   [data-toggle="collapse"].collapsed:hover {
     background: #ececec !important;
     border-bottom: 2px solid #ececec; }
+
+.avon{
+    height: 30px;
+    widows: 50px;
+}
+
+.natura {
+    height: 40px;
+    widows: 60px;
+}
