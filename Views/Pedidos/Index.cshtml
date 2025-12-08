@@ -4,13 +4,14 @@
 *@
 @model List<Pedido>
 @{
-    ViewBag.Title = "Gestión de Pedidos";
+    ViewBag.Title = "Gestión de Pedidos";    
 }
+
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
 
 <div class="text-center">
-    <h1 class="display-4">@ViewBag.Message</h1>
+    <h1 class="display-5">@ViewBag.Message</h1>
     <p>Listado de pedidos del año actual.</p>
 </div>
 
@@ -25,43 +26,66 @@
                 <th scope="col">Monto Total</th>
                 <th scope="col">Tipo/Recurso/Marca</th>
                 <th scope="col">Estado</th>
-                <th>&nbsp;</th>
+                <th colspan="2">&nbsp;
+                    <form method="post" asp-controller="Pedidos">
+                        <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAdd" name="action" value="openFormAdd">Add new Order</button>
+                    </form>
+                    </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var pedido in Model)
             {
+                var collapseN = "#collapse" + @pedido.Id;
+                var collapse = "collapse" + @pedido.Id;
+                var imgTipo = @pedido.TipoRecurso == "AVON" ? "avon.png" : "natura.png";
+                var cssTipo = @pedido.TipoRecurso == "AVON" ? "height: 30px; width: 50px" : "height: 35px; width: 45px";
                 <tr>
-                    <th scope="row">@pedido.Id</th>
-                    <td>@pedido.Numero</td>
-                    <td>@pedido.FechaPedido</td>
-                    <td>@pedido.FechaRecibido</td>
-                    <td>@pedido.MontoTotal</td>
-                    <td>@pedido.TipoRecurso</td>
-                    <td>@pedido.Estado</td>
-                    <td data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="collapsed">
-                        <i class="fa" aria-hidden="false"></i>                        
+                    <th scope="row" id="Id">@pedido.Id</th>
+                    <td id="Numero">@pedido.Numero</td>
+                    <td id="FechaPedido">@pedido.FechaPedido</td>
+                    <td id="FechaRecibido">@pedido.FechaRecibido</td>
+                    <td id="MontoTotal">@pedido.MontoTotal</td>
+                    <td id="TipoRecurso" style="display: flex; justify-content: center; align-items: center; height: auto;">
+                        @pedido.TipoRecurso
+                        <img src="~/images/@imgTipo" style="@cssTipo" />
                     </td>
+                    <td id="Estado">@pedido.Estado.Nombre</td>
+                    <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
+                        <i class="fa" aria-hidden="false"></i>
+                    </td>
+                    <td>
+                        <form method="post" asp-controller="Pedidos" asp-route-id="@pedido.Id">
+                            <input type="text" name="Id" value="@pedido.Id" hidden="hidden" />
+                            <input type="text" name="Numero" value="@pedido.Numero" hidden="hidden" />
+                            <input type="text" name="FechaPedido" value="@pedido.FechaPedido" hidden="hidden" />
+                            <input type="text" name="FechaRecibido" value="@pedido.FechaRecibido" hidden="hidden" />
+                            <input type="text" name="MontoTotal" value="@pedido.MontoTotal" hidden="hidden" />
+                            <input type="text" name="TipoRecurso" value="@pedido.TipoRecurso" hidden="hidden" />
+                            <input type="text" name="Estado" value="@pedido.Estado" hidden="hidden" />
+                            <input type="text" name="Detalles" value="@pedido.Detalles" hidden="hidden" />
+                            <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormEdit" name="action" value="openFormEdit">Edit Order</button>          
+                        </form>
+                    </td>
+
                 </tr>
                 <tr>
-                    <td colspan="6" id="collapseOne" class="collapse acc" data-parent="#accordion">
-                        @foreach (var detalle in pedido.Detalles)
+                    <td colspan="7" id="@collapse" class="collapse acc" data-parent="#accordion">
+                        @foreach (var detalle in @pedido.Detalles)
                         {
-                            <p class="p2">Numero de Orden: <label class="label2"> @detalle.Id</label></p>
-                            <p class="p2">Detalle: <label class="label2"> @detalle.ProductoDetalle</label></p>
-                            <p class="p2">Descripcion: <label class="label2"> @detalle.Descripcion</label></p>
-                            <p class="p2">Codigo de producto: <label class="label2"> @detalle.CodigoProducto</label></p>
-                            <p class="p2">Cantidad: <label class="label2"> @detalle.Cantidad</label></p>
-                            <p class="p2">Monto unitario: <label class="label2"> @detalle.MontoUnitario</label></p>
-                            <p class="p2">Sub total: <label class="label2"> @detalle.Subtotal</label></p>
-                            <p class="p2">Para: <label class="label2"> @detalle.Para</label></p>
-                            <p class="p2">Estado: <label class="label2"> @detalle.Estado</label></p>
+                            <div class="dv2">Numero de Orden: <label class="label2"> @detalle.Id</label></div>
+                            <div class="dv2">Detalle: <label class="label2"> @detalle.ProductoDetalle</label></div>
+                            <div class="dv2">Descripcion: <label class="label2"> @detalle.Descripcion</label></div>
+                            <div class="dv2">Codigo de producto: <label class="label2"> @detalle.CodigoProducto</label></div>
+                            <div class="dv2">Cantidad: <label class="label2"> @detalle.Cantidad</label></div>
+                            <div class="dv2">Monto unitario: <label class="label2"> @detalle.MontoUnitario</label></div>
+                            <div class="dv2">Sub total: <label class="label2"> @detalle.Subtotal</label></div>
+                            <div class="dv2">Para: <label class="label2"> @detalle.Para</label></div>
+                            <div class="dv2">Estado: <label class="label2"> @detalle.Estado.Nombre</label></div>
                         }
                     </td>
                 </tr>
-            }
-
-            
+            }     
         </tbody>
     </table>
 </div>

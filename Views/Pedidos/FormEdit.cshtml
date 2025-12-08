@@ -1,0 +1,180 @@
+﻿@using PersonalFinance.Models.Pedidos
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    ViewBag.Title = "Formulario de Pedido";
+
+    int EstadoId = 0;
+    Pedido pedido = ViewBag.Pedido;
+    List<Estado> estados = ViewBag.Estados;
+    var fechaPedido = pedido.FechaPedido?.ToString("yyyy-MM-dd");
+    var fechaRecibido = pedido.FechaRecibido?.ToString("yyyy-MM-dd");
+
+    var listaItems = new List<SelectListItem>();
+    foreach(var e in estados)
+    {
+        listaItems.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = (pedido.Estado.Nombre == e.Nombre ? true : false)
+        });
+    }
+
+    ViewBag.Items = listaItems;   
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioEstado() {
+                console.log("CambioEstado");
+                console.log($('#Estado :selected').val());
+
+                $('#EstadoSel').val($('#Estado :selected').val());
+            };
+
+</script>
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Actualización de Pedido.</p>
+</div>
+<div class="tab-content">
+    <form method="post" asp-controller="Pedidos" asp-action="FormEdit">
+        <div class="form-group">
+            <table class="table table-primary">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Identificador Interno:</span>
+                            <input type="text" id="Id" name="Id" class="form-control" value="@pedido.Id" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Numero Pedido:</span>
+                            <input type="text" id="Numero" name="Numero" class="form-control" value="@pedido.Numero" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Pedido:</span>
+                            <input id="FechaPedido" name="FechaPedido" class="form-control" type="date" data-language='es' value="@fechaPedido" required>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Recibido:</span>
+                            <input id="FechaRecibido" name="FechaRecibido" class="form-control" type="date" data-language='es' value="@fechaRecibido">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto Total:</span>
+                            <input type="text" id="MontoTotal" min="0.00" max="100000.00" step="0.01" name="MontoTotal" class="form-control" value="@pedido.MontoTotal" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Tipo Recurso:</span>
+                            <select class="form-control" id="TipoRecurso" name="TipoRecurso" readonly>
+                                <option selected>@pedido.TipoRecurso</option>
+                            </select>
+                            <span class="select-arrow"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Estado:</span>
+                            <select class="form-control" id="Estado" name="Estado" onchange="CambioEstado()" required>
+                                @foreach (var item in ViewBag.Items)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="select-arrow"></span>
+                            <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Id" hidden>
+
+                        </div>
+                    </td>
+                    <td style="display: flex; justify-content: center; align-items: center; height: 100px;">
+                        <img src="~/images/avon.png" style="height: 80px; width: 150px" />
+                        <img src="~/images/natura.png" style="height: 75px; width: 110px" />
+                    </td>
+                </tr>
+            </table>
+            <p></p>
+            <table class="table table-secondary">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Descripcion</th>
+                        <th scope="col">Detalle</th>                        
+                        <th scope="col">Código Producto</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Monto unitario</th>
+                        <th scope="col">Sub total</th>
+                        <th scope="col">Para</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">&nbsp;</th>
+                        <th colspan="2">
+                            &nbsp;
+                            <form method="post" asp-controller="Pedidos">
+                                <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAddDetail" name="action" value="addDetail">Add new Detail</button>
+                            </form>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in @pedido.Detalles)
+                    {
+                        var imgTipoDetalle = detalle.Marca == "AVON" ? "avon.png" : "natura.png";
+                        var cssTipoDetalle = detalle.Marca == "AVON" ? "height: 40px; width: 60px" : "height: 40px; width: 55px";
+
+                        <tr>
+                            <td align="center">@detalle.Id</td>
+                            <td>@detalle.Descripcion</td>
+                            <td>@detalle.ProductoDetalle</td>
+                            <td align="center">@detalle.CodigoProducto</td>
+                            <td align="center">@detalle.Cantidad</td>
+                            <td align="center">@detalle.MontoUnitario</td>
+                            <td align="center">@detalle.Subtotal</td>
+                            <td align="center">@detalle.Para</td>
+                            <td align="center">@detalle.Estado.Nombre</td>
+                            <td id="Marca" style="display: flex; justify-content: center; align-items: center; height: auto;">
+                                <img src="~/images/@imgTipoDetalle" style="@cssTipoDetalle" />
+                            </td>
+                            <td>
+                                <form method="post" asp-controller="Pedidos" asp-route-id="@detalle.Id">
+                                    <input type="text" id="pedidoId" name="pedidoId" value="@pedido.Id" hidden="hidden" />
+                                    <input type="text" id="detalleId" name="detalleId" value="@detalle.Id" hidden="hidden" />
+                                    <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormEditDetail" name="action" value="openFormEditDetail">Edit Detail</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="Index" name="action" value="editOrder">Actualizar</button>
+    </form>
+</div>
+<p></p>
+
+<a href="/Pedidos" class="btn btn-secondary">Volver</a>
