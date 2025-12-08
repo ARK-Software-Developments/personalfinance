@@ -57,7 +57,7 @@
 </script>
 
 <div class="text-center">
-    <h1 class="display-4">@ViewBag.Title</h1>
+    <h1 class="display-5">@ViewBag.Title</h1>
     <p>Formulario de Detalles del Pedido.</p>
 </div>
 
@@ -128,13 +128,20 @@
                         <div class="form-group">
                         <span class="form-label">Estado:</span>
                             <select class="form-control" id="Estado" name="Estado" onchange="CambioEstado()" required>
-                            <option>PENDIENTE</option>
-                                <option selected="selected">@pedido.Detalles[0].Estado.Nombre</option>
-                            <option>PAGADO</option>
-                            <option>RECIBIDO</option>
+                                @foreach (var item in ViewBag.Items)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
                         </select>
                         <span class="select-arrow"></span>
-                            <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Nombre" hidden>
+                            <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Id" hidden>
                     </div>
                     </div>
                 </td>
@@ -156,7 +163,7 @@
         </table>
         <p></p>
     </div>
-    <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAddDetail" name="action" value="generar">Actualizar Detalle</button>
+    <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormEditDetail" name="action" value="actualizar">Actualizar Detalle</button>
 </form>
 
 <p></p>

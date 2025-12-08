@@ -16,6 +16,7 @@ namespace PersonalFinance.Service
         private readonly string _urlCreateDetail = "https://localhost/api/v1/ordersdetails/create";
 
         private readonly string _urlUpdate = "https://localhost:443/api/v1/orders/update";
+        private readonly string _urlUpdateDetail = "https://localhost/api/v1/ordersdetails/update";
 
         public PedidoService(HttpClient httpClient) 
         {
@@ -230,7 +231,6 @@ namespace PersonalFinance.Service
             }
         }
 
-
         public async Task GenerarDetalle(PedidoDetalle pedidoDetalle)
         {
             PedidosResponse pedidosResponse = new();
@@ -311,7 +311,87 @@ namespace PersonalFinance.Service
 
             }
         }
-    
-    
+
+        public async Task ActualizarDetalle(PedidoDetalle pedidoDetalle)
+        {
+            PedidosResponse pedidosResponse = new();
+
+            GeneralRequest generalRequest = new()
+            {
+                Parametros =
+                [
+                 new Parametro()
+                 {
+                     Nombre = "pId",
+                     Valor = pedidoDetalle.Id,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pBrand",
+                     Valor = pedidoDetalle.Marca,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pProductDetails",
+                     Valor = pedidoDetalle.ProductoDetalle,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pDescription",
+                     Valor = pedidoDetalle.Descripcion,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pProductCode",
+                     Valor = pedidoDetalle.CodigoProducto,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pQuantity",
+                     Valor = pedidoDetalle.Cantidad,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pUnitPrice",
+                     Valor = Utils.ConvertirMonto(pedidoDetalle.MontoUnitario),
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pSubTotal",
+                     Valor = Utils.ConvertirMonto(pedidoDetalle.Subtotal),
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pTo",
+                     Valor = pedidoDetalle.Para,
+                 },
+                 new Parametro()
+                 {
+                     Nombre = "pStatus",
+                     Valor = pedidoDetalle.Estado.Id,
+                 }
+             ],
+            };
+
+            var jsonContent = JsonConvert.SerializeObject(generalRequest.Parametros);
+
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            // Hacer la solicitud GET a la API
+            HttpResponseMessage response = await _httpClient.PostAsync(_urlUpdateDetail, content);
+
+            // Ensure the request was successful
+            response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Leer el contenido de la respuesta como una cadena JSON
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                // Deserializar la cadena JSON a un objeto o lista de objetos
+                //pedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(jsonResponse);
+
+            }
+        }
+
     }
 }

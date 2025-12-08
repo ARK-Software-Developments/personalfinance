@@ -146,7 +146,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> FormAddDetail([FromForm] Pedido pedido, PedidoDetalle pedidoDetalle, string EstadoSel, string action)
+        public async Task<IActionResult> FormAddDetail([FromForm] Pedido pedido, PedidoDetalle pedidoDetalle, int EstadoSel, string action)
         {
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
@@ -164,7 +164,7 @@
             {
                 //
                 dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
-                pedidoDetalle.Estado = estados.Find(e => e.Nombre == EstadoSel);
+                pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
 
                 await this._pedidoService.GenerarDetalle(pedidoDetalle);
 
@@ -184,7 +184,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> FormEditDetail([FromForm] Pedido pedido, PedidoDetalle pedidoDetalle, int detalleId, int pedidoId, string action)
+        public async Task<IActionResult> FormEditDetail([FromForm] PedidoDetalle pedidoDetalle, int EstadoSel, int detalleId, int pedidoId, string action)
         {
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
@@ -198,32 +198,49 @@
 
             Pedido dataPedido;
 
-            if (action == "generar")
+            switch (action)
             {
-                //
-                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
-                pedidoDetalle.Estado = estados.Find(e => e.Nombre == "PENDIENTE");
+                case "generar":
+                    //
+                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                    pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
 
-                await this._pedidoService.GenerarDetalle(pedidoDetalle);
+                    await this._pedidoService.GenerarDetalle(pedidoDetalle);
 
-                var pedidosResponse = await this.ObtenerPedidos();
+                    dataPedidosResponse = await this.ObtenerPedidos();
 
-                HttpContext.Session.Remove("dataPedidos");
-                HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
-            }
-            else if (action == "editDetail")
-            {  
-                var dataPedidotmp = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+                    HttpContext.Session.Remove("dataPedidos");
+                    HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(dataPedidosResponse));
+                    break;
 
-                var detallePedido = dataPedidotmp.Detalles.Find(d => d.Id == detalleId);
-                dataPedidotmp.Detalles.Clear();
-                dataPedidotmp.Detalles.Add(detallePedido);
+                case "actualizar":
 
-                dataPedido = dataPedidotmp;
-            }
-            else
-            {
-                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                    pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
+
+                    await this._pedidoService.ActualizarDetalle(pedidoDetalle);
+
+                    dataPedidosResponse = await this.ObtenerPedidos();
+
+                    HttpContext.Session.Remove("dataPedidos");
+                    HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(dataPedidosResponse));
+                    break;
+
+                case "openFormEditDetail":
+
+                    var dataPedidotmp = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+
+                    var detallePedido = dataPedidotmp.Detalles.Find(d => d.Id == detalleId);
+                    dataPedidotmp.Detalles.Clear();
+                    dataPedidotmp.Detalles.Add(detallePedido);
+
+                    dataPedido = dataPedidotmp;
+                    break;
+
+                default:
+
+                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+                    break;
             }
 
             ViewBag.Pedido = dataPedido;

@@ -43,7 +43,7 @@
 </script>
 
 <div class="text-center">
-    <h1 class="display-4">@ViewBag.Title</h1>
+    <h1 class="display-5">@ViewBag.Title</h1>
     <p>Generación de Pedido.</p>
 </div>
 
@@ -92,7 +92,7 @@
                     <div class="form-group">
                         <span class="form-label">Estado:</span>
                         <select class="form-control" id="Estado" name="Estado" onchange="CambioEstado()" required>
-                            @foreach (var item in listaItems)
+                            @foreach (var item in ViewBag.Items)
                             {
                                 if (item.Selected)
                                 {

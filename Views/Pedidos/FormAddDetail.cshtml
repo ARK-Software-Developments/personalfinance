@@ -54,7 +54,7 @@
 </script>
 
 <div class="text-center">
-    <h1 class="display-4">@ViewBag.Title</h1>
+    <h1 class="display-5">@ViewBag.Title</h1>
     <p>Formulario de Detalles del Pedido.</p>
 </div>
 
@@ -121,13 +121,20 @@
                     <div class="form-group">               
                         <span class="form-label">Estado:</span>
                             <select class="form-control" id="Estado" name="Estado" onchange="CambioEstado()" required>
-                            <option>PENDIENTE</option>
-                            <option selected="selected">PEDIDO</option>
-                            <option>PAGADO</option>
-                            <option>RECIBIDO</option>
+                            @foreach (var item in ViewBag.Items)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
                         </select>
                         <span class="select-arrow"></span>
-                        <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Nombre">
+                        <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Id" hidden>
          
                     </div>
                 </td>

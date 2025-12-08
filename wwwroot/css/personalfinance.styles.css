@@ -47,7 +47,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
-  display: block; }
+  display: contents; }
 
 body {
   margin: 0;
@@ -360,6 +360,11 @@ h6, .h6 {
   font-weight: 300;
   line-height: 1.2; }
 
+.display-5 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
 hr {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -477,6 +482,11 @@ pre {
     .container {
       max-width: 1140px; } }
 
+  @media (min-width: 1300px) {
+    .container {
+        max-width: 1600px;
+    }
+}
 .container-fluid {
   width: 100%;
   padding-right: 15px;
@@ -3436,7 +3446,9 @@ input[type="button"].btn-block {
   text-align: center; }
 
 .tab-content > .tab-pane {
-  display: none; }
+  display: none;
+  width: auto;
+}
 
 .tab-content > .active {
   display: block; }
@@ -8234,8 +8246,8 @@ h1, h2, h3, h4, h5,
         transition: none; } }
   .table tbody th, .table tbody td {
     border: none;
-    padding: 8px;
-    font-size: 11px; }
+    padding: 4px;
+    font-size: 12px; }
   .table tbody td.acc {
     background: #f3f3f3;
     border: none; }
