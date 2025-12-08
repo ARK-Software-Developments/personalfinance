@@ -27,3 +27,5 @@ yarn-error.log*
 /bin/Release/net8.0
 /.vs/ProjectEvaluation
 /.vs/ProjectEvaluation
+=======
+*.bin
