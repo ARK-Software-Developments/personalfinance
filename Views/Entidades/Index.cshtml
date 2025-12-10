@@ -37,8 +37,8 @@
                     <td>
                         <form method="post" asp-controller="Pedidos" asp-route-id="@entidad.Id">
                             <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
-                            <input type="text" name="Numero" value="@entidad.Nombre" hidden="hidden" />
-                            <input type="text" name="FechaPedido" value="@entidad.Tipo" hidden="hidden" />
+                            <input type="text" name="Nombre" value="@entidad.Nombre" hidden="hidden" />
+                            <input type="text" name="Tipo" value="@entidad.Tipo" hidden="hidden" />
                             <button type="submit" class="btn btn-secondary" asp-controller="Entidades" asp-action="FormEdit" name="action" value="openFormEdit">Edit Entitty</button>
                         </form>
                     </td>
