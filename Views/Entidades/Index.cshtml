@@ -1,0 +1,55 @@
+﻿@using PersonalFinance.Models.Entidades
+
+@model List<Entidad>
+@{
+    ViewBag.Title = "Gestión de Entidades";
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Message</h1>
+    <p>Listado de entidades (Bancaria/Financieras/Billeteras).</p>
+</div>
+
+<div class="tab-content">
+    <table class="table myaccordion table-hover" id="accordion">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Tipo</th>
+                <th colspan="2">
+                    &nbsp;
+                    <form method="post" asp-controller="Entidades">
+                        <button type="submit" class="btn btn-primary" asp-controller="Entidades" asp-action="FormAdd" name="action" value="openFormAdd">Add new Entity</button>
+                    </form>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entidad in Model)
+            {
+                <tr>
+                    <th scope="row" id="Id">@entidad.Id</th>
+                    <td id="Numero">@entidad.Nombre</td>
+                    <td id="FechaPedido">@entidad.Tipo</td>
+                    <td>
+                        <form method="post" asp-controller="Pedidos" asp-route-id="@entidad.Id">
+                            <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
+                            <input type="text" name="Numero" value="@entidad.Nombre" hidden="hidden" />
+                            <input type="text" name="FechaPedido" value="@entidad.Tipo" hidden="hidden" />
+                            <button type="submit" class="btn btn-secondary" asp-controller="Entidades" asp-action="FormEdit" name="action" value="openFormEdit">Edit Entitty</button>
+                        </form>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/main.js"></script>
