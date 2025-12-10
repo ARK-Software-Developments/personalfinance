@@ -1,0 +1,47 @@
+﻿@using PersonalFinance.Helper
+@using PersonalFinance.Models.Entidades
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    ViewBag.Title = "Formulario de Entidad";
+    var fechaActual = DateTime.Now.ToString("yyyy-MM-dd");
+    Entidad entidad = ViewBag.Entidad;
+       
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Generación de Pedido.</p>
+</div>
+
+<form method="post" asp-controller="Pedidos" asp-action="FormAdd">
+    <div class="form-group">
+        <table class="table table-primary">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Nombre:</span>
+                        <input id="Nombre" name="Nombre" class="form-control" type="text" value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Tipo:</span>
+                        <input id="Tipo" name="Tipo" class="form-control" type="text" value="" required>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary" asp-controller="Entidades" asp-action="Index" name="action" value="generar">Generar</button>
+</form>
+
+<p></p>
+
+<a href="/Entidades" class="btn btn-secondary">Volver</a>

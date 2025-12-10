@@ -1,0 +1,52 @@
+﻿@using PersonalFinance.Models.Entidades
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    ViewBag.Title = "Formulario de Entidad";
+
+    Entidad entidad = ViewBag.Entidad;
+    
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Actualización de Entidad.</p>
+</div>
+<div class="tab-content">
+    <form method="post" asp-controller="Entidades" asp-action="FormEdit">
+        <div class="form-group">
+            <table class="table table-primary">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Identificador Interno:</span>
+                            <input type="text" id="Id" name="Id" class="form-control" value="@entidad.Id" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Nombre:</span>
+                            <input type="text" id="Nombre" name="Nombre" class="form-control" value="@entidad.Nombre" required />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Tipo:</span>
+                            <input id="Tipo" name="Tipo" class="form-control" type="text" value="@entidad.Tipo" required>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p></p>
+        </div>
+        <button type="submit" class="btn btn-primary" asp-controller="Entidades" asp-action="Index" name="action" value="actualizar">Actualizar</button>
+    </form>
+</div>
+<p></p>
+
+<a href="/Entidades" class="btn btn-secondary">Volver</a>
