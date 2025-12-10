@@ -1,0 +1,46 @@
+﻿@using PersonalFinance.Models.Categorias
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    ViewBag.Title = "Formulario de Categorias";
+
+    Categoria entidad = ViewBag.Categoria;
+    
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Actualización de @ViewBag.Modulo.</p>
+</div>
+<div class="tab-content">
+    <form method="post" asp-controller="@ViewBag.Modulo" asp-action="FormEdit">
+        <div class="form-group">
+            <table class="table table-primary">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Identificador Interno:</span>
+                            <input type="text" id="Id" name="Id" class="form-control" value="@entidad.Id" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Nombre:</span>
+                            <input type="text" id="Nombre" name="Nombre" class="form-control" value="@entidad.Nombre" required />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p></p>
+        </div>
+        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="Index" name="action" value="actualizar">Actualizar</button>
+    </form>
+</div>
+<p></p>
+
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>
