@@ -214,16 +214,22 @@
                     break;
 
                 case "actualizar":
-
-                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                    
                     pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
 
                     await this._pedidoService.ActualizarDetalle(pedidoDetalle);
 
                     dataPedidosResponse = await this.ObtenerPedidos();
-
                     HttpContext.Session.Remove("dataPedidos");
                     HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(dataPedidosResponse));
+
+                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+
+                    var dataDetalles = dataPedido.Detalles.Find(d => d.Id == pedidoDetalle.Id);
+
+                    dataPedido.Detalles.Clear();
+                    dataPedido.Detalles.Add(dataDetalles);
+
                     break;
 
                 case "openFormEditDetail":
