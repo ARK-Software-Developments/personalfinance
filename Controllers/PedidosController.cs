@@ -17,7 +17,7 @@
     {
         private readonly ILogger<PedidosController> _logger;
         private readonly HttpClient _httpClient;
-        private readonly PedidoService _pedidoService;
+        private readonly PedidosService _pedidoService;
 
         public PedidosController(ILogger<PedidosController> logger, IHttpClientFactory httpClientFactory)
         {
@@ -27,7 +27,7 @@
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
             };
             _httpClient = new HttpClient(httpClientHandler);
-            _pedidoService = new PedidoService(_httpClient);
+            _pedidoService = new PedidosService(_httpClient);
         }
 
         [HttpPost]

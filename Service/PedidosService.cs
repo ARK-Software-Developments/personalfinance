@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PersonalFinance.Service
 {
-    public class PedidoService
+    public class PedidosService
     {
         private readonly HttpClient _httpClient;
         private readonly string _urlPedido = "https://localhost:443/api/v1/orders/getall";
@@ -18,7 +18,7 @@ namespace PersonalFinance.Service
         private readonly string _urlUpdate = "https://localhost:443/api/v1/orders/update";
         private readonly string _urlUpdateDetail = "https://localhost/api/v1/ordersdetails/update";
 
-        public PedidoService(HttpClient httpClient) 
+        public PedidosService(HttpClient httpClient) 
         {
             this._httpClient = httpClient;
         }
