@@ -12,15 +12,15 @@
     var fechaPedido = pedido.FechaPedido?.ToString("yyyy-MM-dd");
     var fechaRecibido = pedido.FechaRecibido?.ToString("yyyy-MM-dd");
 
-    var listaItems = new List<SelectListItem>();
+    var listaEstados = new List<SelectListItem>();
     foreach(var e in estados)
     {
-        listaItems.Add(
+        listaEstados.Add(
         new SelectListItem()
         {
             Value = e.Id.ToString(),
             Text = e.Nombre,
-            Selected = (pedido.Estado.Nombre == e.Nombre ? true : false)
+            Selected = (pedido.Detalles[0].Estado.Id == e.Id ? true : false)
         });
     }
 
@@ -35,8 +35,6 @@
             Value = "ANA", Text = "ANA", Selected = (pedido.Detalles[0].Estado.Nombre == "ANA" ? true : false),
         }
     };
-
-    ViewBag.Items = listaItems;
 
     var imgTipo = pedido.TipoRecurso == "AVON" ? "avon.png" : "natura.png";
     var cssTipo = pedido.TipoRecurso == "AVON" ? "height: 80px; width: 150px" : "height: 80px; width: 135px";
@@ -96,7 +94,6 @@
                     <div class="form-group">
                         <span class="form-label">Para:</span>
                         <select class="form-control" id="Para" name="Para" asp-for="@pedido.Detalles[0].Para" asp-items="@paraItems" required>
-                                                   
                         </select>
                         <span class="select-arrow"></span>
                     </div>
@@ -127,18 +124,8 @@
                     <div class="form-group">
                         <div class="form-group">
                         <span class="form-label">Estado:</span>
-                            <select class="form-control" id="Estado" name="Estado" onchange="CambioEstado()" required>
-                                @foreach (var item in ViewBag.Items)
-                                {
-                                    if (item.Selected)
-                                    {
-                                        <option value="@item.Value" selected>@item.Text</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item.Value">@item.Text</option>
-                                    }
-                                }
+                            <select class="form-control" id="Estado" name="Estado" asp-for="@pedido.Detalles[0].Estado.Id" asp-items="@listaEstados" onchange="CambioEstado()" required>
+ 
                         </select>
                         <span class="select-arrow"></span>
                             <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Id" hidden>
