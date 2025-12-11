@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = ViewBag.Title;
+    ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Message</h1>    
+</div>
+
+<div class="tab-content">
+    <table class="table myaccordion table-hover" id="accordion">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Tarjeta</th>                
+                <th scope="col">Entidad Asociada</th>
+                <th scope="col">Detalle</th>
+                <th scope="col">Cuotas mensuales</th>
+                <th scope="col">Mes Anterior</th>
+                <th scope="col">Mes Actual</th>
+                <th scope="col">Mes Siguiente</th>
+                <th>
+                    &nbsp;
+                    <form method="post" asp-controller="Pedidos">
+                        <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAdd" name="action" value="openFormAdd">Add new Order</button>
+                    </form>
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<p></p>
+<p>>>>>>&nbsp;&nbsp;@ViewBag.Ruta</p>
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/main.js"></script>
