@@ -1,0 +1,102 @@
+﻿@using PersonalFinance.Models.Entidades
+@using PersonalFinance.Models.Tarjetas
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{    
+
+    Tarjeta tarjeta = ViewBag.Tarjeta;
+    List<Entidad> entidades = ViewBag.Entidades;
+    string modeView = ViewBag.ModeView ? "readonly" : "";
+    var listaEntidades = new List<SelectListItem>();
+    foreach (var e in entidades)
+    {
+        listaEntidades.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = (tarjeta.Entidad.Id == e.Id ? true : false)
+        });
+    }
+    
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioEntidad() {
+                console.log("CambioEntidad");
+                console.log($('#Entidad :selected').val());
+
+                $('#EntidadSel').val($('#Entidad :selected').val());
+            };
+
+</script>
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Actualización de Tarjeta.</p>
+</div>
+<div class="tab-content">
+    <form method="post" asp-controller="@ViewBag.Modulo" asp-action="TarjetaFormEdit">
+        <div class="form-group">
+            <table class="table table-primary">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Identificador Interno:</span>
+                            <input type="text" id="Id" name="Id" class="form-control" value="@tarjeta.Id" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Nombre:</span>
+                            <input type="text" id="Nombre" name="Nombre" class="form-control" value="@tarjeta.Nombre" required @modeView />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Entidad:</span>
+                            <select id="Entidad" name="Entidad" class="form-control" onchange="CambioEntidad()" required @modeView>
+                                @foreach (var item in @listaEntidades)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="select-arrow"></span>
+                            <input id="EntidadSel" name="EntidadSel" class="form-control" value="@tarjeta.Entidad.Id" hidden>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Cierre:</span>
+                            <input id="FechaCierre" name="FechaCierre" class="form-control" type="date" data-language='es' value="@tarjeta.FechaCierre.ToString("yyyy-MM-dd")" required @modeView>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Vencimiento:</span>
+                            <input id="FechaVencimiento" name="FechaVencimiento" class="form-control" type="date" data-language='es' value="@tarjeta.FechaVencimiento.ToString("yyyy-MM-dd")" required @modeView>
+                        </div>
+                    </td>
+                </tr>     
+            </table>
+            <p></p>
+        </div>
+        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="TarjetasCredito" name="action" value="actualizar">Actualizar</button>
+    </form>
+</div>
+<p></p>
+
+<a href="/@ViewBag.Modulo/TarjetasCredito" class="btn btn-secondary">Volver</a>
