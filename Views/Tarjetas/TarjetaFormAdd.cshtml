@@ -1,0 +1,82 @@
+﻿@using PersonalFinance.Helper
+@using PersonalFinance.Models.Entidades
+@using PersonalFinance.Models.Tarjetas
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    
+    List<Entidad> entidades = ViewBag.Entidades;
+
+    var listaEntidades = new List<SelectListItem>();
+    foreach (var e in entidades)
+    {
+        listaEntidades.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+        });
+    }
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioEntidad() {
+                console.log("CambioEntidad");
+                console.log($('#Entidad :selected').val());
+
+                $('#EntidadSel').val($('#Entidad :selected').val());
+            };
+
+</script>
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Generación de Tarjeta.</p>
+</div>
+
+<form method="post" asp-controller="@ViewBag.Modulo" asp-action="TarjetaFormAdd">
+    <div class="form-group">
+        <table class="table table-primary">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Nombre:</span>
+                        <input id="Nombre" name="Nombre" class="form-control" type="text" value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Fecha Cierre:</span>
+                        <input id="FechaCierre" name="FechaCierre" class="form-control" type="date" data-language='es' value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Fecha Vencimiento:</span>
+                        <input id="FechaVencimiento" name="FechaVencimiento" class="form-control" type="date" data-language='es' value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Entidad:</span>
+                        <select id="Entidad" name="Entidad" class="form-control" asp-for="@entidades[0].Id" asp-items="@listaEntidades" onchange="CambioEntidad()" required>
+                        </select>
+                        <span class="select-arrow"></span>
+                        <input id="EntidadSel" name="EntidadSel" class="form-control" value="@entidades[0].Id" hidden>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="TarjetasCredito" name="action" value="generar">Generar</button>
+</form>
+
+<p></p>
+
+<a href="/@ViewBag.Modulo/TarjetasCredito" class="btn btn-secondary">Volver</a>
