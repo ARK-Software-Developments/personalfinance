@@ -11,5 +11,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "entities")]
         [Description("Entidades")]
         Entidades = 2,
+
+        [Api(Route = "transactions")]
+        [Description("Transacciones")]
+        Transacciones = 3,
     }
 }

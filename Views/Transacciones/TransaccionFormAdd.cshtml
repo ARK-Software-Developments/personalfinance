@@ -1,0 +1,113 @@
+﻿@using PersonalFinance.Helper
+@using PersonalFinance.Models.Tarjetas
+@using PersonalFinance.Models.Transacciones
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    
+    List<Tarjeta> tarjetas = ViewBag.Tarjetas;
+
+    var listaTarjetas = new List<SelectListItem>();
+    foreach (var e in tarjetas)
+    {
+        listaTarjetas.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+        });
+    }
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioTarjeta() {
+                console.log($('#Tarjeta :selected').val());
+
+                $('#TarjetaSel').val($('#Tarjeta :selected').val());
+            };
+
+</script>
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Generación de Tarjeta.</p>
+</div>
+
+<form method="post" asp-controller="@ViewBag.Modulo" asp-action="TransaccionFormAdd">
+    <div class="form-group">
+        <table class="table table-primary">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Orden de Compra:</span>
+                        <input type="text" id="OrdenCompra" name="OrdenCompra" class="form-control" value="" required />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Codigo Transaccion:</span>
+                        <input type="text" id="CodigoTransaccion" name="CodigoTransaccion" class="form-control" value="" required />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Fecha de Transaccion:</span>
+                        <input id="FechaTransaccion" name="FechaTransaccion" class="form-control" type="date" data-language='es' value="" required >
+                    </div>
+                </td> 
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Entidad Asociada:</span>
+                        <input type="text" id="EntidadAsociada" name="EntidadAsociada" class="form-control" value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Tarjeta de Crédito:</span>
+                        <select id="Tarjeta" name="Tarjeta" class="form-control" onchange="CambioTarjeta()" required>
+                            @foreach (var item in @listaTarjetas)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span class="select-arrow"></span>
+                        <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@listaTarjetas[0].Value" hidden>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Resumen:</span>
+                        <input type="text" id="Resumen" name="Resumen" class="form-control" value="" required >
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Observaciones:</span>
+                        <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="" required >
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="Transacciones" name="action" value="generar">Generar</button>
+</form>
+
+<p></p>
+
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>
