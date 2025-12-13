@@ -8,7 +8,7 @@
 
     Tarjeta tarjeta = ViewBag.Tarjeta;
     List<Entidad> entidades = ViewBag.Entidades;
-    string modeView = ViewBag.ModeView ? "readonly" : "";
+    string modeView = ViewBag.ModeView ? "disabled" : "";
     var listaEntidades = new List<SelectListItem>();
     foreach (var e in entidades)
     {

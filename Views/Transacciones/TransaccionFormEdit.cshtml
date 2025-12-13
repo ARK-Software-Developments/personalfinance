@@ -1,0 +1,128 @@
+﻿@using PersonalFinance.Models.Transacciones
+@using PersonalFinance.Models.Tarjetas
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{    
+
+    List<Tarjeta> tarjetas = ViewBag.Tarjetas;
+    Transaccion transaccion = ViewBag.Transaccion;
+    string modeView = ViewBag.ModeView ? "disabled" : "";
+
+    var listaTarjetas = new List<SelectListItem>();
+    foreach (var e in tarjetas)
+    {
+        listaTarjetas.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = (transaccion.Tarjeta.Id == e.Id ? true : false)
+        });
+    }
+    
+    
+
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioTarjeta() {
+                console.log($('#Tarjeta :selected').val());
+
+                $('#TarjetaSel').val($('#Tarjeta :selected').val());
+            };
+
+</script>
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Actualización de Tarjeta.</p>
+</div>
+
+<div class="tab-content">
+    <form method="post" asp-controller="@ViewBag.Modulo" asp-action="TransaccionFormEdit">
+        <div class="form-group">
+            <table class="table table-primary">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Identificador Interno:</span>
+                            <input type="text" id="Id" name="Id" class="form-control" value="@transaccion.Id" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Orden de Compra:</span>
+                            <input type="text" id="OrdenCompra" name="OrdenCompra" class="form-control" value="@transaccion.OrdenCompra" required @modeView />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Codigo Transaccion:</span>
+                            <input type="text" id="CodigoTransaccion" name="CodigoTransaccion" class="form-control" value="@transaccion.CodigoTransaccion" required @modeView />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha de Transaccion:</span>
+                            <input id="FechaTransaccion" name="FechaTransaccion" class="form-control" type="date" data-language='es' value="@transaccion.FechaTransaccion.ToString("yyyy-MM-dd")" required @modeView>
+                        </div>
+                    </td>
+                   
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Entidad Asociada:</span>
+                            <input type="text" id="EntidadAsociada" name="EntidadAsociada" class="form-control" value="@transaccion.EntidadAsociada" required @modeView>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Tarjeta de Crédito:</span>
+                            <select id="Tarjeta" name="Tarjeta" class="form-control" onchange="CambioTarjeta()" required @modeView>
+                                @foreach (var item in @listaTarjetas)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="select-arrow"></span>
+                            <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@transaccion.Tarjeta.Id" hidden>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Resumen:</span>
+                            <input type="text" id="Resumen" name="Resumen" class="form-control" value="@transaccion.Resumen" required @modeView>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Observaciones:</span>
+                            <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="@transaccion.Observaciones" required @modeView>
+                        </div>
+                    </td>
+                </tr>     
+            </table>
+            <p></p>
+        </div>
+        @if (string.IsNullOrEmpty(@modeView))
+        {
+            <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="Transacciones" name="action" value="actualizar">Actualizar</button>
+        }
+        
+    </form>
+</div>
+<p></p>
+
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>
