@@ -80,6 +80,14 @@ p {
     margin-top: 0;
     margin-bottom: 0;
     height: 20px;
+    
+}
+
+.dv3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 95px;
+    padding-left: 30px;
 }
 
 abbr[title],

@@ -15,5 +15,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "update")]
         Actualizar = 4,
+
+        [Api(Method = "updatetransid")]
+        ActualizarTransId = 100,
     }
 }

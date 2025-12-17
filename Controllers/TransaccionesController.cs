@@ -49,7 +49,8 @@ public class TransaccionesController : Controller
 
         try
         {
-            var cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
+            cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
+
             if (cacheTransacciones == null)
             {
                 response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
@@ -152,10 +153,37 @@ public class TransaccionesController : Controller
                 else
                 {
                     generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest);
+
+                    if (this.Request.Form.ContainsKey("ConsumoTarjeta"))
+                    {
+                        int ConsumoTarjetaId = int.Parse(this.Request.Form["ConsumoTarjeta"]);
+
+                        int transactionCodeId = int.Parse(generalDataResponse.Data[0].ToString());
+
+                        generalRequest = new()
+                        {
+                            Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pId",
+                             Valor = ConsumoTarjetaId,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pTransactionCodeId",
+                             Valor = transactionCodeId,
+                         }
+                     ],
+                        };
+
+                        await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.ConsumosTarjeta, generalRequest, MetodoEnum.ActualizarTransId);
+                    }
+
+
                 }
                 
                 HttpContext.Session.Remove(cacheNameDataTransacciones);
-
             }
                        
 
@@ -207,6 +235,9 @@ public class TransaccionesController : Controller
             tarjetasResponse = JsonConvert.DeserializeObject<TarjetasResponse>(cacheTarjetas);
         }
 
+        ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("TarjetaConsumoId") ? int.Parse(this.Request.Form["TarjetaConsumoId"]) : 0;
+        ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaSel") ? int.Parse(this.Request.Form["TarjetaSel"]) : 0; ;
+        
         ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
 
         return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
