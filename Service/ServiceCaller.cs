@@ -25,12 +25,12 @@ namespace PersonalFinance.Service
         }
 
 
-        public async Task<T> ObtenerRegistros<T>(ServicioEnum servicio)
+        public async Task<T> ObtenerRegistros<T>(ServicioEnum servicio, Dictionary<string, object> keyValuePairs = null)
         {
             object apiResponse;
 
             // Hacer la solicitud GET a la API
-            HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(servicio, MetodoEnum.Todos));
+            HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(servicio, MetodoEnum.Todos, keyValuePairs));
 
             // Ensure the request was successful
             response.EnsureSuccessStatusCode();
@@ -83,7 +83,7 @@ namespace PersonalFinance.Service
             }
         }
 
-        public async Task<T> ActualizarRegistro<T>(ServicioEnum servicio, GeneralRequest generalRequest)
+        public async Task<T> ActualizarRegistro<T>(ServicioEnum servicio, GeneralRequest generalRequest, MetodoEnum metodoEnum = MetodoEnum.Actualizar)
         {
             object apiResponse;
 
@@ -92,7 +92,7 @@ namespace PersonalFinance.Service
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             // Hacer la solicitud GET a la API
-            HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(servicio, MetodoEnum.Actualizar), content);
+            HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(servicio, metodoEnum), content);
 
             // Ensure the request was successful
             response.EnsureSuccessStatusCode();

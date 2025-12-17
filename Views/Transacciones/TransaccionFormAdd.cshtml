@@ -18,6 +18,7 @@
         {
             Value = e.Id.ToString(),
             Text = e.Nombre,
+            Selected = ViewBag.TarjetaSel > 0 ? true : false,
         });
     }
 }
@@ -60,8 +61,13 @@
                         <span class="form-label">Fecha de Transaccion:</span>
                         <input id="FechaTransaccion" name="FechaTransaccion" class="form-control" type="date" data-language='es' value="" required >
                     </div>
-                </td> 
-
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Consumo de Tarjeta:</span>
+                        <input id="ConsumoTarjeta" name="ConsumoTarjeta" class="form-control" type="number" value="@ViewBag.TarjetaConsumoId" readonly>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td>
