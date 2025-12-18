@@ -18,6 +18,7 @@
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Message</h1>
+    <p>Listado de @ViewBag.Modulo.</p>
 </div>
 
 <div class="tab-content">
@@ -43,6 +44,7 @@
         <tbody>
             @foreach (var entidad in @transacciones)
             {
+
                 var titleTarjeta = $"Entidad: {entidad.Tarjeta.Entidad.Nombre}\n{entidad.Tarjeta.Nombre}\nCierre: {entidad.Tarjeta.FechaCierre.ToString("dd/MM/yyy", new CultureInfo("es-ES"))}\nVencimmiento: {entidad.Tarjeta.FechaVencimiento.ToString("dd/MM/yyy", new CultureInfo("es-ES"))}";
 
                 var imgTarjeta = "{0}.png";

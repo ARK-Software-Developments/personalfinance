@@ -6,7 +6,6 @@
 
 
 @{
-    ViewBag.Title = "Formulario de Pedido";
     var fechaActual = DateTime.Now.ToString("yyyy-MM-dd");
     Pedido pedido = ViewBag.Pedido;
     List<Estado> estados = ViewBag.Estados;
@@ -44,7 +43,7 @@
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Title</h1>
-    <p>Generación de Pedido.</p>
+    <p>Generación de @ViewBag.Modulo.</p>
 </div>
 
 <form method="post" asp-controller="Pedidos" asp-action="FormAdd">

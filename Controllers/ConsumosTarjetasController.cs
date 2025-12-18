@@ -85,7 +85,7 @@ public class ConsumosTarjetasController : Controller
     public async Task<IActionResult> ConsumosTarjetas([FromForm] TarjetaConsumo tarjetaConsumo, string action, int VilleteraSel, int TipoGastoSel)
     {
         ViewBag.Modulo = Modulo;
-        ViewBag.Title = "Gastos";
+        ViewBag.Title = $"Formulario de {Modulo}";
         ViewBag.Message = $"{Gestion} {Modulo}";
 
         try
@@ -264,6 +264,7 @@ public class ConsumosTarjetasController : Controller
         ViewBag.Modulo = Modulo;
         ViewBag.Action = action;
         ViewBag.TarjetaConsumo = tarjetaConsumo;
+        ViewBag.Title = $"Formulario de {Modulo}";
 
         // Obtener Transacciones
         cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
@@ -304,6 +305,7 @@ public class ConsumosTarjetasController : Controller
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
         ViewBag.Action = action;
+        ViewBag.Title = $"Formulario de {Modulo}";
 
         switch (action)
         {

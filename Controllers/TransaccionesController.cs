@@ -49,16 +49,7 @@ public class TransaccionesController : Controller
 
         try
         {
-            cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
-
-            if (cacheTransacciones == null)
-            {
-                response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<TransaccionesResponse>(cacheTransacciones);
-            }
+            response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
 
             ViewBag.Transacciones = response.Transacciones;
 
@@ -261,16 +252,7 @@ public class TransaccionesController : Controller
 
                 cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
 
-                if (cacheTransacciones == null)
-                {
-                    response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
-                    HttpContext.Session.SetString(cacheNameDataTransacciones, JsonConvert.SerializeObject(response));
-                }
-                else
-                {
-                    response = JsonConvert.DeserializeObject<TransaccionesResponse>(cacheTransacciones);
-                }
+                response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
 
                 cacheTarjetas = HttpContext.Session.GetString(cacheNameDataTarjetas);
                 
