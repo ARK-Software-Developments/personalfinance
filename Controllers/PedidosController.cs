@@ -15,6 +15,8 @@
 
     public class PedidosController : Controller
     {
+        private readonly string Gestion = "Administrar";
+        private readonly string Modulo = "Pedidos";        
         private readonly ILogger<PedidosController> _logger;
         private readonly HttpClient _httpClient;
         private readonly PedidosService _pedidoService;
@@ -37,7 +39,9 @@
             // Por ejemplo, guarda en una base de datos  
 
             ViewBag.Action = action;
-            
+            ViewBag.Modulo = Modulo;
+            ViewBag.Title = $"Formulario de {Modulo}";
+
             var dataEstados = HttpContext.Session.GetString("dataEstados");
             var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
             var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
@@ -84,6 +88,8 @@
 
             pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == 2);
 
+            ViewBag.Modulo = Modulo;
+            ViewBag.Title = $"Formulario de {Modulo}";
             ViewBag.Pedido = pedido;
             ViewBag.Estados = estados;
 
@@ -93,6 +99,8 @@
         public async Task<IActionResult> Index([FromForm] Pedido pedido, string action, int EstadoSel)
         {
             ViewBag.Message = "Gestión de Pedidos";
+            ViewBag.Modulo = Modulo;
+            ViewBag.Title = $"Formulario de {Modulo}";
 
             _logger.LogInformation("Inicializando PedidosController => Index()");
 
@@ -151,6 +159,8 @@
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
             ViewBag.Message = "Gestión Detalle del Pedidos";
+            ViewBag.Modulo = Modulo;
+            ViewBag.Title = $"Formulario Detalle de {Modulo}";
 
             string dataPedidos = dataPedidos = HttpContext.Session.GetString("dataPedidos");
             PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
@@ -189,6 +199,8 @@
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
             ViewBag.Message = "Gestión Detalle del Pedidos";
+            ViewBag.Modulo = Modulo;
+            ViewBag.Title = $"Formulario Detalle de {Modulo}";
 
             string dataPedidos = dataPedidos = HttpContext.Session.GetString("dataPedidos");
             PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);

@@ -8,6 +8,7 @@
 @{
     ViewBag.Title = "Formulario de Entidad";
     var fechaActual = DateTime.Now.ToString("yyyy-MM-dd");
+    var form = ViewBag.Modulo;
     Entidad entidad = ViewBag.Entidad;
        
 }
@@ -17,7 +18,7 @@
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Title</h1>
-    <p>Generación de Pedido.</p>
+    <p>Formulario de @form.</p>
 </div>
 
 <form method="post" asp-controller="Pedidos" asp-action="FormAdd">
