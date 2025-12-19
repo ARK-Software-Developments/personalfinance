@@ -20,10 +20,10 @@
             <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Denominación</th>
-                <th align="center" scope="col">Fecha de Cierre</th>
-                <th align="center" scope="col">Fecha de Vencimiento</th>
-                <th align="center" scope="col">Entidad</th>
-                <th align="center" scope="col">Activo</th>
+                <th scope="col" align="center">Fecha de Cierre</th>
+                <th scope="col" align="center">Fecha de Vencimiento</th>
+                <th scope="col" align="center">Entidad</th>
+                <th scope="col" align="center">Activo</th>
                 <th>
                     &nbsp;
                     <form method="post" asp-controller="@ViewBag.Modulo">
@@ -36,12 +36,12 @@
             @foreach (var entidad in @tarjetas)
             {
                 <tr>
-                    <th scope="row" id="Id">@entidad.Id</th>
-                    <td id="Numero">@entidad.Nombre</td>
-                    <td id="FechaCierre">@entidad.FechaCierre.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
-                    <td id="FechaVencimiento">@entidad.FechaVencimiento.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
-                    <td id="Entidad">@entidad.Entidad.Nombre</td>
-                    <td id="Estado">@entidad.Activo</td>
+                    <td scope="row" id="Id">@entidad.Id</td>
+                    <td scope="row" id="Numero">@entidad.Nombre</td>
+                    <td scope="row" id="FechaCierre">@entidad.FechaCierre.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
+                    <td scope="row" id="FechaVencimiento">@entidad.FechaVencimiento.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
+                    <td scope="row" id="Entidad">@entidad.Entidad.Nombre</td>
+                    <td scope="row" id="Estado">@entidad.Activo</td>
                     <td>
                         <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
                             <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
