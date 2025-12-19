@@ -12,7 +12,7 @@
     CultureInfo culturaArgentina = new CultureInfo("es-AR");
     TarjetaConsumo tarjetaConsumo = ViewBag.TarjetaConsumo;
     List<Tarjeta> tarjetas = ViewBag.Tarjetas;
-    List<Transaccion> transacciones = ViewBag.Transacciones;
+    List<Transaccion> transacciones = ViewBag.Transacciones;    
 
     string modeView = ViewBag.ModeView ? "disabled" : "";
 
@@ -90,37 +90,11 @@
                             <span class="form-label">Tarjeta:</span>
                             @if (string.IsNullOrEmpty(@modeView))
                             {
-                                <select id="Tarjeta" name="Tarjeta" class="form-control" onchange="CambioTarjeta()" asp-for="@tarjetaConsumo.Tarjeta.Id" required>
-                                    @foreach (var item in @lstTarjetas)
-                                    {
-                                        if (item.Selected)
-                                        {
-                                            <option value="@item.Value" selected>@item.Text</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item.Value">@item.Text</option>
-                                        }
-                                    }
-                                </select>
-                                <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@tarjetaConsumo.Tarjeta.Id" hidden>
+                                <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@tarjetaConsumo.Tarjeta.Nombre">
                             }
                             else
                             {
-                                <select id="Tarjeta" name="Tarjeta" class="form-control" onchange="CambioTarjeta()" asp-for="@tarjetaConsumo.Tarjeta.Id" disabled>
-                                    @foreach (var item in @lstTarjetas)
-                                    {
-                                        if (item.Selected)
-                                        {
-                                            <option value="@item.Value" selected>@item.Text</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item.Value">@item.Text</option>
-                                        }
-                                    }
-                                </select>
-                                <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@tarjetaConsumo.Tarjeta.Id" hidden>
+                                <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@tarjetaConsumo.Tarjeta.Nombre" disabled>
                             }
                             <span class="select-arrow"></span>                            
                         </div>
@@ -270,8 +244,34 @@
                     </td>
                 </tr>
             </table>
-            <p></p>
-
+            <p></p>         
+            <table class="table table-secondary">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Código de Transacción</th>
+                        <th scope="col">Nro Orden / Compra</th>
+                        <th scope="col">Entidad Asociada</th>
+                        <th scope="col">Fecha de Transacción</th>
+                        <th scope="col">Resumen</th>
+                        <th scope="col">Observaciones</th>
+                    </tr>
+                </thead>
+                @if (tarjetaConsumo.Transaccion != null)
+                {
+                    <tbody>
+                        <tr>
+                            <td scope="row" id="Id">@tarjetaConsumo.Transaccion.Id</td>
+                            <td scope="row" id="CodigoTransaccion">@tarjetaConsumo.Transaccion.CodigoTransaccion</td>
+                            <td scope="row" id="OrdenCompra">@tarjetaConsumo.Transaccion.OrdenCompra</td>
+                            <td scope="row" id="EntidadAsociada">@tarjetaConsumo.Transaccion.EntidadAsociada</td>
+                            <td scope="row" id="FechaTransaccion" align="center">@tarjetaConsumo.Transaccion.FechaTransaccion.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
+                            <td scope="row" id="Resumen">@tarjetaConsumo.Transaccion.Resumen</td>
+                            <td scope="row" id="Observaciones">@tarjetaConsumo.Transaccion.Observaciones</td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
         </div>
         @if (string.IsNullOrEmpty(@modeView))
         {

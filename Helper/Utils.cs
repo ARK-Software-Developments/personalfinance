@@ -5,6 +5,7 @@ using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
+using System.Text.RegularExpressions;
 
 namespace PersonalFinance.Helper
 {
@@ -101,7 +102,6 @@ namespace PersonalFinance.Helper
 
             return meses;
         }
-
         public static Dictionary<string, decimal> CalcularDiferenciasMeses(int mesActual, Meses entidad)
         {
             Dictionary<string, decimal> result = new ();
@@ -184,7 +184,7 @@ namespace PersonalFinance.Helper
             
             return result;
         }       
-    
+   
         public static T MapRequest<T>(IFormCollection form, ServicioEnum servicioEnum)
         {
             switch (servicioEnum)
@@ -226,6 +226,12 @@ namespace PersonalFinance.Helper
                     return (T)new object();
             }
             
+        }
+        
+        public static string LetraCapital(string cadena)
+        {
+            var result = Regex.Replace(cadena.ToLower(), @"\b(\w)", m => m.Value.ToUpper());
+            return Regex.Replace(result, @"(\s(of|in|by|and)|\'[st])\b", m => m.Value.ToLower(), RegexOptions.IgnoreCase);
         }
     }
 }

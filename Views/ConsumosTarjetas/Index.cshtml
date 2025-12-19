@@ -1,11 +1,24 @@
 ﻿@using PersonalFinance.Helper
 @using PersonalFinance.Models.TarjetaConsumos
 @using System.Globalization
+@using System.Text.RegularExpressions
 @{
+    CultureInfo culturaEspañol = new CultureInfo("es-ES");
+
     ViewData["Title"] = ViewBag.Title;
     ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
     List<TarjetaConsumo> tarjetaConsumos = ViewBag.TarjetaConsumos;
+    var anoActual = DateTime.Now.Year;
+    var mesActual = DateTime.Now.Month;
+    var colorMayor = "background-color: #E89B3C;";
+    var colorMenor = "background-color: #A7C282;";
+
+    var tituloMesAnterior =  Utils.LetraCapital((new DateTime(anoActual, mesActual - 1, 1)).ToString("MMMM", culturaEspañol));
+    var tituloMesActual = Utils.LetraCapital((new DateTime(anoActual, mesActual, 1)).ToString("MMMM", culturaEspañol));
+    var tituloMesSiguiente = Utils.LetraCapital((new DateTime(anoActual, mesActual == 12 ? 1 : mesActual + 1, 1)).ToString("MMMM", culturaEspañol));
+
 }
+
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
@@ -29,9 +42,9 @@
                 <th scope="col">Id</th>
                 <th scope="col">Entidad Operada</th>
                 <th scope="col">Detalle</th>                
-                <th scope="col">Mes Anterior</th>
-                <th scope="col">Mes Actual</th>
-                <th scope="col">Mes Siguiente</th>
+                <th scope="col" style="width: 90px" align="center">@tituloMesAnterior</th>
+                <th scope="col" style="width: 90px" align="center">@tituloMesActual</th>
+                <th scope="col" style="width: 90px" align="center">@tituloMesSiguiente</th>
                 <th scope="col">Tarjeta</th>
                 <th scope="col">Transacción</th>
                 <th scope="col">V</th>
@@ -49,10 +62,7 @@
             {
                 var collapseN = "#collapse" + entidad.Id;
                 var collapse = "collapse" + entidad.Id;
-                var mesActual = DateTime.Now.Month;
-                var colorMayor = "background-color: #E89B3C;";
-                var colorMenor = "background-color: #A7C282;";
-
+                
                 var difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<TarjetaConsumo>(entidad));
 
                 decimal gastoMesAnterior = difMeses["anterior"];
@@ -64,16 +74,16 @@
                 
                 <tr>
                     <th scope="row" id="Id">@entidad.Id</th>
-                    <td id="EntidadCompra">@entidad.EntidadCompra.ToUpper()</td>
-                    <td id="Detalle">@entidad.Detalle.ToUpper()</td>                    
-                    <td id="MesAnterior" style="padding-right: 20px; text-align: right;">@gastoMesAnterior.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td id="MesAnterior" style="padding-right: 20px; text-align: right;@(@gastoMesActual >= @gastoMesAnterior ? @colorMayor : @colorMenor)">@gastoMesActual.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td id="MesAnterior" style="padding-right: 20px; text-align: right;@(@gastoMesSiguiente >= @gastoMesActual ? @colorMayor : @colorMenor)">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td id="Tarjeta">@(@entidad.Tarjeta != null ? @entidad.Tarjeta.Nombre.ToUpper() : string.Empty)</td>
-                    <td id="Transaccion">@(@entidad.Transaccion != null ? @entidad.Transaccion.Resumen.ToUpper() : string.Empty)</td>
-                    <td id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
-                    <td id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
-                    <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
+                    <td scope="row" id="EntidadCompra">@entidad.EntidadCompra.ToUpper()</td>
+                    <td scope="row" id="Detalle">@entidad.Detalle.ToUpper()</td>
+                    <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;">@gastoMesAnterior.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;@(@gastoMesActual >= @gastoMesAnterior ? @colorMayor : @colorMenor)">@gastoMesActual.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;@(@gastoMesSiguiente >= @gastoMesActual ? @colorMayor : @colorMenor)">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="Tarjeta">@(@entidad.Tarjeta != null ? @entidad.Tarjeta.Nombre.ToUpper() : string.Empty)</td>
+                    <td scope="row" id="Transaccion">@(@entidad.Transaccion != null ? @entidad.Transaccion.Resumen.ToUpper() : string.Empty)</td>
+                    <td scope="row" id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
+                    <td scope="row" id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
+                    <td scope="row" data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                         <i class="fa" aria-hidden="false"></i>
                     </td>
                     <td>
@@ -119,7 +129,6 @@
                                         <th scope="row" id="Octubre" style="@(@mesActual == 10 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</th>
                                         <th scope="row" id="Noviembre" style="@(@mesActual == 11 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</th>
                                         <th scope="row" id="Diciembre" style="@(@mesActual == 12 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</th>
-
                                     </tr>
                                 </tbody>
                             </table>

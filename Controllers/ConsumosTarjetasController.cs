@@ -326,7 +326,10 @@ public class ConsumosTarjetasController : Controller
                     response = JsonConvert.DeserializeObject<TarjetaConsumoResponse>(cacheTarjetaConsumo);
                 }
 
-                ViewBag.TarjetaConsumo = response?.TarjetaConsumos.Find(t => t.Id == tarjetaConsumo.Id);
+
+                var tmpTarjetaConsumo = response?.TarjetaConsumos.Find(t => t.Id == tarjetaConsumo.Id);
+
+                ViewBag.TarjetaConsumo = tmpTarjetaConsumo;
 
                 // Obtener Transacciones
                 cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
@@ -342,7 +345,7 @@ public class ConsumosTarjetasController : Controller
                     transaccionesResponse = JsonConvert.DeserializeObject<TransaccionesResponse>(cacheTransacciones);
                 }
 
-                ViewBag.Transacciones = transaccionesResponse?.Transacciones;
+                ViewBag.Transacciones = transaccionesResponse?.Transacciones.FindAll(t => t.Tarjeta.Id == tmpTarjetaConsumo.Tarjeta.Id);
 
                 // Obtener Tarjetas
                 cacheTarjetas = HttpContext.Session.GetString(cacheNameDataTarjetas);
@@ -351,7 +354,7 @@ public class ConsumosTarjetasController : Controller
                 {
                     tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
-                    HttpContext.Session.SetString(cacheNameDataTransacciones, JsonConvert.SerializeObject(response));
+                    HttpContext.Session.SetString(cacheNameDataTarjetas, JsonConvert.SerializeObject(response));
                 }
                 else
                 {
