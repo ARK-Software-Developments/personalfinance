@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace PersonalFinance.Helper

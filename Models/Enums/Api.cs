@@ -11,6 +11,8 @@
         /// </summary>
         public string Route { get; set; }
 
+        public string Cache { get; set; }
+
         public string Method { get; set; }
 
         public string GetAll()

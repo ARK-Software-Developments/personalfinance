@@ -46,7 +46,6 @@
                 <th scope="col" style="width: 90px" align="center">@tituloMesActual</th>
                 <th scope="col" style="width: 90px" align="center">@tituloMesSiguiente</th>
                 <th scope="col">Tarjeta</th>
-                <th scope="col">Transacción</th>
                 <th scope="col">V</th>
                 <th scope="col">P</th>
                 <th colspan="2">
@@ -80,7 +79,6 @@
                     <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;@(@gastoMesActual >= @gastoMesAnterior ? @colorMayor : @colorMenor)">@gastoMesActual.ToString("C", new CultureInfo("es-AR"))</td>
                     <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;@(@gastoMesSiguiente >= @gastoMesActual ? @colorMayor : @colorMenor)">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
                     <td scope="row" id="Tarjeta">@(@entidad.Tarjeta != null ? @entidad.Tarjeta.Nombre.ToUpper() : string.Empty)</td>
-                    <td scope="row" id="Transaccion">@(@entidad.Transaccion != null ? @entidad.Transaccion.Resumen.ToUpper() : string.Empty)</td>
                     <td scope="row" id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
                     <td scope="row" id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
                     <td scope="row" data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">

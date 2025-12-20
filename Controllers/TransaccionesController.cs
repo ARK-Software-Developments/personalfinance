@@ -1,57 +1,44 @@
 namespace PersonalFinance.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using PersonalFinance.Helper;
 using PersonalFinance.Models;
-using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
 using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 
-public class TransaccionesController : Controller
+public class TransaccionesController : BaseController
 {
     private readonly string Gestion = "Administrar";
     private readonly string Modulo = "Transacciones";
-    private readonly string cacheNameDataTransacciones = "cacheDataTransacciones";
-    private readonly string cacheNameDataTarjetas = "cacheDataTarjetas";
     private readonly ILogger<TransaccionesController> _logger;
-    private readonly ServiceCaller serviceCaller;
-
-    private GeneralDataResponse generalDataResponse = new();
-    private TransaccionesResponse response = new();
-    private TarjetasResponse tarjetasResponse = new();
-    private GeneralRequest generalRequest = new();
-    private string cacheTransacciones = string.Empty;
-    private string cacheTarjetas = string.Empty;
 
     public TransaccionesController(ILogger<TransaccionesController> logger)
     {
         _logger = logger;
-        HttpClientHandler httpClientHandler = new()
+        this.httpClientHandler = new()
         {
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
         };
-        this.serviceCaller = new ServiceCaller(new HttpClient(httpClientHandler));
     }
-
 
     public async Task<IActionResult> Index([FromForm] Transaccion entidad, string action)
     {
+        this.Inicialized();
+
         _logger.LogInformation("Inicializando TarjetasController => Index()");
-        TransaccionesResponse response = new();
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de {Modulo}";
 
         try
         {
-            response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
+            transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
 
-            ViewBag.Transacciones = response.Transacciones;
+            ViewBag.Transacciones = transaccionesResponse.Transacciones;
 
             return View(ViewBag);
 
@@ -66,6 +53,8 @@ public class TransaccionesController : Controller
 
     public async Task<IActionResult> Transacciones([FromForm] Transaccion transaccion, string action, int TarjetaSel)
     {
+        this.Inicialized();
+
         _logger.LogInformation("Inicializando TarjetasController => Index()");
         
         ViewBag.Modulo = Modulo;
@@ -76,16 +65,7 @@ public class TransaccionesController : Controller
         {
             if (action == "generar" || action == "actualizar")
             {
-                cacheTarjetas = HttpContext.Session.GetString(cacheNameDataTarjetas);
-
-                if (cacheTarjetas == null)
-                {
-                    tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
-                }
-                else
-                {
-                    tarjetasResponse = JsonConvert.DeserializeObject<TarjetasResponse>(cacheTarjetas);
-                }
+                tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
                 generalRequest = new()
                 {
@@ -173,27 +153,15 @@ public class TransaccionesController : Controller
 
 
                 }
-                
-                HttpContext.Session.Remove(cacheNameDataTransacciones);
-            }
-                       
 
-            cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
-
-            if (cacheTransacciones == null)
-            {
-                response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
-                HttpContext.Session.SetString(cacheNameDataTransacciones, JsonConvert.SerializeObject(response));
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<TransaccionesResponse>(cacheTransacciones);
+                CacheAdmin.Remove(HttpContext, ServicioEnum.Transacciones);
             }
 
-            ViewBag.Transacciones = response?.Transacciones;
+
+            transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
+
+            ViewBag.Transacciones = transaccionesResponse?.Transacciones;
             
-            //return View("Index");
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
 
         }
@@ -208,6 +176,8 @@ public class TransaccionesController : Controller
     [HttpPost]
     public async Task<IActionResult> TransaccionFormAdd([FromForm] Transaccion transaccion, string action)
     {
+        this.Inicialized();
+
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -215,16 +185,7 @@ public class TransaccionesController : Controller
         ViewBag.Transaccion = transaccion;
         ViewBag.Tarjetas = new List<Tarjeta>();
 
-        cacheTarjetas = HttpContext.Session.GetString(cacheNameDataTarjetas);
-
-        if (cacheTarjetas == null)
-        {
-            tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
-        }
-        else
-        {
-            tarjetasResponse = JsonConvert.DeserializeObject<TarjetasResponse>(cacheTarjetas);
-        }
+        tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
         ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("TarjetaConsumoId") ? int.Parse(this.Request.Form["TarjetaConsumoId"]) : 0;
         ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaSel") ? int.Parse(this.Request.Form["TarjetaSel"]) : 0; ;
@@ -237,6 +198,8 @@ public class TransaccionesController : Controller
     [HttpPost]
     public async Task<IActionResult> TransaccionFormEdit([FromForm] Transaccion transaccion, string action)
     {
+        this.Inicialized();
+
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -250,23 +213,12 @@ public class TransaccionesController : Controller
             case "openFormView":
             case "openFormEdit":
 
-                cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
+                transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
 
-                response = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
-                cacheTarjetas = HttpContext.Session.GetString(cacheNameDataTarjetas);
-                
-                if (cacheTarjetas == null)
-                {
-                    tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
-                }
-                else
-                {
-                    tarjetasResponse = JsonConvert.DeserializeObject<TarjetasResponse>(cacheTarjetas);
-                }
+                tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
                 ViewBag.ModeView = action == "openFormView" ? true : false;
-                ViewBag.Transaccion = response.Transacciones.Find(t => t.Id == transaccion.Id);
+                ViewBag.Transaccion = transaccionesResponse.Transacciones.Find(t => t.Id == transaccion.Id);
                 ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
 
                 return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página

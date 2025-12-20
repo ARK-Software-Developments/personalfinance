@@ -3,54 +3,34 @@ namespace PersonalFinance.Controllers;
 #pragma warning disable CS8601 // Posible asignación de referencia nula
 
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
-using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
-using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
-using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 
-public class ConsumosTarjetasController : Controller
+public class ConsumosTarjetasController : BaseController
 {
     private readonly string Gestion = "Administrar";
     private readonly string Modulo = "ConsumosTarjetas";
-    private readonly string cacheNameDataTarjetaConsumo = "cacheDataTarjetaConsumo";
-    private readonly string cacheNameDataTransacciones = "cacheDataTransacciones";
-    private readonly string cacheNameDataTarjetas = "cacheDataTarjetas";
     private readonly ILogger<ConsumosTarjetasController> _logger;
-    private readonly ServiceCaller serviceCaller;
-    private readonly Dictionary<string, object> keyValuePairs = [];
-
-    private GeneralDataResponse generalDataResponse = new();
-    private TarjetaConsumoResponse response = new();
-    private TransaccionesResponse transaccionesResponse = new();
-    private TarjetasResponse tarjetasResponse = new();
-    private GeneralRequest generalRequest = new();
-    private string cacheTarjetaConsumo = string.Empty;
-    private string cacheTarjetas = string.Empty;
-    private string cacheTransacciones = string.Empty;
     
     public ConsumosTarjetasController(ILogger<ConsumosTarjetasController> logger)
     {
         _logger = logger;
-        HttpClientHandler httpClientHandler = new()
+        this.httpClientHandler = new()
         {
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-        };
-        this.serviceCaller = new ServiceCaller(new HttpClient(httpClientHandler));
-        this.keyValuePairs.Add("year", 2025);
+        }; 
     }
-
 
     public async Task<IActionResult> Index([FromForm] TarjetaConsumo tarjetaConsumo, string action)
     {
+        this.Inicialized();
+
         _logger.LogInformation("Inicializando TarjetasController => Index()");
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
@@ -58,32 +38,24 @@ public class ConsumosTarjetasController : Controller
 
         try
         {
-            cacheTarjetaConsumo = HttpContext.Session.GetString(cacheNameDataTarjetaConsumo);
-            if (cacheTarjetaConsumo == null)
-            {
-                response = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<TarjetaConsumoResponse>(cacheTarjetaConsumo);
-            }
+            tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
 
-            ViewBag.TarjetaConsumos = response.TarjetaConsumos;
+            ViewBag.TarjetaConsumos = tarjetaConsumoResponse.TarjetaConsumos;
 
-            return View(ViewBag);
-
+            return await Task.FromResult<IActionResult>(View(ViewBag));
         }
         catch (Exception ex)
         {
             _logger.LogCritical(ex.ToString());
 
-            return View(new List<TarjetaConsumo>());
+            return await Task.FromResult<IActionResult>(View(new List<TarjetaConsumo>()));
         }
     }
 
     [HttpPost]
     public async Task<IActionResult> ConsumosTarjetas([FromForm] TarjetaConsumo tarjetaConsumo, string action, int VilleteraSel, int TipoGastoSel)
     {
+        this.Inicialized();
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"Formulario de {Modulo}";
         ViewBag.Message = $"{Gestion} {Modulo}";
@@ -92,16 +64,6 @@ public class ConsumosTarjetasController : Controller
         {
             if (action == "generar" || action == "actualizar")
             {
-                cacheTarjetaConsumo = HttpContext.Session.GetString(cacheNameDataTarjetaConsumo);
-                if (cacheTarjetaConsumo == null)
-                {
-                    response = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-                }
-                else
-                {
-                    response = JsonConvert.DeserializeObject<TarjetaConsumoResponse>(cacheTarjetaConsumo);
-                }
-
                 tarjetaConsumo = Utils.MapRequest<TarjetaConsumo>(this.Request.Form, ServicioEnum.ConsumosTarjeta);
 
                 generalRequest = new()
@@ -117,11 +79,6 @@ public class ConsumosTarjetasController : Controller
                          {
                              Nombre = "pPurchasingEntity",
                              Valor = tarjetaConsumo.EntidadCompra,
-                         },
-                         new Parametro()
-                         {
-                             Nombre = "pTransactionCodeId",
-                             Valor = tarjetaConsumo.Transaccion.Id,
                          },
                          new Parametro()
                          {
@@ -226,23 +183,14 @@ public class ConsumosTarjetasController : Controller
                 {
                     generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.ConsumosTarjeta, generalRequest);
                 }
-                
-                HttpContext.Session.Remove(cacheNameDataTarjetaConsumo);
+
+                CacheAdmin.Remove(HttpContext, ServicioEnum.ConsumosTarjeta);
 
             }
 
+            tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
 
-            cacheTarjetaConsumo = HttpContext.Session.GetString(cacheNameDataTarjetaConsumo);
-            if (cacheTarjetaConsumo == null)
-            {
-                response = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<TarjetaConsumoResponse>(cacheTarjetaConsumo);
-            }
-
-            ViewBag.TarjetaConsumos = response?.TarjetaConsumos;
+            ViewBag.TarjetaConsumos = tarjetaConsumoResponse?.TarjetaConsumos;
             
             //return View("Index");
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
@@ -252,13 +200,15 @@ public class ConsumosTarjetasController : Controller
         {
             _logger.LogCritical(ex.ToString());
 
-            return View(new List<TarjetaConsumo>());
+            return await Task.FromResult<IActionResult>(View(new List<TarjetaConsumo>()));
         }
     }
 
     [HttpPost]
     public async Task<IActionResult> ConsumosTarjetasFormAdd([FromForm] TarjetaConsumo tarjetaConsumo, string action)
     {
+        this.Inicialized();
+
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -267,33 +217,14 @@ public class ConsumosTarjetasController : Controller
         ViewBag.Title = $"Formulario de {Modulo}";
 
         // Obtener Transacciones
-        cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
-
-        if (cacheTransacciones == null)
-        {
-            transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
-            HttpContext.Session.SetString(cacheNameDataTransacciones, JsonConvert.SerializeObject(response));
-        }
-        else
-        {
-            transaccionesResponse = JsonConvert.DeserializeObject<TransaccionesResponse>(cacheTransacciones);
-        }
+        transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
 
         ViewBag.Transacciones = transaccionesResponse?.Transacciones;
 
         // Obtener Consumos Tarjetas
-        cacheTarjetaConsumo = HttpContext.Session.GetString(cacheNameDataTarjetaConsumo);
-        if (cacheTarjetaConsumo == null)
-        {
-            response = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-        }
-        else
-        {
-            response = JsonConvert.DeserializeObject<TarjetaConsumoResponse>(cacheTarjetaConsumo);
-        }
+        tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
 
-        ViewBag.TarjetaConsumos = response?.TarjetaConsumos;
+        ViewBag.TarjetaConsumos = tarjetaConsumoResponse?.TarjetaConsumos;
 
         return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
     }
@@ -301,6 +232,8 @@ public class ConsumosTarjetasController : Controller
     [HttpPost]
     public async Task<IActionResult> ConsumosTarjetasFormEdit([FromForm] TarjetaConsumo tarjetaConsumo, string action)
     {
+        this.Inicialized();
+
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -316,51 +249,16 @@ public class ConsumosTarjetasController : Controller
             case "openFormEdit":
 
                 // Obtener Consumos Tarjeta
-                cacheTarjetaConsumo = HttpContext.Session.GetString(cacheNameDataTarjetaConsumo);
-                if (cacheTarjetaConsumo == null)
-                {
-                    response = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-                }
-                else
-                {
-                    response = JsonConvert.DeserializeObject<TarjetaConsumoResponse>(cacheTarjetaConsumo);
-                }
-
-
-                var tmpTarjetaConsumo = response?.TarjetaConsumos.Find(t => t.Id == tarjetaConsumo.Id);
-
+                tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
+                var tmpTarjetaConsumo = tarjetaConsumoResponse?.TarjetaConsumos.Find(t => t.Id == tarjetaConsumo.Id);
                 ViewBag.TarjetaConsumo = tmpTarjetaConsumo;
 
                 // Obtener Transacciones
-                cacheTransacciones = HttpContext.Session.GetString(cacheNameDataTransacciones);
-
-                if (cacheTransacciones == null)
-                {
-                    transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
-                    HttpContext.Session.SetString(cacheNameDataTransacciones, JsonConvert.SerializeObject(response));
-                }
-                else
-                {
-                    transaccionesResponse = JsonConvert.DeserializeObject<TransaccionesResponse>(cacheTransacciones);
-                }
-
+                transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
                 ViewBag.Transacciones = transaccionesResponse?.Transacciones.FindAll(t => t.Tarjeta.Id == tmpTarjetaConsumo.Tarjeta.Id);
 
                 // Obtener Tarjetas
-                cacheTarjetas = HttpContext.Session.GetString(cacheNameDataTarjetas);
-
-                if (cacheTarjetas == null)
-                {
-                    tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
-
-                    HttpContext.Session.SetString(cacheNameDataTarjetas, JsonConvert.SerializeObject(response));
-                }
-                else
-                {
-                    tarjetasResponse = JsonConvert.DeserializeObject<TarjetasResponse>(cacheTarjetas);
-                }
-
+                tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
                 ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
 
                 ViewBag.ModeView = action == "openFormView" ? true : false;

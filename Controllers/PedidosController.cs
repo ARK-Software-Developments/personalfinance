@@ -1,40 +1,37 @@
 ﻿namespace PersonalFinance.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using PersonalFinance.Helper;
     using PersonalFinance.Models;
+    using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Pedidos;
-    using PersonalFinance.Service;
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
-    using System.Text;
 
-    public class PedidosController : Controller
+    public class PedidosController : BaseController
     {
         private readonly string Gestion = "Administrar";
         private readonly string Modulo = "Pedidos";        
         private readonly ILogger<PedidosController> _logger;
-        private readonly HttpClient _httpClient;
-        private readonly PedidosService _pedidoService;
 
         public PedidosController(ILogger<PedidosController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
-            HttpClientHandler httpClientHandler = new()
+            this.httpClientHandler = new()
             {
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-            };
-            _httpClient = new HttpClient(httpClientHandler);
-            _pedidoService = new PedidosService(_httpClient);
+            };            
         }
 
         [HttpPost]
-        public Task<IActionResult> FormEdit([FromForm] Pedido pedido, string action)
+        public async Task<IActionResult> FormEdit([FromForm] Pedido pedido, string action)
         {
+            this.Inicialized();
+
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
 
@@ -42,72 +39,75 @@
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario de {Modulo}";
 
-            var dataEstados = HttpContext.Session.GetString("dataEstados");
-            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
-            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+            estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
 
-            string dataPedidos = HttpContext.Session.GetString("dataPedidos");
-            PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
-
+            var estados = estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
             
+            pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+
             switch (action)
             {
                 case "add":
-                    return Task.FromResult<IActionResult>(View()); // Redirige a otra página
+                    return await Task.FromResult<IActionResult>(View()); // Redirige a otra página
 
 
                 case "openFormEdit":
 
 
-                    var dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
+                    var dataPedido = pedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
 
                     ViewBag.Estados = estados;
                     ViewBag.Pedido = dataPedido;
 
-                    return Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
+                    return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
 
                 default:
 
                     ViewBag.Estados = estados;
                     //ViewBag.Pedido = dataPedido;
 
-                    return Task.FromResult<IActionResult>(View("Index", dataPedidosResponse.Pedidos));
+                    return await Task.FromResult<IActionResult>(View("Index", pedidosResponse.Pedidos));
             }
             
         }
 
         [HttpPost]
-        public Task<IActionResult> FormAdd([FromForm] Pedido pedido, string action)
+        public async Task<IActionResult> FormAdd([FromForm] Pedido pedido, string action)
         {
+            this.Inicialized();
+
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
 
-            var dataEstados = HttpContext.Session.GetString("dataEstados");
-            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
-            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+            estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
 
-            pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == 2);
+
+            var estados = estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+
+            pedido.Estado = estadosResponse.Estados.Find(e => e.Id == 2);
 
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario de {Modulo}";
             ViewBag.Pedido = pedido;
             ViewBag.Estados = estados;
 
-            return Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
+            return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
         }
 
         public async Task<IActionResult> Index([FromForm] Pedido pedido, string action, int EstadoSel)
         {
+            this.Inicialized();
+
             ViewBag.Message = "Gestión de Pedidos";
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario de {Modulo}";
+            string montoTotal = string.Empty;
+            decimal decena = 0;
+            decimal decimales = 0;
 
             _logger.LogInformation("Inicializando PedidosController => Index()");
 
-            PedidosResponse pedidosResponse = new();
-
-            var dataEstados = HttpContext.Session.GetString("dataEstados");
-            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
+            this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
 
             try
             {
@@ -115,32 +115,110 @@
                 {
                     case "generar":
 
-                        pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == EstadoSel);
+                        pedido.Estado = estadosResponse.Estados.Find(e => e.Id == EstadoSel);
 
-                        await this._pedidoService.GenerarPedido(pedido);
-                        HttpContext.Session.Remove("dataPedidos");
+                        montoTotal = pedido.MontoTotal.Replace("$ ", string.Empty);
+                        decena = 0;
+                        decimales = 0;
+
+                        if (montoTotal.Contains(","))
+                        {
+                            decena = decimal.Parse(montoTotal.Split(",")[0]);
+                            decimales = decimal.Parse(montoTotal.Split(",")[1]);
+                        }
+                        else
+                        {
+                            decena = decimal.Parse(montoTotal);
+                        }
+
+                        this.generalRequest = new ()
+                        {
+                            Parametros =
+                                [
+                                 new Parametro()
+                                 {
+                                     Nombre = "pNumero",
+                                     Valor = pedido.Numero,
+                                 },
+                                 new Parametro()
+                                 {
+                                     Nombre = "pFechaPedido",
+                                     Valor = pedido.FechaPedido?.ToString("yyyy-MM-dd"),
+                                 },
+                                 new Parametro()
+                                 {
+                                     Nombre = "pMontoTotal",
+                                     Valor = decimal.Parse($"{decena.ToString()},{decimales.ToString()}"),
+                                 },
+                                 new Parametro()
+                                 {
+                                     Nombre = "pTipoRecurso",
+                                     Valor = pedido.TipoRecurso,
+                                 },
+                                 new Parametro()
+                                 {
+                                     Nombre = "pEstado",
+                                     Valor = 2,
+                                 }
+                             ],
+                        };
+
+                        await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Pedidos, generalRequest);
+                        CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
                         break;
 
                     case "editOrder":
                         
-                        pedido.Estado = dataEstadosResponse.Estados.Find(e => e.Id == EstadoSel);
-                        await this._pedidoService.ActualizarPedido(pedido);
-                        HttpContext.Session.Remove("dataPedidos");
+                        pedido.Estado = this.estadosResponse.Estados.Find(e => e.Id == EstadoSel);
+                        montoTotal = pedido.MontoTotal.Replace("$ ", string.Empty);
+                        decena = 0;
+                        decimales = 0;
+
+                        if (montoTotal.Contains(","))
+                        {
+                            decena = decimal.Parse(montoTotal.Split(",")[0]);
+                            decimales = decimal.Parse(montoTotal.Split(",")[1]);
+                        }
+                        else
+                        {
+                            decena = decimal.Parse(montoTotal);
+                        }
+
+                        this.generalRequest = new()
+                        {
+                            Parametros =
+                            [
+                             new Parametro()
+                             {
+                                 Nombre = "pId",
+                                 Valor = pedido.Id,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pFechaRecibido",
+                                 Valor = pedido.FechaRecibido?.ToString("yyyy-MM-dd"),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pMontoTotal",
+                                 Valor = decimal.Parse($"{decena.ToString()},{decimales.ToString()}"),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pEstado",
+                                 Valor = pedido.Estado.Id,
+                             }
+                            ],
+                        };
+
+                        await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Pedidos, generalRequest);
+                        CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
                         break;
                 }
 
-                var dataPedidos = HttpContext.Session.GetString("dataPedidos");
+                pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
 
-                if (dataPedidos == null)
-                {
-                    pedidosResponse = await this.ObtenerPedidos();
-                }
-                else
-                {
-                    pedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
-                }
-
-                    return View(pedidosResponse.Pedidos);
+                return View(pedidosResponse.Pedidos);
 
             }
             catch (Exception ex) 
@@ -156,36 +234,95 @@
         [HttpPost]
         public async Task<IActionResult> FormAddDetail([FromForm] Pedido pedido, PedidoDetalle pedidoDetalle, int EstadoSel, string action)
         {
+            this.Inicialized();
+
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
             ViewBag.Message = "Gestión Detalle del Pedidos";
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario Detalle de {Modulo}";
 
-            string dataPedidos = dataPedidos = HttpContext.Session.GetString("dataPedidos");
-            PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
-            var dataEstados = HttpContext.Session.GetString("dataEstados");
-            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
-            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+            this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+            this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
+
+            var estados = estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
 
             Pedido dataPedido;
 
             if (action == "generar")
             {
                 //
-                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                dataPedido = this.pedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
                 pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
 
-                await this._pedidoService.GenerarDetalle(pedidoDetalle);
+                this.generalRequest = new ()
+                {
+                    Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pOrderId",
+                             Valor = pedidoDetalle.PedidoId,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pBrand",
+                             Valor = pedidoDetalle.Marca,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pProductDetails",
+                             Valor = pedidoDetalle.ProductoDetalle,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pDescription",
+                             Valor = pedidoDetalle.Descripcion,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pProductCode",
+                             Valor = pedidoDetalle.CodigoProducto,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pQuantity",
+                             Valor = pedidoDetalle.Cantidad,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pUnitPrice",
+                             Valor = Utils.ConvertirMonto(pedidoDetalle.MontoUnitario),
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pSubTotal",
+                             Valor = Utils.ConvertirMonto(pedidoDetalle.Subtotal),
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pTo",
+                             Valor = pedidoDetalle.Para,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pStatus",
+                             Valor = pedidoDetalle.Estado.Id,
+                         }
+                     ],
+                };
 
-                var pedidosResponse = await this.ObtenerPedidos();
+                await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.DetallePedido, generalRequest);
 
-                HttpContext.Session.Remove("dataPedidos");
-                HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
+                this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+
+                CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
+
+                HttpContext.Session.SetString(ServicioEnum.Pedidos.ToCache(), JsonConvert.SerializeObject(this.pedidosResponse));
             }
             else
             {
-                dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
+                dataPedido = pedidosResponse.Pedidos.Find(x => x.Id == pedido.Id);
             }
 
             ViewBag.Pedido = dataPedido;
@@ -196,46 +333,92 @@
         [HttpPost]
         public async Task<IActionResult> FormEditDetail([FromForm] PedidoDetalle pedidoDetalle, int EstadoSel, int detalleId, int pedidoId, string action)
         {
+            this.Inicialized();
+
             // Procesa los datos del formulario que están en el objeto 'model'
             // Por ejemplo, guarda en una base de datos  
             ViewBag.Message = "Gestión Detalle del Pedidos";
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario Detalle de {Modulo}";
 
-            string dataPedidos = dataPedidos = HttpContext.Session.GetString("dataPedidos");
-            PedidosResponse dataPedidosResponse = JsonConvert.DeserializeObject<PedidosResponse>(dataPedidos);
-            var dataEstados = HttpContext.Session.GetString("dataEstados");
-            var dataEstadosResponse = JsonConvert.DeserializeObject<EstadosResponse>(dataEstados);
-            var estados = dataEstadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
+            this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+            this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
+            var estados = this.estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
 
             Pedido dataPedido;
 
             switch (action)
             {
-                case "generar":
-                    //
-                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
-                    pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
-
-                    await this._pedidoService.GenerarDetalle(pedidoDetalle);
-
-                    dataPedidosResponse = await this.ObtenerPedidos();
-
-                    HttpContext.Session.Remove("dataPedidos");
-                    HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(dataPedidosResponse));
-                    break;
-
                 case "actualizar":
                     
                     pedidoDetalle.Estado = estados.Find(e => e.Id == EstadoSel);
 
-                    await this._pedidoService.ActualizarDetalle(pedidoDetalle);
+                    this.generalRequest = new()
+                    {
+                        Parametros =
+                            [
+                             new Parametro()
+                             {
+                                 Nombre = "pId",
+                                 Valor = pedidoDetalle.Id,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pBrand",
+                                 Valor = pedidoDetalle.Marca,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pProductDetails",
+                                 Valor = pedidoDetalle.ProductoDetalle,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pDescription",
+                                 Valor = pedidoDetalle.Descripcion,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pProductCode",
+                                 Valor = pedidoDetalle.CodigoProducto,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pQuantity",
+                                 Valor = pedidoDetalle.Cantidad,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pUnitPrice",
+                                 Valor = Utils.ConvertirMonto(pedidoDetalle.MontoUnitario),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pSubTotal",
+                                 Valor = Utils.ConvertirMonto(pedidoDetalle.Subtotal),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pTo",
+                                 Valor = pedidoDetalle.Para,
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pStatus",
+                                 Valor = pedidoDetalle.Estado.Id,
+                             }
+                         ],
+                    };
 
-                    dataPedidosResponse = await this.ObtenerPedidos();
-                    HttpContext.Session.Remove("dataPedidos");
-                    HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(dataPedidosResponse));
+                    await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.DetallePedido, generalRequest);
 
-                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+                    this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
+
+                    HttpContext.Session.SetString(ServicioEnum.Pedidos.ToCache(), JsonConvert.SerializeObject(this.pedidosResponse));
+
+                    dataPedido = this.pedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
 
                     var dataDetalles = dataPedido.Detalles.Find(d => d.Id == pedidoDetalle.Id);
 
@@ -246,7 +429,7 @@
 
                 case "openFormEditDetail":
 
-                    var dataPedidotmp = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+                    var dataPedidotmp = this.pedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
 
                     var detallePedido = dataPedidotmp.Detalles.Find(d => d.Id == detalleId);
                     dataPedidotmp.Detalles.Clear();
@@ -257,23 +440,13 @@
 
                 default:
 
-                    dataPedido = dataPedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
+                    dataPedido = this.pedidosResponse.Pedidos.Find(x => x.Id == pedidoId);
                     break;
             }
 
             ViewBag.Pedido = dataPedido;
             ViewBag.Estados = estados;
             return View(ViewBag); // Redirige a otra página
-        }
-
-        private async Task<PedidosResponse> ObtenerPedidos()
-        {
-            PedidosResponse pedidosResponse = new();
-            pedidosResponse = await _pedidoService.Obtener();
-
-            HttpContext.Session.SetString("dataPedidos", JsonConvert.SerializeObject(pedidosResponse));
-
-            return pedidosResponse;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

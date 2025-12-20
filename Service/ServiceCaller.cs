@@ -11,6 +11,7 @@ namespace PersonalFinance.Service
     public class ServiceCaller
     {
         private readonly HttpClient _httpClient;
+        private readonly CacheAdmin _cacheAdmin;
         private readonly string _urlPedido = "https://localhost:443/api/v1/orders/getall";
         private readonly string _urlPedidoDetalles = "https://localhost:443/api/v1/ordersdetails/getorderid/";
         private readonly string _urlCreate = "https://localhost:443/api/v1/orders/create";
@@ -19,15 +20,22 @@ namespace PersonalFinance.Service
         private readonly string _urlUpdate = "https://localhost:443/api/v1/orders/update";
         private readonly string _urlUpdateDetail = "https://localhost/api/v1/ordersdetails/update";
 
-        public ServiceCaller(HttpClient httpClient) 
+        public ServiceCaller(HttpContext httpContext, HttpClient httpClient) 
         {
             this._httpClient = httpClient;
+            this._cacheAdmin = new CacheAdmin(httpContext);
         }
-
 
         public async Task<T> ObtenerRegistros<T>(ServicioEnum servicio, Dictionary<string, object> keyValuePairs = null)
         {
             object apiResponse;
+            
+            apiResponse = _cacheAdmin.Obtener<T>(servicio);
+
+            if (apiResponse != null)
+            {
+                return (T)apiResponse;
+            }
 
             // Hacer la solicitud GET a la API
             HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(servicio, MetodoEnum.Todos, keyValuePairs));

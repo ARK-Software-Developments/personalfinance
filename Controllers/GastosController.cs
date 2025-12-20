@@ -3,56 +3,34 @@ namespace PersonalFinance.Controllers;
 #pragma warning disable CS8601 // Posible asignación de referencia nula
 
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
-using PersonalFinance.Models.Tarjetas;
-using PersonalFinance.Models.Transacciones;
 using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 
-public class GastosController : Controller
+public class GastosController : BaseController
 {
     private readonly string Gestion = "Administrar";
     private readonly string Modulo = "Gastos";
-    private readonly string cacheNameDataGastos = "cacheDataGastos";
-    private readonly string cacheNameDataEntidades = "cacheDataEntidades";
-    private readonly string cacheNameDataTiposGastos = "cacheDataTiposGastos";
     private readonly ILogger<GastosController> _logger;
-    private readonly ServiceCaller serviceCaller;
-    private readonly Dictionary<string, object> keyValuePairs = [];
-
-    private GeneralDataResponse generalDataResponse = new();
-    private GastosResponse response = new();
-    private EntidadesResponse entidadesResponse = new();
-    private TiposGastosResponse tiposGastosResponse = new();
-    private GeneralRequest generalRequest = new();
-    private string cacheGastos = string.Empty;
-    private string cacheTiposGastos = string.Empty;
-    private string cacheEntidades = string.Empty;
-    
-
-    
 
     public GastosController(ILogger<GastosController> logger)
     {
         _logger = logger;
-        HttpClientHandler httpClientHandler = new()
+        this.httpClientHandler = new()
         {
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
         };
-        this.serviceCaller = new ServiceCaller(new HttpClient(httpClientHandler));
-        this.keyValuePairs.Add("year", 2025);
     }
-
 
     public async Task<IActionResult> Index([FromForm] Gasto gasto, string action)
     {
+        this.Inicialized();
+
         _logger.LogInformation("Inicializando TarjetasController => Index()");
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
@@ -60,19 +38,9 @@ public class GastosController : Controller
 
         try
         {
-            var cacheGastos = HttpContext.Session.GetString(cacheNameDataGastos);
-            if (cacheGastos == null)
-            {
-                
+            gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
 
-                response = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<GastosResponse>(cacheGastos);
-            }
-
-            ViewBag.Gastos = response.Gastos;
+            ViewBag.Gastos = gastosResponse.Gastos;
 
             return View(ViewBag);
 
@@ -88,6 +56,7 @@ public class GastosController : Controller
     [HttpPost]
     public async Task<IActionResult> Gastos([FromForm] Gasto gasto, string action, int VilleteraSel, int TipoGastoSel)
     {
+        this.Inicialized();
         ViewBag.Modulo = Modulo;
         ViewBag.Title = "Gastos";
         ViewBag.Message = $"{Gestion} {Modulo}";
@@ -95,20 +64,7 @@ public class GastosController : Controller
         try
         {
             if (action == "generar" || action == "actualizar")
-            {
-                cacheGastos = HttpContext.Session.GetString(cacheNameDataGastos);
-
-                if (cacheGastos == null)
-                {
-                    response = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, this.keyValuePairs);
-
-                    HttpContext.Session.SetString(cacheNameDataGastos, JsonConvert.SerializeObject(response));
-                }
-                else
-                {
-                    response = JsonConvert.DeserializeObject<GastosResponse>(cacheGastos);
-                }
-
+            { 
                 gasto = Utils.MapRequest<Gasto>(this.Request.Form, ServicioEnum.Gastos);
 
                 generalRequest = new()
@@ -239,26 +195,13 @@ public class GastosController : Controller
                 {
                     generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Gastos, generalRequest);
                 }
-                
-                HttpContext.Session.Remove(cacheNameDataGastos);
 
+                CacheAdmin.Remove(HttpContext, ServicioEnum.Gastos);
             }
 
-            
-            cacheGastos = HttpContext.Session.GetString(cacheNameDataGastos);
+            gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
 
-            if(cacheGastos == null)
-            {
-                response = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, this.keyValuePairs);
-
-                HttpContext.Session.SetString(cacheNameDataGastos, JsonConvert.SerializeObject(response));
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<GastosResponse>(cacheGastos);
-            }
-
-            ViewBag.Gastos = response?.Gastos;
+            ViewBag.Gastos = gastosResponse?.Gastos;
             
             //return View("Index");
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
@@ -275,6 +218,7 @@ public class GastosController : Controller
     [HttpPost]
     public async Task<IActionResult> GastoFormAdd([FromForm] Gasto gasto, string action)
     {
+        this.Inicialized();
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -282,32 +226,12 @@ public class GastosController : Controller
         ViewBag.Gasto = gasto;
         ViewBag.Villeteras = new List<Entidad>();
 
-
         // Obtener Villeteras o Entidades
-        cacheEntidades = HttpContext.Session.GetString(cacheNameDataEntidades);
-
-        if (cacheEntidades == null)
-        {
-            entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-        }
-        else
-        {
-            entidadesResponse = JsonConvert.DeserializeObject<EntidadesResponse>(cacheEntidades);
-        }
-
+        entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades, keyValuePairs);
         ViewBag.Villeteras = entidadesResponse?.Entidades;
 
         // Obtener Tipo de Gastos
-        cacheTiposGastos = HttpContext.Session.GetString(cacheNameDataTiposGastos);
-
-        if (cacheTiposGastos == null)
-        {
-            tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos);
-        }
-        else
-        {
-            tiposGastosResponse = JsonConvert.DeserializeObject<TiposGastosResponse>(cacheTiposGastos);
-        }
+        tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
 
         ViewBag.TiposGastos = tiposGastosResponse?.TiposGastos;
 
@@ -317,6 +241,7 @@ public class GastosController : Controller
     [HttpPost]
     public async Task<IActionResult> GastoFormEdit([FromForm] Gasto gasto, string action)
     {
+        this.Inicialized();
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -331,48 +256,18 @@ public class GastosController : Controller
             case "openFormEdit":
 
                 // Obtener Gasto
-                var cacheGastos = HttpContext.Session.GetString(cacheNameDataGastos);
-                if (cacheGastos == null)
-                {
-
-
-                    response = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
-                }
-                else
-                {
-                    response = JsonConvert.DeserializeObject<GastosResponse>(cacheGastos);
-                }
+                gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
 
                 // Obtener Villeteras o Entidades
-                cacheEntidades = HttpContext.Session.GetString(cacheNameDataEntidades);
-
-                if (cacheEntidades == null)
-                {
-                    entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-                }
-                else
-                {
-                    entidadesResponse = JsonConvert.DeserializeObject<EntidadesResponse>(cacheEntidades);
-                }
-
+                entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades, keyValuePairs);
                 ViewBag.Villeteras = entidadesResponse?.Entidades;
 
                 // Obtener Tipo de Gastos
-                cacheTiposGastos = HttpContext.Session.GetString(cacheNameDataTiposGastos);
-
-                if (cacheTiposGastos == null)
-                {
-                    tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos);
-                }
-                else
-                {
-                    tiposGastosResponse = JsonConvert.DeserializeObject<TiposGastosResponse>(cacheTiposGastos);
-                }
-
+                tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
                 ViewBag.TiposGastos = tiposGastosResponse?.TiposGastos;
 
                 ViewBag.ModeView = action == "openFormView" ? true : false;
-                ViewBag.Gasto = response.Gastos.Find(t => t.Id == gasto.Id);
+                ViewBag.Gasto = gastosResponse.Gastos.Find(t => t.Id == gasto.Id);
 
                 return await Task.FromResult<IActionResult>(View()); // Redirige a otra página
 
