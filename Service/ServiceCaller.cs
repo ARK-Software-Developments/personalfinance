@@ -26,7 +26,7 @@ namespace PersonalFinance.Service
             this._cacheAdmin = new CacheAdmin(httpContext);
         }
 
-        public async Task<T> ObtenerRegistros<T>(ServicioEnum servicio, Dictionary<string, object> keyValuePairs = null)
+        public async Task<T> ObtenerRegistros<T>(ServicioEnum servicio, Dictionary<string, object> keyValuePairs = null, MetodoEnum metodo = MetodoEnum.Todos)
         {
             object apiResponse;
             
@@ -38,7 +38,7 @@ namespace PersonalFinance.Service
             }
 
             // Hacer la solicitud GET a la API
-            HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(servicio, MetodoEnum.Todos, keyValuePairs));
+            HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(servicio, metodo, keyValuePairs));
 
             // Ensure the request was successful
             response.EnsureSuccessStatusCode();

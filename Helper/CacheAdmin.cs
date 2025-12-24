@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using PersonalFinance.Models.Enums;
 
 namespace PersonalFinance.Helper
@@ -28,6 +29,11 @@ namespace PersonalFinance.Helper
         public static void Remove(HttpContext httpContext, ServicioEnum servicioEnum)
         {
             httpContext.Session.Remove(servicioEnum.ToCache());
+        }
+
+        public static void Set(HttpContext httpContext, ServicioEnum servicioEnum, string jsonResponse)
+        {
+            httpContext.Session.SetString(servicioEnum.ToCache(), jsonResponse);
         }
     }
 }

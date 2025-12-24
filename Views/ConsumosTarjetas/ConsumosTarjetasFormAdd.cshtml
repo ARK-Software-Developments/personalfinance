@@ -2,6 +2,7 @@
 @using PersonalFinance.Models.Entidades
 @using PersonalFinance.Models.Gastos
 @using PersonalFinance.Models.TarjetaConsumos
+@using PersonalFinance.Models.Tarjetas
 @using PersonalFinance.Models.Transacciones
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,27 +11,24 @@
 
 @{
     List<TarjetaConsumo> tarjetaConsumos = ViewBag.TarjetaConsumos;
-    List<Transaccion> transacciones = ViewBag.Transacciones;
     TarjetaConsumo tarjetaConsumo = ViewBag.TarjetaConsumo;
+    List<Tarjeta> tarjetas = ViewBag.Tarjetas;
+
+    var lstTarjetas = new List<SelectListItem>();
+    foreach (var e in tarjetas)
+    {
+        lstTarjetas.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = e.Id == tarjetaConsumo.Tarjeta?.Id ? true : false,
+        });
+    }
 }
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
-
-<script>
-    function CambioVilletera() {
-                console.log($('#Villetera :selected').val());
-
-                $('#VilleteraSel').val($('#Villetera :selected').val());
-            };
-
-    function CambioTipoGasto() {
-                console.log($('#TipoGasto :selected').val());
-
-                $('#TipoGastoSel').val($('#TipoGasto :selected').val());
-            };
-
-</script>
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Title</h1>
@@ -43,37 +41,42 @@
             <tr>
                 <td>
                     <div class="form-group">
-                        <span class="form-label">Villetera:</span>
-                        <select id="Villetera" name="Villetera" class="form-control" onchange="CambioVilletera()" required>
-                            
+                        <span class="form-label">Tarjeta:</span>
+                        <select id="Tarjeta" name="Tarjeta" class="form-control" onchange="CambioTarjeta()" required>
+                            @foreach (var item in @lstTarjetas)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
                         </select>
                         <span class="select-arrow"></span>
-                        <input id="VilleteraSel" name="VilleteraSel" class="form-control" value="1" >
+                        <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@lstTarjetas[0].Value" hidden>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Cuotas:</span>
+                        <input id="Cuotas" name="Cuotas" class="form-control" type="number" min="0.00" max="1000000.00" step="0.01" value="0" required />
                     </div>
                 </td>
                 <td colspan="2">
-                    <div class="form-group">
-                        <span class="form-label">Tipo de Gasto:</span>
-                        <select id="TipoGasto" name="TipoGasto" class="form-control" onchange="CambioTipoGasto()" required>
-                        </select>
-                        <span class="select-arrow"></span>
-                        <input id="TipoGastoSel" name="TipoGastoSel" class="form-control" value="1" >
-                    </div>
-                </td>
-                <td colspan="2
-">
                     <div class="form-group">
                         <span class="form-label">Resumen:</span>
                         <input type="text" id="Resumen" name="Resumen" class="form-control" value="" required />
                     </div>
                 </td>
-                <td colspan="4">
+                <td colspan="2">
                     <div class="form-group">
                         <span class="form-label">Observaciones:</span>
                         <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="" required />
                     </div>
                 </td>                
-
             </tr>
             <tr>
                 <td>

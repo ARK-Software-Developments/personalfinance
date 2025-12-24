@@ -1,6 +1,7 @@
 ﻿namespace PersonalFinance.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using PersonalFinance.Helper;
@@ -42,8 +43,8 @@
             estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
 
             var estados = estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
-            
-            pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+
+            await CargarPedidos();
 
             switch (action)
             {
@@ -216,10 +217,11 @@
                         break;
                 }
 
-                pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+                await CargarPedidos();
 
-                return View(pedidosResponse.Pedidos);
+                //return View(this.pedidosResponse.Pedidos);
 
+                return await Task.FromResult<IActionResult>(View("Index",this.pedidosResponse.Pedidos)); // Redirige a otra página
             }
             catch (Exception ex) 
             {
@@ -242,7 +244,8 @@
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario Detalle de {Modulo}";
 
-            this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+            await CargarPedidos();
+
             this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
 
             var estados = estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
@@ -317,8 +320,14 @@
                 this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
+                CacheAdmin.Set(httpContext, ServicioEnum.Pedidos, JsonConvert.SerializeObject(this.pedidosResponse));
 
-                HttpContext.Session.SetString(ServicioEnum.Pedidos.ToCache(), JsonConvert.SerializeObject(this.pedidosResponse));
+                dataPedido = pedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
+
+                ViewBag.Pedido = dataPedido;
+                ViewBag.Estados = estados;
+
+                return await Task.FromResult<IActionResult>(View("FormEdit", ViewBag)); // Redirige a otra página
             }
             else
             {
@@ -327,7 +336,7 @@
 
             ViewBag.Pedido = dataPedido;
             ViewBag.Estados = estados;
-            return View(ViewBag); // Redirige a otra página
+            return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
         }
 
         [HttpPost]
@@ -341,7 +350,8 @@
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario Detalle de {Modulo}";
 
-            this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+            await CargarPedidos();
+
             this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
             var estados = this.estadosResponse.Estados.FindAll(x => x.Tabla.Contains("ORDERS") || x.Tabla.Contains("ORDERDETAILS"));
 
@@ -412,20 +422,14 @@
 
                     await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.DetallePedido, generalRequest);
 
-                    this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
-
-                    CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
-
-                    HttpContext.Session.SetString(ServicioEnum.Pedidos.ToCache(), JsonConvert.SerializeObject(this.pedidosResponse));
+                    await CargarPedidos();
 
                     dataPedido = this.pedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
 
-                    var dataDetalles = dataPedido.Detalles.Find(d => d.Id == pedidoDetalle.Id);
+                    ViewBag.Pedido = dataPedido;
+                    ViewBag.Estados = estados;
 
-                    dataPedido.Detalles.Clear();
-                    dataPedido.Detalles.Add(dataDetalles);
-
-                    break;
+                    return await Task.FromResult<IActionResult>(View("FormEdit", ViewBag)); // Redirige a otra página
 
                 case "openFormEditDetail":
 
@@ -446,13 +450,42 @@
 
             ViewBag.Pedido = dataPedido;
             ViewBag.Estados = estados;
-            return View(ViewBag); // Redirige a otra página
+            return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private async Task<PedidosResponse> CargarPedidos()
+        {
+            this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
+            
+            List<Pedido> lstPedidos = [];
+
+            foreach (var order in this.pedidosResponse.Pedidos)
+            {
+                this.keyValuePairs = new Dictionary<string, object>()
+                    {
+                        {"pOrderId",  order.Id},
+                    };
+
+                var detail = await this.serviceCaller.ObtenerRegistros<PedidoDetallesResponse>(ServicioEnum.DetallePedido, this.keyValuePairs, MetodoEnum.DetallePedidoByOrderId);
+
+                order.Detalles = detail.Detalles;
+
+                lstPedidos.Add(order);
+            }
+
+            this.pedidosResponse.Pedidos = [];
+            this.pedidosResponse.Pedidos = lstPedidos;
+
+            CacheAdmin.Remove(httpContext, ServicioEnum.Pedidos);
+            CacheAdmin.Set(httpContext, ServicioEnum.Pedidos, JsonConvert.SerializeObject(this.pedidosResponse));
+
+            return this.pedidosResponse;
         }
     }
 }

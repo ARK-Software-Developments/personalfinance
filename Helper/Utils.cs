@@ -192,7 +192,7 @@ namespace PersonalFinance.Helper
             switch (servicioEnum)
             {
                 case ServicioEnum.Gastos:
-                    object gasto  = new Gasto()
+                    object gasto = new Gasto()
                     {
                         Id = int.Parse(form["Id"]),
                         Enero = decimal.Parse(form["Enero"]),
@@ -220,6 +220,7 @@ namespace PersonalFinance.Helper
                         Pagado = form.ContainsKey("Pagado") ? bool.Parse(form["Pagado"]) : false,
                         Reservado = form.ContainsKey("Reservado") ? bool.Parse(form["Reservado"]) : false,
                         Verificado = form.ContainsKey("Verificado") ? bool.Parse(form["Verificado"]) : false,
+                        Activo = true,
                     };
 
                     return (T)gasto;

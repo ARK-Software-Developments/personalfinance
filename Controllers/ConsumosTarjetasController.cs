@@ -39,7 +39,6 @@ public class ConsumosTarjetasController : BaseController
         try
         {
             tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-
             ViewBag.TarjetaConsumos = tarjetaConsumoResponse.TarjetaConsumos;
 
             return await Task.FromResult<IActionResult>(View(ViewBag));
@@ -216,14 +215,12 @@ public class ConsumosTarjetasController : BaseController
         ViewBag.TarjetaConsumo = tarjetaConsumo;
         ViewBag.Title = $"Formulario de {Modulo}";
 
-        // Obtener Transacciones
-        transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
-        ViewBag.Transacciones = transaccionesResponse?.Transacciones;
+        // Obtener Tarjetas
+        tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
+        ViewBag.Tarjetas = tarjetasResponse.Tarjetas;
 
         // Obtener Consumos Tarjetas
         tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-
         ViewBag.TarjetaConsumos = tarjetaConsumoResponse?.TarjetaConsumos;
 
         return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
@@ -255,7 +252,7 @@ public class ConsumosTarjetasController : BaseController
 
                 // Obtener Transacciones
                 transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-                ViewBag.Transacciones = transaccionesResponse?.Transacciones.FindAll(t => t.Tarjeta.Id == tmpTarjetaConsumo.Tarjeta.Id);
+                ViewBag.Transacciones = transaccionesResponse?.Transacciones.FindAll(t => t.TarjetaConsumoId == tmpTarjetaConsumo.Id);
 
                 // Obtener Tarjetas
                 tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
