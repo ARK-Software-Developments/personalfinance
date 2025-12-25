@@ -9,7 +9,7 @@
     /// <summary>
     /// Clase Transaccion.
     /// </summary>
-    public class Transaccion
+    public class Transaccion : AbstractModelExternder
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Transaccion"/> class.
@@ -17,11 +17,6 @@
         public Transaccion()
         {
         }
-        /// <summary>
-        /// Gets or sets propiedad CodigoTransaccion.
-        /// </summary>
-        [JsonProperty("id")]
-        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets propiedad CodigoTransaccion.
@@ -65,5 +60,10 @@
         [JsonProperty("tarjeta")]
         public Tarjeta Tarjeta { get; set; }
 
+        /// <summary>
+        /// Gets or sets propiedad TarjetaConsumoId.
+        /// </summary>
+        [JsonProperty("tarjetaConsumoId")]
+        public int TarjetaConsumoId { get; set; }
     }
 }

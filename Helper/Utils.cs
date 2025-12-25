@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
+using PersonalFinance.Models.Tarjetas;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace PersonalFinance.Helper
@@ -190,7 +193,7 @@ namespace PersonalFinance.Helper
             switch (servicioEnum)
             {
                 case ServicioEnum.Gastos:
-                    object gasto  = new Gasto()
+                    object gasto = new Gasto()
                     {
                         Id = int.Parse(form["Id"]),
                         Enero = decimal.Parse(form["Enero"]),
@@ -218,9 +221,42 @@ namespace PersonalFinance.Helper
                         Pagado = form.ContainsKey("Pagado") ? bool.Parse(form["Pagado"]) : false,
                         Reservado = form.ContainsKey("Reservado") ? bool.Parse(form["Reservado"]) : false,
                         Verificado = form.ContainsKey("Verificado") ? bool.Parse(form["Verificado"]) : false,
+                        Activo = true,
                     };
 
                     return (T)gasto;
+    
+                case ServicioEnum.ConsumosTarjeta:
+                    object consumo = new TarjetaConsumo()
+                    {
+                        Id = int.Parse(form["Id"]),
+                        Enero = decimal.Parse(form["Enero"]),
+                        Febrero = decimal.Parse(form["Febrero"]),
+                        Marzo = decimal.Parse(form["Marzo"]),
+                        Abril = decimal.Parse(form["Abril"]),
+                        Mayo = decimal.Parse(form["Mayo"]),
+                        Junio = decimal.Parse(form["Junio"]),
+                        Julio = decimal.Parse(form["Julio"]),
+                        Agosto = decimal.Parse(form["Agosto"]),
+                        Septiembre = decimal.Parse(form["Septiembre"]),
+                        Octubre = decimal.Parse(form["Octubre"]),
+                        Noviembre = decimal.Parse(form["Noviembre"]),
+                        Diciembre = decimal.Parse(form["Diciembre"]),
+                        Ano = form.ContainsKey("Ano") ? int.Parse(form["Ano"]) : 2025,
+                        Cuotas = int.Parse(form["Cuotas"]),
+                        Detalle = form["Detalle"].ToString(),
+                        EntidadCompra = form["EntidadCompra"].ToString(),
+                        Pagado = form.ContainsKey("Pagado") ? bool.Parse(form["Pagado"]) : false,
+                        Verificado = form.ContainsKey("Verificado") ? bool.Parse(form["Verificado"]) : false,
+                        Tarjeta = form.ContainsKey("Tarjeta") ? 
+                        new Tarjeta()
+                        {
+                            Id = int.Parse(form["Tarjeta"]),
+                        } : null,
+                    };
+
+                    return (T)consumo;
+
 
                 default:
                     return (T)new object();

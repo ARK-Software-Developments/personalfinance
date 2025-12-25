@@ -26,23 +26,7 @@
             Text = e.Nombre,
             Selected = e.Id == tarjetaConsumo.Tarjeta.Id ? true : false,
         });
-    }
-
-    var lstTransacciones = new List<SelectListItem>();
-
-    if (tarjetaConsumo.Transaccion != null)
-    {
-        foreach (var e in transacciones)
-        {
-            lstTransacciones.Add(
-            new SelectListItem()
-            {
-                Value = e.Id.ToString(),
-                Text = e.Resumen,
-                Selected = e.Id == tarjetaConsumo.Transaccion.Id ? true : false,
-            });
-        }
-    }   
+    }  
 }
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
@@ -87,16 +71,28 @@
                     </td>
                     <td>
                         <div class="form-group">
+                            <span class="form-label">Cuotas:</span>
+                            <input id="Cuotas" name="Cuotas" class="form-control" type="number" min="0.00" max="1000000.00" step="0.01" value="@tarjetaConsumo.Cuotas" required />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
                             <span class="form-label">Tarjeta:</span>
-                            @if (string.IsNullOrEmpty(@modeView))
-                            {
-                                <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@tarjetaConsumo.Tarjeta.Nombre">
-                            }
-                            else
-                            {
-                                <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@tarjetaConsumo.Tarjeta.Nombre" disabled>
-                            }
-                            <span class="select-arrow"></span>                            
+                            <select id="Tarjeta" name="Tarjeta" class="form-control" onchange="CambioTarjeta()" required>
+                                @foreach (var item in @lstTarjetas)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="select-arrow"></span>
+                            <input id="TarjetaSel" name="TarjetaSel" class="form-control" value="@lstTarjetas[0].Value" hidden>
                         </div>
                     </td>
                     <td colspan="2">
@@ -233,13 +229,6 @@
                     </td>
                     <td colspan="2" align="center">
                         <div class="form-group">
-                            @if (string.IsNullOrEmpty(@modeView))
-                            {
-                                <form method="post" asp-controller="Transacciones">
-                                    <input type="number" id="TarjetaConsumoId" name="TarjetaConsumoId" class="form-control" asp-for="@tarjetaConsumo.Id" value="@tarjetaConsumo.Id" hidden />
-                                    <button type="submit" class="btn btn-primary" asp-controller="Transacciones" asp-action="TransaccionFormAdd" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
-                                </form>
-                            }
                         </div>
                     </td>
                 </tr>
@@ -255,22 +244,35 @@
                         <th scope="col">Fecha de Transacción</th>
                         <th scope="col">Resumen</th>
                         <th scope="col">Observaciones</th>
+                        <th scope="col">&nbsp;</th>
+                        <th colspan="2">
+                            &nbsp;
+                            <form method="post" asp-controller="Transacciones">
+
+                                <button type="submit" class="btn btn-primary" asp-controller="Transacciones" asp-action="TransaccionFormAdd" name="action" value="addTransaccion">Add new Transacción</button>
+                            </form>
+                        </th>
                     </tr>
                 </thead>
-                @if (tarjetaConsumo.Transaccion != null)
-                {
-                    <tbody>
+                <tbody>
+                    @foreach (var transaccion in @transacciones)
+                    {
+
                         <tr>
-                            <td scope="row" id="Id">@tarjetaConsumo.Transaccion.Id</td>
-                            <td scope="row" id="CodigoTransaccion">@tarjetaConsumo.Transaccion.CodigoTransaccion</td>
-                            <td scope="row" id="OrdenCompra">@tarjetaConsumo.Transaccion.OrdenCompra</td>
-                            <td scope="row" id="EntidadAsociada">@tarjetaConsumo.Transaccion.EntidadAsociada</td>
-                            <td scope="row" id="FechaTransaccion" align="center">@tarjetaConsumo.Transaccion.FechaTransaccion.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
-                            <td scope="row" id="Resumen">@tarjetaConsumo.Transaccion.Resumen</td>
-                            <td scope="row" id="Observaciones">@tarjetaConsumo.Transaccion.Observaciones</td>
+                            <td scope="row" align="center">@transaccion.Id</td>
+                            <td scope="row">@transaccion.CodigoTransaccion</td>
+                            <td scope="row">@transaccion.OrdenCompra</td>
+                            <td scope="row" align="center">@transaccion.EntidadAsociada</td>
+                            <td scope="row">@transaccion.FechaTransaccion</td>
+                            <td scope="row">@transaccion.Resumen</td>
+                            <td scope="row">@transaccion.Observaciones</td>
+                            <td scope="row">
+                               
+                            </td>
                         </tr>
-                    </tbody>
-                }
+                    }
+
+                </tbody>
             </table>
         </div>
         @if (string.IsNullOrEmpty(@modeView))

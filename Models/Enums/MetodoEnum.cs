@@ -7,16 +7,19 @@ namespace PersonalFinance.Models.Enums
         [Api(Method = "getall")]        
         Todos = 1,
 
-        [Api(Method = "getid")]
-        Uno = 2,
+        [Api(Method = "getorderid")]
+        DetallePedidoByOrderId = 2,
+
+        [Api(Method = "get")]
+        Uno = 3,
 
         [Api(Method = "create")]
-        Nuevo = 3,
+        Nuevo = 4,
 
         [Api(Method = "update")]
-        Actualizar = 4,
+        Actualizar = 5,
 
-        [Api(Method = "updatetransid")]
-        ActualizarTransId = 100,
+        [Api(Method = "updatecreditcardspending")]
+        ActualizarTransConsumo = 100,
     }
 }

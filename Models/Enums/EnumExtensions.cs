@@ -104,5 +104,25 @@ namespace PersonalFinance.Models.Enums
             return endpoint;
         }
 
+        /// <summary>
+        /// Método para obtener la ruta del servicio BFF.
+        /// </summary>
+        /// <param name="value">Enum.</param>
+        /// <returns>Valor del atributo Route de la clase Api.</returns>
+        public static string ToCache(this Enum value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            _ = value.GetType();
+
+            var attribute = value.GetAttribute<Api>();
+
+            var endpoint = attribute == null ? value.ToString() : $"{((Api)attribute).Cache}";
+
+            return endpoint;
+        }
     }
 }

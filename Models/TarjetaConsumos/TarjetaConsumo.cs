@@ -24,11 +24,6 @@ namespace PersonalFinance.Models.TarjetaConsumos
         public string EntidadCompra { get; set; }
 
         /// <summary>
-        /// Gets or sets propiedad Transaccion.
-        /// </summary>
-        public Transaccion Transaccion { get; set; }
-
-        /// <summary>
         /// Gets or sets propiedad Detalle.
         /// </summary>
         public string Detalle { get; set; }
@@ -47,5 +42,10 @@ namespace PersonalFinance.Models.TarjetaConsumos
         /// Gets or sets propiedad Pagado.
         /// </summary>
         public bool Pagado { get; set; }
+
+        /// <summary>
+        /// Gets or sets propiedad TransaccionesAsociadas.
+        /// </summary>
+        public int TransaccionesAsociadas { get; set; }
     }
 }

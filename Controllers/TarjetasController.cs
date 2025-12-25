@@ -1,7 +1,7 @@
 namespace PersonalFinance.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
@@ -9,29 +9,26 @@ using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 
-public class TarjetasController : Controller
+public class TarjetasController : BaseController
 {
     private readonly string Gestion = "Administrar";
     private readonly string Modulo = "Tarjetas";
-    private readonly string cacheData = "dataTarjetas";
     private readonly ILogger<TarjetasController> _logger;
-    private readonly ServiceCaller serviceCaller;    
 
     public TarjetasController(ILogger<TarjetasController> logger)
     {
         _logger = logger;
-        HttpClientHandler httpClientHandler = new()
+        this.httpClientHandler = new()
         {
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
         };
-        this.serviceCaller = new ServiceCaller(new HttpClient(httpClientHandler));
     }
-
 
     public async Task<IActionResult> Index([FromForm] Tarjeta entidad, string action)
     {
+        this.Inicialized();
+
         _logger.LogInformation("Inicializando TarjetasController => Index()");
         TarjetasResponse response = new();
         ViewBag.Modulo = Modulo;
@@ -72,50 +69,36 @@ public class TarjetasController : Controller
 
             ViewBag.Categorias = response.Categoria;
             */
-            return View();
 
+            return await Task.FromResult<IActionResult>(View());
         }
         catch (Exception ex)
         {
             _logger.LogCritical(ex.ToString());
-
-            return View(new List<Tarjeta>());
+            return await Task.FromResult<IActionResult>(View(new List<Tarjeta>()));
         }
     }
 
     public async Task<IActionResult> TarjetasCredito([FromForm] Tarjeta tarjeta, string action, int EntidadSel)
     {
-        _logger.LogInformation("Inicializando TarjetasController => Index()");
-        GeneralDataResponse generalDataResponse = new ();
-        TarjetasResponse response = new ();
-        EntidadesResponse entidadesResponse = new ();
-        GeneralRequest generalRequest = new ();
-        Entidad entidad = new ();
-        string cacheEstidades = string.Empty;
-        string dataCache = string.Empty;
+        this.Inicialized();
+
+        _logger.LogInformation("Inicializando TarjetasController => Index()");        
         ViewBag.Modulo = Modulo;
         ViewBag.Title = "Tarjetas de Crétitos";
         ViewBag.Message = $"{Gestion} {Modulo}";
+        Entidad entidad;
 
         try
         {
+            this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
+            entidad = entidadesResponse.Entidades.Find(e => e.Id == EntidadSel);
+
             switch (action)
             {
                 case "generar":
 
-                    cacheEstidades = HttpContext.Session.GetString("dataEntidades");
-                    if (cacheEstidades == null)
-                    {
-                        entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-                    }
-                    else
-                    {
-                        entidadesResponse = JsonConvert.DeserializeObject<EntidadesResponse>(cacheEstidades);
-                    }
-
-                    entidad = entidadesResponse.Entidades.Find(e => e.Id == EntidadSel);
-
-                    generalRequest = new()
+                    this.generalRequest = new()
                     {
                         Parametros =
                         [
@@ -146,24 +129,15 @@ public class TarjetasController : Controller
                          },
                      ],
                     };
-                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Tarjetas, generalRequest);
-                    HttpContext.Session.Remove(cacheData);
+                    
+                    await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Tarjetas, generalRequest);
+
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.Tarjetas);
                     break;
                     
                 case "actualizar":
-                    cacheEstidades = HttpContext.Session.GetString("dataEntidades");
-                    if (cacheEstidades == null)
-                    {
-                        entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-                    }
-                    else
-                    {
-                        entidadesResponse = JsonConvert.DeserializeObject<EntidadesResponse>(cacheEstidades);
-                    }
 
-                    entidad = entidadesResponse.Entidades.Find(e => e.Id == EntidadSel);
-
-                    generalRequest = new()
+                    this.generalRequest = new()
                     {
                         Parametros =
                         [
@@ -200,26 +174,15 @@ public class TarjetasController : Controller
                      ],
                     };
 
-                    generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Tarjetas, generalRequest);
-                    HttpContext.Session.Remove(cacheData);
+                    await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Tarjetas, generalRequest);
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.Tarjetas);
                     break;
 
             }
 
-            dataCache = HttpContext.Session.GetString(cacheData);
+            this.tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
-            if (dataCache == null)
-            {
-                response = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
-
-                HttpContext.Session.SetString(cacheData, JsonConvert.SerializeObject(response));
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<TarjetasResponse>(dataCache);
-            }
-
-            ViewBag.Tarjetas = response?.Tarjetas;
+            ViewBag.Tarjetas = this.tarjetasResponse?.Tarjetas;
             
             return View(ViewBag);
 
@@ -235,23 +198,16 @@ public class TarjetasController : Controller
     [HttpPost]
     public async Task<IActionResult> TarjetaFormAdd([FromForm] Tarjeta entidad, string action)
     {
+        this.Inicialized();
+
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
         ViewBag.Tarjeta = entidad;
 
-        var dataEstidades = HttpContext.Session.GetString("dataEntidades");
-        EntidadesResponse entidadesResponse;
-        if (dataEstidades == null)
-        {
-            entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-        }
-        else
-        {
-            entidadesResponse = JsonConvert.DeserializeObject<EntidadesResponse>(dataEstidades);
-        }
+        this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
 
-        ViewBag.Entidades = entidadesResponse.Entidades;
+        ViewBag.Entidades = this.entidadesResponse.Entidades;
 
         return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
     }
@@ -259,6 +215,8 @@ public class TarjetasController : Controller
     [HttpPost]
     public async Task<IActionResult> TarjetaFormEdit([FromForm] Tarjeta entidad, string action)
     {
+        this.Inicialized();
+
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
@@ -272,21 +230,11 @@ public class TarjetasController : Controller
             case "openFormView":
             case "openFormEdit":
 
-                var dataTarjetas = HttpContext.Session.GetString(cacheData);
-                var tarjetasResponse = JsonConvert.DeserializeObject<TarjetasResponse>(dataTarjetas);
+                this.tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
-                entidad = tarjetasResponse.Tarjetas.Find(t => t.Id == entidad.Id);
+                entidad = this.tarjetasResponse.Tarjetas.Find(t => t.Id == entidad.Id);
 
-                var dataEstidades = HttpContext.Session.GetString("dataEntidades");
-                EntidadesResponse entidadesResponse;
-                if (dataEstidades == null)
-                {
-                    entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-                }
-                else
-                {
-                    entidadesResponse = JsonConvert.DeserializeObject<EntidadesResponse>(dataEstidades);
-                }
+                this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
 
                 ViewBag.ModeView = action == "openFormView" ? true : false;
                 ViewBag.Tarjeta = entidad;
