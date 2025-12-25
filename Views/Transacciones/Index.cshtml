@@ -25,14 +25,15 @@
     <table class="table myaccordion table-hover" id="accordion">
         <thead>
             <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Código de Transacción</th>
+                <th scope="col">Identificador interno</th>
+                <th scope="col">Código Trans.</th>
                 <th scope="col">Nro Orden / Compra</th>
                 <th scope="col">Entidad Asociada</th>
-                <th scope="col">Fecha de Transacción</th>
+                <th scope="col">Fecha Oper.</th>
                 <th scope="col">Resumen</th>
                 <th scope="col">Observaciones</th>
-                <th scope="col">Tarjeta de Crédito</th>
+                <th scope="col">Tarjeta</th>
+                <th scope="col">Consumo</th>
                 <th>
                     &nbsp;
                     <form method="post" asp-controller="Pedidos">
@@ -44,7 +45,6 @@
         <tbody>
             @foreach (var entidad in @transacciones)
             {
-
                 var titleTarjeta = $"Entidad: {entidad.Tarjeta.Entidad.Nombre}\n{entidad.Tarjeta.Nombre}\nCierre: {entidad.Tarjeta.FechaCierre.ToString("dd/MM/yyy", new CultureInfo("es-ES"))}\nVencimmiento: {entidad.Tarjeta.FechaVencimiento.ToString("dd/MM/yyy", new CultureInfo("es-ES"))}";
 
                 var imgTarjeta = "{0}.png";
@@ -71,17 +71,19 @@
 
                 <tr>
                     <th scope="row" id="Id">@entidad.Id</th>
-                    <td id="CodigoTransaccion">@entidad.CodigoTransaccion</td>
-                    <td id="OrdenCompra">@entidad.OrdenCompra</td>
-                    <td id="EntidadAsociada" align="center">@entidad.EntidadAsociada</td>
-                    <td id="FechaTransaccion" align="center">@entidad.FechaTransaccion.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
-                    <td id="Resumen">@entidad.Resumen</td>
-                    <td id="Observaciones">@entidad.Observaciones</td>
-                    <td id="Tarjeta" title="@titleTarjeta">@entidad.Tarjeta.Nombre
+                    <td scope="row" id="CodigoTransaccion">@entidad.CodigoTransaccion</td>
+                    <td scope="row" id="OrdenCompra">@entidad.OrdenCompra</td>
+                    <td scope="row" id="EntidadAsociada" align="center">@entidad.EntidadAsociada</td>
+                    <td scope="row" id="FechaTransaccion" align="center">@entidad.FechaTransaccion.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</td>
+                    <td scope="row" id="Resumen">@entidad.Resumen</td>
+                    <td scope="row" id="Observaciones">@entidad.Observaciones</td>
+                    <td scope="row" id="Tarjeta" title="@titleTarjeta">
+                        @entidad.Tarjeta.Nombre
                         &nbsp;&nbsp;<img src="~/images/info.png" style="height: 25px; width: 25px; vertical-align: middle; align-content: center;" />
                         &nbsp;&nbsp;<img src="~/images/@imgTarjeta.Replace("{0}", ico)" style="height: 25px; width: 35px; vertical-align: middle; align-content: center;" />
                         &nbsp;&nbsp;<img src="~/images/@imgEntidad" style="height: 25px; width: 35px; vertical-align: middle; align-content: center;" />
                     </td>
+                    <td scope="row" id="Observaciones" align="center">@entidad.TarjetaConsumoId</td>
                     <td>
                         <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
                             <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />

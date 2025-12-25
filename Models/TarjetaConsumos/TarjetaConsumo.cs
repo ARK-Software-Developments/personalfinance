@@ -42,5 +42,10 @@ namespace PersonalFinance.Models.TarjetaConsumos
         /// Gets or sets propiedad Pagado.
         /// </summary>
         public bool Pagado { get; set; }
+
+        /// <summary>
+        /// Gets or sets propiedad TransaccionesAsociadas.
+        /// </summary>
+        public int TransaccionesAsociadas { get; set; }
     }
 }

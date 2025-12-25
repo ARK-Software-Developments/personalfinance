@@ -46,8 +46,9 @@
                 <th scope="col" style="width: 90px" align="center">@tituloMesActual</th>
                 <th scope="col" style="width: 90px" align="center">@tituloMesSiguiente</th>
                 <th scope="col">Tarjeta</th>
-                <th scope="col">V</th>
-                <th scope="col">P</th>
+                <th scope="col" align="center">V</th>
+                <th scope="col" align="center">P</th>
+                <th scope="col" align="center">Trans. Asoc.</th>
                 <th colspan="2">
                     &nbsp;
                     <form method="post" asp-controller="@ViewBag.Modulo">
@@ -72,7 +73,7 @@
                 var checkedP = entidad.Pagado ? "checked" : string.Empty; 
                 
                 <tr>
-                    <th scope="row" id="Id">@entidad.Id</th>
+                    <td scope="row" id="Id">@entidad.Id</td>
                     <td scope="row" id="EntidadCompra">@entidad.EntidadCompra.ToUpper()</td>
                     <td scope="row" id="Detalle">@entidad.Detalle.ToUpper()</td>
                     <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;">@gastoMesAnterior.ToString("C", new CultureInfo("es-AR"))</td>
@@ -81,6 +82,7 @@
                     <td scope="row" id="Tarjeta">@(@entidad.Tarjeta != null ? @entidad.Tarjeta.Nombre.ToUpper() : string.Empty)</td>
                     <td scope="row" id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
                     <td scope="row" id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
+                    <td scope="row" id="TransaccionesAsociadas" align="center">@entidad.TransaccionesAsociadas</td>
                     <td scope="row" data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                         <i class="fa" aria-hidden="false"></i>
                     </td>

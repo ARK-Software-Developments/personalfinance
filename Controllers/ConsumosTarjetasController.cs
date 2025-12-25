@@ -10,6 +10,7 @@ using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 
 public class ConsumosTarjetasController : BaseController
@@ -40,6 +41,11 @@ public class ConsumosTarjetasController : BaseController
         {
             tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
             ViewBag.TarjetaConsumos = tarjetaConsumoResponse.TarjetaConsumos;
+
+            if (this.Request.Form.ContainsKey("TransaccionId"))
+            {
+                CacheAdmin.Set(HttpContext, $"{ServicioEnum.Transacciones.ToCache()}Rel", this.Request.Form["TransaccionId"]);
+            }
 
             return await Task.FromResult<IActionResult>(View(ViewBag));
         }
@@ -72,7 +78,7 @@ public class ConsumosTarjetasController : BaseController
                          new Parametro()
                          {
                              Nombre = "pCardsId",
-                             Valor = tarjetaConsumo.Id,
+                             Valor = tarjetaConsumo.Tarjeta.Id,
                          },
                          new Parametro()
                          {
@@ -185,6 +191,8 @@ public class ConsumosTarjetasController : BaseController
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.ConsumosTarjeta);
 
+                AsociarATransaccion(tarjetaConsumo.Id);
+
             }
 
             tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
@@ -273,5 +281,35 @@ public class ConsumosTarjetasController : BaseController
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private async void AsociarATransaccion(int idTarjetaConsumo)
+    {
+        if (CacheAdmin.Existe(HttpContext, $"{ServicioEnum.Transacciones.ToCache()}Rel"))
+        {
+            var idTransaccion = CacheAdmin.Obtener(HttpContext, $"{ServicioEnum.Transacciones.ToCache()}Rel");
+
+            this.generalRequest = new()
+            {
+                Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pId",
+                             Valor = idTransaccion,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pCreditCardsPendingId",
+                             Valor = idTarjetaConsumo,
+                         }
+                        ],
+            };
+
+            await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest, MetodoEnum.ActualizarTransConsumo);
+
+            CacheAdmin.Remove(HttpContext, $"{ServicioEnum.Transacciones.ToCache()}Rel");
+            this.generalRequest = null;
+        }
     }
 }

@@ -31,9 +31,29 @@ namespace PersonalFinance.Helper
             httpContext.Session.Remove(servicioEnum.ToCache());
         }
 
+        public static void Remove(HttpContext httpContext, string nombre)
+        {
+            httpContext.Session.Remove(nombre);
+        }
+
         public static void Set(HttpContext httpContext, ServicioEnum servicioEnum, string jsonResponse)
         {
             httpContext.Session.SetString(servicioEnum.ToCache(), jsonResponse);
+        }
+
+        public static void Set(HttpContext httpContext, string nombre, string data)
+        {
+            httpContext.Session.SetString(nombre, data);
+        }
+
+        public static bool Existe(HttpContext httpContext, string nombre)
+        {
+            return httpContext.Session.GetString(nombre) != null ? true : false;
+        }
+
+        public static string Obtener(HttpContext httpContext, string nombre)
+        {
+            return httpContext.Session.GetString(nombre);
         }
     }
 }

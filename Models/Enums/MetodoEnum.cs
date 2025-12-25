@@ -10,7 +10,7 @@ namespace PersonalFinance.Models.Enums
         [Api(Method = "getorderid")]
         DetallePedidoByOrderId = 2,
 
-        [Api(Method = "getid")]
+        [Api(Method = "get")]
         Uno = 3,
 
         [Api(Method = "create")]
@@ -19,7 +19,7 @@ namespace PersonalFinance.Models.Enums
         [Api(Method = "update")]
         Actualizar = 5,
 
-        [Api(Method = "updatetransid")]
-        ActualizarTransId = 100,
+        [Api(Method = "updatecreditcardspending")]
+        ActualizarTransConsumo = 100,
     }
 }

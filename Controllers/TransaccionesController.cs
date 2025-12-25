@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Enums;
+using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
 using PersonalFinance.Service;
@@ -142,13 +143,13 @@ public class TransaccionesController : BaseController
                          },
                          new Parametro()
                          {
-                             Nombre = "pTransactionCodeId",
+                             Nombre = "pCreditCardsPendingId",
                              Valor = transactionCodeId,
                          }
-                     ],
+                        ],
                         };
 
-                        await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.ConsumosTarjeta, generalRequest, MetodoEnum.ActualizarTransId);
+                        await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest, MetodoEnum.ActualizarTransConsumo);
                     }
 
 
@@ -214,12 +215,21 @@ public class TransaccionesController : BaseController
             case "openFormEdit":
 
                 transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-
+                var transaccionUpdate = transaccionesResponse.Transacciones.Find(t => t.Id == transaccion.Id);
                 tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
+                this.keyValuePairs = new Dictionary<string, object>()
+                    {
+                        {"pId",  transaccionUpdate.TarjetaConsumoId},
+                    };
+
+
+                tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs, MetodoEnum.Uno);
+
                 ViewBag.ModeView = action == "openFormView" ? true : false;
-                ViewBag.Transaccion = transaccionesResponse.Transacciones.Find(t => t.Id == transaccion.Id);
+                ViewBag.Transaccion = transaccionUpdate;
                 ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
+                ViewBag.TarjetaConsumos = tarjetaConsumoResponse?.TarjetaConsumos.Count > 0 ? tarjetaConsumoResponse?.TarjetaConsumos[0] : null;
 
                 return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
 

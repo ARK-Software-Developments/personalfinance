@@ -1,4 +1,5 @@
-﻿@using PersonalFinance.Models.Transacciones
+﻿@using PersonalFinance.Models.TarjetaConsumos
+@using PersonalFinance.Models.Transacciones
 @using PersonalFinance.Models.Tarjetas
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -8,6 +9,7 @@
 
     List<Tarjeta> tarjetas = ViewBag.Tarjetas;
     Transaccion transaccion = ViewBag.Transaccion;
+    TarjetaConsumo tarjetaConsumo = ViewBag.TarjetaConsumos;
     string modeView = ViewBag.ModeView ? "disabled" : "";
 
     var listaTarjetas = new List<SelectListItem>();
@@ -120,8 +122,48 @@
         {
             <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="Transacciones" name="action" value="actualizar">Actualizar</button>
         }
-        
     </form>
+    <p></p>
+    @if (@tarjetaConsumo != null)
+    {
+        <table class="table table-secondary">
+            <thead>
+                <tr>
+                    <th scope="col">Identificador interno</th>
+                    <th scope="col">Cuotas</th>
+                    <th scope="col">Entidad Operada</th>
+                    <th scope="col">Detalle</th>
+                    <th scope="col">V</th>
+                    <th scope="col">P</th>
+                    <th colspan="2">
+                        &nbsp;
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope="row">@tarjetaConsumo.Id</td>
+                    <td scope="row">@tarjetaConsumo.Cuotas</td>
+                    <td scope="row">@tarjetaConsumo.EntidadCompra</td>
+                    <td scope="row">@tarjetaConsumo.Detalle</td>
+                    <td scope="row">@tarjetaConsumo.Verificado</td>
+                    <td scope="row">@tarjetaConsumo.Pagado</td>
+                    <td scope="row">&nbsp;</td>
+                </tr>
+            </tbody>
+
+        </table>
+    } else
+    {
+        <form method="post" asp-controller="ConsumosTarjetas" asp-action="Index">
+            <input type="text" id="TransaccionId" name="TransaccionId" class="form-control" value="@transaccion.Id" hidden />
+
+            <p>No hay Consumo de Tarjeta Asociado.</p>
+            <button id="submit" type="submit" class="btn btn-warning" name="action" value="Index">Asociar Consumo</button>
+        </form>
+    }
+
+        
 </div>
 <p></p>
 

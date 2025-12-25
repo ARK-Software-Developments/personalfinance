@@ -43,6 +43,11 @@ namespace PersonalFinance.Controllers
         {
             this.httpContext = ControllerContext.HttpContext;
             this.serviceCaller = new ServiceCaller(this.httpContext, new HttpClient(this.httpClientHandler));
+            
+            if (!this.keyValuePairs.ContainsKey("year"))
+            {
+                this.keyValuePairs.Add("year", 2025);
+            }
         }
     }
 }

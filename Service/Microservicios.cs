@@ -13,10 +13,12 @@ namespace PersonalFinance.Service
                 string tmp = url.Replace("{0}", servicio.ToRoute()).Replace("{1}", metodo.ToMethod());
                 return $"{tmp}/{keyValuePairs["year"]}";
             }
-            else if (servicio == ServicioEnum.DetallePedido && metodo == MetodoEnum.DetallePedidoByOrderId)
+            else if ((servicio == ServicioEnum.DetallePedido && metodo == MetodoEnum.DetallePedidoByOrderId) ||
+                    (servicio == ServicioEnum.ConsumosTarjeta && metodo == MetodoEnum.Uno) ||
+                    (servicio == ServicioEnum.Transacciones && metodo == MetodoEnum.Uno))
             {
                 string tmp = url.Replace("{0}", servicio.ToRoute()).Replace("{1}", metodo.ToMethod());
-                return $"{tmp}/{keyValuePairs["pOrderId"]}";
+                return $"{tmp}/{keyValuePairs["pId"]}";
             }
             else
             {

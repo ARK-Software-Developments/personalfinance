@@ -469,7 +469,7 @@
             {
                 this.keyValuePairs = new Dictionary<string, object>()
                     {
-                        {"pOrderId",  order.Id},
+                        {"pId",  order.Id},
                     };
 
                 var detail = await this.serviceCaller.ObtenerRegistros<PedidoDetallesResponse>(ServicioEnum.DetallePedido, this.keyValuePairs, MetodoEnum.DetallePedidoByOrderId);
