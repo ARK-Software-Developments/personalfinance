@@ -11,6 +11,7 @@
     Pedido pedido = ViewBag.Pedido;
     List<Estado> estados = ViewBag.Estados;
     var fechaPedido = pedido.FechaPedido?.ToString("yyyy-MM-dd");
+    var fechaPagado = pedido.FechaPagado?.ToString("yyyy-MM-dd");
     var fechaRecibido = pedido.FechaRecibido?.ToString("yyyy-MM-dd");
 
     var listaItems = new List<SelectListItem>();
@@ -63,18 +64,13 @@
                     </td>
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Fecha Pedido:</span>
-                            <input id="FechaPedido" name="FechaPedido" class="form-control" type="date" data-language='es' value="@fechaPedido" required>
+                            <span class="form-label">Tipo Recurso:</span>
+                            <select class="form-control" id="TipoRecurso" name="TipoRecurso" readonly>
+                                <option selected>@pedido.TipoRecurso</option>
+                            </select>
+                            <span class="select-arrow"></span>
                         </div>
                     </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Fecha Recibido:</span>
-                            <input id="FechaRecibido" name="FechaRecibido" class="form-control" type="date" data-language='es' value="@fechaRecibido">
-                        </div>
-                    </td>
-                </tr>
-                <tr>
                     <td>
                         <div class="form-group">
                             <span class="form-label">Monto Total:</span>
@@ -83,13 +79,11 @@
                     </td>
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Tipo Recurso:</span>
-                            <select class="form-control" id="TipoRecurso" name="TipoRecurso" readonly>
-                                <option selected>@pedido.TipoRecurso</option>
-                            </select>
-                            <span class="select-arrow"></span>
+                            &nbsp;
                         </div>
                     </td>
+                </tr>
+                <tr> 
                     <td>
                         <div class="form-group">
                             <span class="form-label">Estado:</span>
@@ -109,6 +103,24 @@
                             <span class="select-arrow"></span>
                             <input id="EstadoSel" name="EstadoSel" class="form-control" value="@pedido.Estado.Id" hidden>
 
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Pedido:</span>
+                            <input id="FechaPedido" name="FechaPedido" class="form-control" type="date" data-language='es' value="@fechaPedido" required>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Pagado:</span>
+                            <input id="FechaPagado" name="FechaPagado" class="form-control" type="date" data-language='es' value="@fechaPagado" disabled>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Recibido:</span>
+                            <input id="FechaRecibido" name="FechaRecibido" class="form-control" type="date" data-language='es' value="@fechaRecibido">
                         </div>
                     </td>
                     <td style="display: flex; justify-content: center; align-items: center; height: 100px;">
@@ -167,7 +179,6 @@
                             </td>
                         </tr>
                     }
-
                 </tbody>
 
             </table>
