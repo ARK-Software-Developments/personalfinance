@@ -317,10 +317,8 @@
 
                 await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.DetallePedido, generalRequest);
 
-                this.pedidosResponse = await this.serviceCaller.ObtenerRegistros<PedidosResponse>(ServicioEnum.Pedidos);
-
-                CacheAdmin.Remove(HttpContext, ServicioEnum.Pedidos);
-                CacheAdmin.Set(httpContext, ServicioEnum.Pedidos, JsonConvert.SerializeObject(this.pedidosResponse));
+                CacheAdmin.Remove(httpContext, ServicioEnum.Pedidos);
+                await CargarPedidos();
 
                 dataPedido = pedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
 
@@ -373,6 +371,11 @@
                                  Valor = pedidoDetalle.Id,
                              },
                              new Parametro()
+                                {
+                                 Nombre = "pOrderId",
+                                 Valor = pedidoDetalle.PedidoId,
+                             }, 
+                             new Parametro()
                              {
                                  Nombre = "pBrand",
                                  Valor = pedidoDetalle.Marca,
@@ -422,6 +425,7 @@
 
                     await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.DetallePedido, generalRequest);
 
+                    CacheAdmin.Remove(httpContext, ServicioEnum.Pedidos);
                     await CargarPedidos();
 
                     dataPedido = this.pedidosResponse.Pedidos.Find(x => x.Id == pedidoDetalle.PedidoId);
