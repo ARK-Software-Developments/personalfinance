@@ -1,0 +1,77 @@
+﻿@using PersonalFinance.Models.Pagos
+@using System.Globalization
+@{
+    ViewData["Title"] = ViewBag.Title;
+    ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
+    List<Pago> pagos = ViewBag.Pagos;
+
+    var colorWarning = "background-color: #E89B3C;";
+    var colorInfo = "background-color: #F5F0F0;";
+    var colorSuccess = "background-color: #A7C282;";
+
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Message</h1>
+    <p>Listado de @ViewBag.Modulo.</p>
+</div>
+
+<div class="tab-content">
+    <table class="table myaccordion table-hover" id="accordion">
+        <thead>
+            <tr>
+                <th scope="col">Identificador interno</th>
+                <th scope="col" align="center">Fecha de Registracion</th>
+                <th scope="col" align="center">Fecha del Pago</th>
+                <th scope="col" align="center">Codigo Registro</th>
+                <th scope="col" align="center">Recurso Del Pago</th>
+                <th scope="col" align="center">Tipo Pago</th>
+                <th scope="col" align="center">Monto Presup.</th>
+                <th scope="col" align="center">Monto Pagado</th>
+                <th scope="col" align="center">Desvio Presup.</th>
+                <th scope="col" align="center">Gasto</th>
+                <th>
+                    &nbsp;
+                    <form method="post" asp-controller="@ViewBag.Modulo">
+                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="PagosPedidos" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
+                    </form>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pago in @pagos)
+            {
+                var desvPresup = @pago.MontoPresupuestado - @pago.MontoPagado;
+
+                var cssDesvPresup = desvPresup < 0 ? colorWarning : (desvPresup > 0 ? colorSuccess : colorInfo );
+
+                <tr>
+                    <td scope="row" id="Id">@pago.Id</td>
+                    <td scope="row" id="FechaRegistro">@pago.FechaRegistro?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
+                    <td scope="row" id="FechaPago">@pago.FechaPago?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
+                    <td scope="row" id="CodigoRegistro">@pago.CodigoRegistro</td>
+                    <td scope="row" id="RecursoDelPago">@pago.RecursoDelPago.Nombre-@pago.RecursoDelPago.Tipo</td>
+                    <td scope="row" id="TipoDePago">@pago.TipoDePago</td>
+                    <td scope="row" id="MontoPagado">@pago.MontoPagado.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="MontoPresupuestado">@pago.MontoPresupuestado.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="MontoDesvio" align="center" style="@cssDesvPresup">
+                        @desvPresup.ToString("C", new CultureInfo("es-AR"))
+                    </td>
+                    <td scope="row" id="TipoDeGasto">@pago.TipoDeGasto.Tipo</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p></p>
+<p>>>>>>&nbsp;&nbsp;@ViewBag.Ruta</p>
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/main.js"></script>

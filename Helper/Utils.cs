@@ -229,7 +229,7 @@ namespace PersonalFinance.Helper
                 case ServicioEnum.ConsumosTarjeta:
                     object consumo = new TarjetaConsumo()
                     {
-                        Id = int.Parse(form["Id"]),
+                        Id = form.ContainsKey("Id") ? int.Parse(form["Id"]) : 0,
                         Enero = decimal.Parse(form["Enero"]),
                         Febrero = decimal.Parse(form["Febrero"]),
                         Marzo = decimal.Parse(form["Marzo"]),

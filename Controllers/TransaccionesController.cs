@@ -9,7 +9,9 @@ using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
 using PersonalFinance.Service;
 using System.Diagnostics;
+using System.Drawing;
 using System.Net.Http;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class TransaccionesController : BaseController
 {
@@ -188,8 +190,8 @@ public class TransaccionesController : BaseController
 
         tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
-        ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("TarjetaConsumoId") ? int.Parse(this.Request.Form["TarjetaConsumoId"]) : 0;
-        ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaSel") ? int.Parse(this.Request.Form["TarjetaSel"]) : 0; ;
+        ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("Id") ? int.Parse(this.Request.Form["Id"]) : 0;
+        ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaSel") ? int.Parse(this.Request.Form["TarjetaSel"]) : 0;
         
         ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
 
@@ -213,16 +215,53 @@ public class TransaccionesController : BaseController
 
             case "openFormView":
             case "openFormEdit":
+                Transaccion transaccionUpdate = new();
 
                 transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
-                var transaccionUpdate = transaccionesResponse.Transacciones.Find(t => t.Id == transaccion.Id);
+
+                if ((this.Request.Form.ContainsKey("TransaccionId") && !string.IsNullOrEmpty(this.Request.Form["TransaccionId"])) 
+                    && (this.Request.Form.ContainsKey("Id") && !string.IsNullOrEmpty(this.Request.Form["Id"])))
+                {
+                    int TransaccionId = int.Parse(this.Request.Form["TransaccionId"]);
+                    int ConsumoTarjetaId = int.Parse(this.Request.Form["Id"]);
+
+                    this.generalRequest = new GeneralRequest()
+                    {
+                        Parametros = [
+                         new Parametro()
+                         {
+                             Nombre = "pId",
+                             Valor = TransaccionId,
+                         },
+                         new Parametro()
+                         {
+                            Nombre = "pCreditCardsPendingId",
+                            Valor = ConsumoTarjetaId,
+                         },
+                         ]
+                    };
+
+                    generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest, MetodoEnum.ActualizarTransConsumo);
+
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.Transacciones);
+
+                    transaccionesResponse = await this.serviceCaller.ObtenerRegistros<TransaccionesResponse>(ServicioEnum.Transacciones);
+
+                    transaccionUpdate = transaccionesResponse?.Transacciones?.Find(t => t.Id == TransaccionId);
+
+                }
+                else 
+                {
+                    transaccionUpdate = transaccionesResponse?.Transacciones?.Find(t => t.Id == transaccion.Id);
+                }
+
                 tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
+                this.keyValuePairs.Clear();
                 this.keyValuePairs = new Dictionary<string, object>()
                     {
                         {"pId",  transaccionUpdate.TarjetaConsumoId},
                     };
-
 
                 tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs, MetodoEnum.Uno);
 

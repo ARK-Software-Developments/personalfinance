@@ -43,5 +43,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "ordersdetails", Cache = "cacheDataDetallePedido")]
         [Description("DetallePedido")]
         DetallePedido = 10,
+
+        [Api(Route = "payments", Cache = "cacheDataPagos")]
+        [Description("Pagos")]
+        Pagos = 11,
     }
 }
