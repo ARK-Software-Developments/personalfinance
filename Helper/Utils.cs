@@ -1,6 +1,7 @@
 ﻿namespace PersonalFinance.Helper
 {
 #pragma warning disable CS8601 // Posible asignación de referencia nula
+#pragma warning disable CS8604 // Posible argumento de referencia nulo
 
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
@@ -9,12 +10,10 @@
     using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Gastos;
     using PersonalFinance.Models.Pagos;
-    using PersonalFinance.Models.Pedidos;
     using PersonalFinance.Models.TarjetaConsumos;
     using PersonalFinance.Models.Tarjetas;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
 
     public static class Utils
@@ -199,6 +198,7 @@
             switch (servicioEnum)
             {
                 case ServicioEnum.Gastos:
+
                     object gasto = new Gasto()
                     {
                         Id = int.Parse(form["Id"]),
