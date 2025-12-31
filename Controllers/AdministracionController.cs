@@ -11,14 +11,11 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 
-public class AdministracionController : Controller
+public class AdministracionController : BaseController
 {
     private readonly string Gestion = "Administrar";
-    private readonly string Modulo = "Administracion";
-    private readonly string cacheData = "dataAdministracion";
+    private readonly string Modulo = "Administracion";    
     private readonly ILogger<AdministracionController> _logger;
-    private readonly HttpClient _httpClient;
-    private readonly CategoriasService _service;
 
     public AdministracionController(ILogger<AdministracionController> logger)
     {
@@ -27,60 +24,25 @@ public class AdministracionController : Controller
         {
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
         };
-        _httpClient = new HttpClient(httpClientHandler);
-        _service = new CategoriasService(_httpClient);
     }
 
     public async Task<IActionResult> Index([FromForm] Categoria entidad, string action)
     {
-        _logger.LogInformation("Inicializando AdministracionController => Index()");
-        CategoriasResponse response = new();
+        _logger.LogInformation("Inicializando AdministracionController => Index()");        
+
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de {Modulo}";
 
         try
-        {
-            /*
-            switch (action)
-            {
-                case "generar":
-                    await this._service.Generar(entidad);
-                    HttpContext.Session.Remove(cacheData);
-                    break;
-
-                case "actualizar":
-                    await this._service.Actualizar(entidad);
-                    HttpContext.Session.Remove(cacheData);
-                    break;
-
-                default:
-                    response = await this.Obtener();
-                    
-                    break;
-            }
-
-            var dataPedidos = HttpContext.Session.GetString(cacheData);
-
-            if (dataPedidos == null)
-            {
-                response = await this.Obtener();
-            }
-            else
-            {
-                response = JsonConvert.DeserializeObject<CategoriasResponse>(dataPedidos);
-            }
-
-            ViewBag.Categorias = response.Categoria;
-            */
-            return View();
-
+        {            
+            return await Task.FromResult<IActionResult>(View());
         }
         catch (Exception ex)
         {
             _logger.LogCritical(ex.ToString());
 
-            return View(new List<Entidad>());
+            return await Task.FromResult<IActionResult>(View());
         }
     }
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -23,6 +23,7 @@
                 <th scope="col">Id</th>
                 <th scope="col">Numero</th>
                 <th scope="col">Fecha de Pedido</th>
+                <th scope="col">Fecha de Pagado</th>
                 <th scope="col">Fecha de Recibido</th>
                 <th scope="col">Monto Total</th>
                 <th scope="col">Tipo/Recurso/Marca</th>
@@ -45,6 +46,7 @@
                     <th scope="row" id="Id">@pedido.Id</th>
                     <td id="Numero">@pedido.Numero</td>
                     <td id="FechaPedido">@pedido.FechaPedido?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
+                    <td id="FechaPagado">@pedido.FechaPagado?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
                     <td id="FechaRecibido">@pedido.FechaRecibido?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
                     <td id="MontoTotal">@pedido.MontoTotal</td>
                     <td id="TipoRecurso" style="display: flex; justify-content: center; align-items: center; height: auto;">

@@ -18,6 +18,9 @@ public class Pedido
     [JsonProperty("fechaPedido")]
     public DateTime? FechaPedido { get; set; }
 
+    [JsonProperty("fechaPagado")]
+    public DateTime? FechaPagado { get; set; }
+
     [JsonProperty("fechaRecibido")]
     public DateTime? FechaRecibido { get; set; }
 

@@ -1,19 +1,25 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using PersonalFinance.Models;
-using PersonalFinance.Models.Entidades;
-using PersonalFinance.Models.Enums;
-using PersonalFinance.Models.Gastos;
-using PersonalFinance.Models.Pedidos;
-using PersonalFinance.Models.TarjetaConsumos;
-using PersonalFinance.Models.Tarjetas;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-namespace PersonalFinance.Helper
+﻿namespace PersonalFinance.Helper
 {
+#pragma warning disable CS8601 // Posible asignación de referencia nula
+
+    using Microsoft.AspNetCore.Http;
+    using Newtonsoft.Json;
+    using PersonalFinance.Models;
+    using PersonalFinance.Models.Entidades;
+    using PersonalFinance.Models.Enums;
+    using PersonalFinance.Models.Gastos;
+    using PersonalFinance.Models.Pagos;
+    using PersonalFinance.Models.Pedidos;
+    using PersonalFinance.Models.TarjetaConsumos;
+    using PersonalFinance.Models.Tarjetas;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using System.Text.RegularExpressions;
+
     public static class Utils
     {
+        public static IFormatProvider cultureInfor = CultureInfo.InvariantCulture;
         public static T ObtenerResponseFromCache<T>(HttpContext httpContext, string key)
         {
             var cache = httpContext.Session.GetString(key);
@@ -196,18 +202,18 @@ namespace PersonalFinance.Helper
                     object gasto = new Gasto()
                     {
                         Id = int.Parse(form["Id"]),
-                        Enero = decimal.Parse(form["Enero"]),
-                        Febrero = decimal.Parse(form["Febrero"]),
-                        Marzo = decimal.Parse(form["Marzo"]),
-                        Abril = decimal.Parse(form["Abril"]),
-                        Mayo = decimal.Parse(form["Mayo"]),
-                        Junio = decimal.Parse(form["Junio"]),
-                        Julio = decimal.Parse(form["Julio"]),
-                        Agosto = decimal.Parse(form["Agosto"]),
-                        Septiembre = decimal.Parse(form["Septiembre"]),
-                        Octubre = decimal.Parse(form["Octubre"]),
-                        Noviembre = decimal.Parse(form["Noviembre"]),
-                        Diciembre = decimal.Parse(form["Diciembre"]),
+                        Enero = decimal.Parse(form["Enero"], cultureInfor),
+                        Febrero = decimal.Parse(form["Febrero"], cultureInfor),
+                        Marzo = decimal.Parse(form["Marzo"], cultureInfor),
+                        Abril = decimal.Parse(form["Abril"], cultureInfor),
+                        Mayo = decimal.Parse(form["Mayo"], cultureInfor),
+                        Junio = decimal.Parse(form["Junio"], cultureInfor),
+                        Julio = decimal.Parse(form["Julio"], cultureInfor),
+                        Agosto = decimal.Parse(form["Agosto"], cultureInfor),
+                        Septiembre = decimal.Parse(form["Septiembre"], cultureInfor),
+                        Octubre = decimal.Parse(form["Octubre"], cultureInfor),
+                        Noviembre = decimal.Parse(form["Noviembre"], cultureInfor),
+                        Diciembre = decimal.Parse(form["Diciembre"], cultureInfor),
                         Resumen = form["Resumen"],
                         Observaciones = form["Observaciones"],
                         Villetera = new Entidad()
@@ -229,19 +235,19 @@ namespace PersonalFinance.Helper
                 case ServicioEnum.ConsumosTarjeta:
                     object consumo = new TarjetaConsumo()
                     {
-                        Id = int.Parse(form["Id"]),
-                        Enero = decimal.Parse(form["Enero"]),
-                        Febrero = decimal.Parse(form["Febrero"]),
-                        Marzo = decimal.Parse(form["Marzo"]),
-                        Abril = decimal.Parse(form["Abril"]),
-                        Mayo = decimal.Parse(form["Mayo"]),
-                        Junio = decimal.Parse(form["Junio"]),
-                        Julio = decimal.Parse(form["Julio"]),
-                        Agosto = decimal.Parse(form["Agosto"]),
-                        Septiembre = decimal.Parse(form["Septiembre"]),
-                        Octubre = decimal.Parse(form["Octubre"]),
-                        Noviembre = decimal.Parse(form["Noviembre"]),
-                        Diciembre = decimal.Parse(form["Diciembre"]),
+                        Id = form.ContainsKey("Id") ? int.Parse(form["Id"]) : 0,
+                        Enero = decimal.Parse(form["Enero"], cultureInfor),
+                        Febrero = decimal.Parse(form["Febrero"], cultureInfor),
+                        Marzo = decimal.Parse(form["Marzo"], cultureInfor),
+                        Abril = decimal.Parse(form["Abril"], cultureInfor),
+                        Mayo = decimal.Parse(form["Mayo"], cultureInfor),
+                        Junio = decimal.Parse(form["Junio"], cultureInfor),
+                        Julio = decimal.Parse(form["Julio"], cultureInfor),
+                        Agosto = decimal.Parse(form["Agosto"], cultureInfor),
+                        Septiembre = decimal.Parse(form["Septiembre"], cultureInfor),
+                        Octubre = decimal.Parse(form["Octubre"], cultureInfor),
+                        Noviembre = decimal.Parse(form["Noviembre"], cultureInfor),
+                        Diciembre = decimal.Parse(form["Diciembre"], cultureInfor),
                         Ano = form.ContainsKey("Ano") ? int.Parse(form["Ano"]) : 2025,
                         Cuotas = int.Parse(form["Cuotas"]),
                         Detalle = form["Detalle"].ToString(),
@@ -257,6 +263,29 @@ namespace PersonalFinance.Helper
 
                     return (T)consumo;
 
+                case ServicioEnum.Pagos:
+                    object pago = new Pago()
+                    { 
+                        Id = form.ContainsKey("Id") ? int.Parse(form["Id"]) : 0,
+                        CodigoRegistro = form["CodigoRegistro"].ToString(),
+                        FechaPago = DateTime.ParseExact(form["FechaPago"], "yyyy-MM-dd", cultureInfor),
+                        FechaRegistro = DateTime.ParseExact(form["FechaRegistro"], "yyyy-MM-dd", cultureInfor),
+                        MontoPagado = decimal.Parse(form["MontoPagado"], cultureInfor),
+                        MontoPresupuestado = decimal.Parse(form["MontoPresupuestado"], cultureInfor),
+                        TipoDePago = form["TipoDePago"].ToString(),
+                        RecursoDelPago = form.ContainsKey("EntidadSel") ?
+                        new Entidad()
+                        {
+                            Id = int.Parse(form["EntidadSel"]),
+                        } : null,
+                        TipoDeGasto = form.ContainsKey("RecursoDelPagoSel") ?
+                        new TipoGasto()
+                        {
+                            Id = int.Parse(form["RecursoDelPagoSel"]),
+                        } : null,
+                    };
+
+                    return (T)pago;
 
                 default:
                     return (T)new object();

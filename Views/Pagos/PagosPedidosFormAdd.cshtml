@@ -1,0 +1,137 @@
+﻿@using Microsoft.AspNetCore.Components
+@using PersonalFinance.Helper
+@using PersonalFinance.Models.Entidades
+@using PersonalFinance.Models.Gastos
+@using PersonalFinance.Models.Pagos
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    string selectedTopping;
+    List<Entidad> entidades = ViewBag.Entidades;
+    List<TipoGasto> tiposGastos = ViewBag.TiposGastos;
+
+    Pago pago = ViewBag.Pago;
+
+    var listaEntidades = new List<SelectListItem>();
+    foreach (var e in entidades)
+    {
+        listaEntidades.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+        });
+    }
+
+    var listaTipoGasto = new List<SelectListItem>();
+    foreach (var e in tiposGastos)
+    {
+        listaTipoGasto.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Tipo,
+        });
+    }
+
+    void HandleChange(ChangeEventArgs args)
+    {
+        var algo = args;
+    }
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioEntidad() {
+                console.log("CambioEntidad");
+                console.log($('#Entidad :selected').val());
+
+                $('#EntidadSel').val($('#Entidad :selected').val());
+            };
+
+    function CambioConsumoTarjeta() {
+                console.log("CambioEntidad");
+                console.log($('#RecursoDelPago :selected').val());
+
+                $('#RecursoDelPagoSel').val($('#RecursoDelPago :selected').val());
+            };
+</script>
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Generación de @ViewBag.Modulo.</p>
+</div>
+
+<form method="post" asp-controller="@ViewBag.Modulo" asp-action="PagosPedidos">
+    <div class="form-group">
+        <table class="table table-primary">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Tipo De Pago:</span>
+                        <input id="TipoDePago" name="TipoDePago" class="form-control" type="text" value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Codigo de Registro:</span>
+                        <input id="CodigoRegistro" name="CodigoRegistro" class="form-control" type="text" value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Fecha FechaRegistro:</span>
+                        <input id="FechaRegistro" name="FechaRegistro" class="form-control" type="date" data-language='es' value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Fecha de Pago:</span>
+                        <input id="FechaPago" name="FechaPago" class="form-control" type="date" data-language='es' value="" required>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Entidad:</span>
+                        <select id="Entidad" name="Entidad" class="form-control" asp-items="@listaEntidades" onabort="CambioEntidad()" required>
+                        </select>
+                        <span class="select-arrow"></span>
+                        <input id="EntidadSel" name="EntidadSel" class="form-control" value="@entidades[0].Id" hidden>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Recurso Del Pago:</span>
+                        <select id="RecursoDelPago" name="RecursoDelPago" class="form-control" asp-for="@tiposGastos[0].Id" asp-items="@listaTipoGasto" onchange="CambioConsumoTarjeta()" required>
+                        </select>
+                        <span class="select-arrow"></span>
+                        <input id="RecursoDelPagoSel" name="RecursoDelPagoSel" class="form-control" value="@entidades[0].Id" hidden>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Monto Presupuestado:</span>
+                        <input id="MontoPresupuestado" name="MontoPresupuestado" class="form-control" type="number" value="" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Monto Pagado:</span>
+                        <input id="MontoPagado" name="MontoPagado" class="form-control" type="number" value="" required>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="PagosPedidos" name="action" value="generar">Generar</button>
+</form>
+
+<p></p>
+
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>
