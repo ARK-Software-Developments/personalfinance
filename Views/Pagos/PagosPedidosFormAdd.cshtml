@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components
 @using PersonalFinance.Helper
 @using PersonalFinance.Models.Entidades
+@using PersonalFinance.Models.Gastos
 @using PersonalFinance.Models.Pagos
-@using PersonalFinance.Models.TarjetaConsumos
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -10,7 +10,7 @@
 @{
     string selectedTopping;
     List<Entidad> entidades = ViewBag.Entidades;
-    List<TarjetaConsumo> tarjetaConsumos = ViewBag.TarjetaConsumos;
+    List<TipoGasto> tiposGastos = ViewBag.TiposGastos;
 
     Pago pago = ViewBag.Pago;
 
@@ -25,14 +25,14 @@
         });
     }
 
-    var listaTarjetaConsumos = new List<SelectListItem>();
-    foreach (var e in tarjetaConsumos)
+    var listaTipoGasto = new List<SelectListItem>();
+    foreach (var e in tiposGastos)
     {
-        listaTarjetaConsumos.Add(
+        listaTipoGasto.Add(
         new SelectListItem()
         {
             Value = e.Id.ToString(),
-            Text = e.Detalle,
+            Text = e.Tipo,
         });
     }
 
@@ -108,7 +108,7 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Recurso Del Pago:</span>
-                        <select id="RecursoDelPago" name="RecursoDelPago" class="form-control" asp-for="@tarjetaConsumos[0].Id" asp-items="@listaTarjetaConsumos" onchange="CambioConsumoTarjeta()" required>
+                        <select id="RecursoDelPago" name="RecursoDelPago" class="form-control" asp-for="@tiposGastos[0].Id" asp-items="@listaTipoGasto" onchange="CambioConsumoTarjeta()" required>
                         </select>
                         <span class="select-arrow"></span>
                         <input id="RecursoDelPagoSel" name="RecursoDelPagoSel" class="form-control" value="@entidades[0].Id" hidden>

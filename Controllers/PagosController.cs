@@ -8,10 +8,8 @@ using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Pagos;
-using PersonalFinance.Models.TarjetaConsumos;
-using PersonalFinance.Models.Tarjetas;
-using PersonalFinance.Service;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 
 public class PagosController : BaseController
@@ -73,14 +71,74 @@ public class PagosController : BaseController
                     entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
                     var gasto = pagosResponse?.Pagos?.Find(p => p.Id == pago.Id);
 
-                    tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-                    var tarjetaConsumos = tarjetaConsumoResponse?.TarjetaConsumos?.FindAll(c => c.TransaccionesAsociadas == 0);
+                    tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
 
                     ViewBag.Gasto = gasto;
                     ViewBag.Entidades = entidadesResponse.Entidades;
-                    ViewBag.TarjetaConsumos = tarjetaConsumos;
+                    ViewBag.TiposGastos = tiposGastosResponse.TiposGastos;
                     return await Task.FromResult<IActionResult>(View("PagosPedidosFormAdd", ViewBag));
 
+                case "generar":
+
+                    var mapPago = Utils.MapRequest<Pago>(this.Request.Form, ServicioEnum.Pagos);
+
+                    this.generalRequest = new GeneralRequest()
+                    {
+                        Parametros = 
+                        [
+                           new Parametro()
+                           {
+                               Nombre = "pRegistrationDate",
+                               Valor = mapPago.FechaRegistro?.ToString("yyyy-MM-dd"),
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "pDateOfPayment",
+                               Valor = mapPago.FechaPago?.ToString("yyyy-MM-dd"),
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "pRegistrationCode",
+                               Valor = mapPago.CodigoRegistro,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "pPaymentResourceId",
+                               Valor = mapPago.RecursoDelPago.Id,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "pPaymentType",
+                               Valor = mapPago.TipoDePago,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "pBudgetedAmount",
+                               Valor = mapPago.MontoPresupuestado,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "pAmountPaid",
+                               Valor = mapPago.MontoPagado,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "pReasonForPayment",
+                               Valor = mapPago.TipoDeGasto.Id,
+                           },
+                        ]
+                    };
+
+                    generalDataResponse = new GeneralDataResponse();
+                    generalDataResponse =  await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Pagos, this.generalRequest);
+
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.Pagos);
+                    pagosResponse = await this.serviceCaller.ObtenerRegistros<PagosResponse>(ServicioEnum.Pagos);
+
+                    ViewBag.Pagos = pagosResponse.Pagos;
+
+                    return await Task.FromResult<IActionResult>(View(ViewBag));
+                
                 default:
                     ViewBag.Pagos = pagosResponse.Pagos;
 
@@ -102,10 +160,5 @@ public class PagosController : BaseController
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-    public void HandleChange(ChangeEventArgs args)
-    {
-        var algo = args;
     }
 }
