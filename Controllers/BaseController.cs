@@ -38,7 +38,6 @@ namespace PersonalFinance.Controllers
 
         public BaseController() 
         {
-            //this.keyValuePairs.Add("year", Utils.GetYear(HttpContext));
         }
 
         public void Inicialized()
