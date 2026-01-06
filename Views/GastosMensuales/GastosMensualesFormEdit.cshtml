@@ -61,7 +61,7 @@
 </div>
 
 <div class="tab-content">
-    <form method="post" asp-controller="@ViewBag.Modulo" asp-action="Gastos" enctype="application/x-www-form-urlencoded" >
+    <form method="post" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" enctype="application/x-www-form-urlencoded">
         <div class="form-group">
             <table class="table table-primary">
                 <tr>
@@ -88,7 +88,7 @@
                                 }
                             </select>
                             <span class="select-arrow"></span>
-                            <input id="VilleteraSel" name="VilleteraSel" class="form-control" value="@lstVilleteras[0].Value" hidden>
+                            <input id="VilleteraSel" name="VilleteraSel" class="form-control" value="@gasto.Villetera.Id" hidden>
                         </div>
                     </td>
                     <td>
@@ -108,7 +108,7 @@
                                 }
                             </select>
                             <span class="select-arrow"></span>
-                            <input id="TipoGastoSel" name="TipoGastoSel" class="form-control" value="@lstTiposGastos[0].Value" hidden>
+                            <input id="TipoGastoSel" name="TipoGastoSel" class="form-control" value="@gasto.TipoGasto.Id" hidden>
                         </div>
                     </td>
                     <td>
@@ -248,7 +248,7 @@
         </div>
         @if (string.IsNullOrEmpty(@modeView))
         {
-            <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="Gastos" name="action" value="actualizar">Actualizar</button>
+            <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="actualizar">Actualizar</button>
         }
 
     </form>

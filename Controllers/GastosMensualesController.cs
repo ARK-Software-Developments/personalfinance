@@ -12,13 +12,13 @@ using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
 
-public class GastosController : BaseController
+public class GastosMensualesController : BaseController
 {
     private readonly string Gestion = "Administrar";
-    private readonly string Modulo = "Gastos";
-    private readonly ILogger<GastosController> _logger;
+    private readonly string Modulo = "GastosMensuales";
+    private readonly ILogger<GastosMensualesController> _logger;
 
-    public GastosController(ILogger<GastosController> logger)
+    public GastosMensualesController(ILogger<GastosMensualesController> logger)
     {
         _logger = logger;
         this.httpClientHandler = new()
@@ -35,10 +35,10 @@ public class GastosController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de {Modulo}";
-
+        @ViewBag.Year = Utils.GetYear(httpContext);
         try
         {
-            gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
+            gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 
             ViewBag.Gastos = gastosResponse.Gastos;
 
@@ -54,7 +54,7 @@ public class GastosController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Gastos([FromForm] Gasto gasto, string action, int VilleteraSel, int TipoGastoSel)
+    public async Task<IActionResult> GastosMensuales([FromForm] Gasto gasto, string action, int VilleteraSel, int TipoGastoSel)
     {
         this.Inicialized();
         ViewBag.Modulo = Modulo;
@@ -65,7 +65,7 @@ public class GastosController : BaseController
         {
             if (action == "generar" || action == "actualizar")
             { 
-                gasto = Utils.MapRequest<Gasto>(this.Request.Form, ServicioEnum.Gastos);
+                gasto = Utils.MapRequest<Gasto>(this.Request.Form, ServicioEnum.GastosMensuales);
 
                 generalRequest = new()
                 {
@@ -188,18 +188,18 @@ public class GastosController : BaseController
                             Valor = gasto.Id,
                         });
 
-                    generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Gastos, generalRequest);
+                    generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.GastosMensuales, generalRequest);
 
                 }
                 else
                 {
-                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Gastos, generalRequest);
+                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.GastosMensuales, generalRequest);
                 }
 
-                CacheAdmin.Remove(HttpContext, ServicioEnum.Gastos);
+                CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
             }
 
-            gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
+            gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 
             ViewBag.Gastos = gastosResponse?.Gastos;
             
@@ -216,7 +216,7 @@ public class GastosController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> GastoFormAdd([FromForm] Gasto gasto, string action)
+    public async Task<IActionResult> GastosMensualesFormAdd([FromForm] Gasto gasto, string action)
     {
         this.Inicialized();
         // Procesa los datos del formulario que están en el objeto 'model'
@@ -239,7 +239,7 @@ public class GastosController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> GastoFormEdit([FromForm] Gasto gasto, string action)
+    public async Task<IActionResult> GastosMensualesFormEdit([FromForm] Gasto gasto, string action)
     {
         this.Inicialized();
         // Procesa los datos del formulario que están en el objeto 'model'
@@ -256,7 +256,7 @@ public class GastosController : BaseController
             case "openFormEdit":
 
                 // Obtener Gasto
-                gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.Gastos, keyValuePairs);
+                gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 
                 // Obtener Villeteras o Entidades
                 entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades, keyValuePairs);

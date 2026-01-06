@@ -17,8 +17,8 @@ namespace PersonalFinance.Models.Enums
         Transacciones = 3,
 
         [Api(Route = "bills", Cache = "cacheDataGastos")]
-        [Description("Gastos")]
-        Gastos = 4,
+        [Description("GastosMensuales")]
+        GastosMensuales = 4,
 
         [Api(Route = "typeofexpense", Cache = "cacheDataTipoGastos")]
         [Description("TipoGastos")]

@@ -19,7 +19,7 @@
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Message</h1>
-    <p>Listado de @ViewBag.Modulo.</p>
+    <p>Listado de @ViewBag.Modulo (@ViewBag.Year).</p>
 </div>
 
 <div class="tab-content">
@@ -37,10 +37,11 @@
                 <th scope="col">V</th>
                 <th scope="col">R</th>
                 <th scope="col">P</th>
+                <th scope="col">Activo</th>
                 <th colspan="2">
                     &nbsp;
                     <form method="post" asp-controller="Pedidos">
-                        <button type="submit" class="btn btn-primary" asp-controller="Gastos" asp-action="GastoFormAdd" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
+                        <button type="submit" class="btn btn-primary" asp-controller="GastosMensuales" asp-action="GastosMensualesFormAdd" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
                     </form>
                 </th>
             </tr>
@@ -62,7 +63,7 @@
                 var checkedV = entidad.Verificado ? "checked" : string.Empty;
                 var checkedR = entidad.Reservado ? "checked" : string.Empty;
                 var checkedP = entidad.Pagado ? "checked" : string.Empty;
-
+                var checkedA = entidad.Activo ? "checked" : string.Empty;
                 
                 
                 <tr>
@@ -77,15 +78,16 @@
                     <td id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
                     <td id="Reservado"><input id="CReservado" type="checkbox" @checkedR></td>
                     <td id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
+                    <td id="Activo"><input id="CPagado" type="checkbox" @checkedA></td>
                     <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                         <i class="fa" aria-hidden="false"></i>
                     </td>
                     <td>
                         <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
                             <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
-                            <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastoFormEdit" name="action" value="openFormEdit">Edit Entitty</button>
+                            <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensualesFormEdit" name="action" value="openFormEdit">Edit Entitty</button>
                             &nbsp;|&nbsp;
-                            <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastoFormEdit" name="action" value="openFormView">View Entitty</button>
+                            <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensualesFormEdit" name="action" value="openFormView">View Entitty</button>
                         </form>
                     </td>
                 </tr>

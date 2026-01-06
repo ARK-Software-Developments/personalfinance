@@ -199,7 +199,7 @@
         {
             switch (servicioEnum)
             {
-                case ServicioEnum.Gastos:
+                case ServicioEnum.GastosMensuales:
 
                     object gasto = new Gasto()
                     {
