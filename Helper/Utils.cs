@@ -14,7 +14,9 @@
     using PersonalFinance.Models.Tarjetas;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Net.Http;
     using System.Text.RegularExpressions;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     public static class Utils
     {
@@ -248,7 +250,7 @@
                         Octubre = decimal.Parse(form["Octubre"], cultureInfor),
                         Noviembre = decimal.Parse(form["Noviembre"], cultureInfor),
                         Diciembre = decimal.Parse(form["Diciembre"], cultureInfor),
-                        Ano = form.ContainsKey("Ano") ? int.Parse(form["Ano"]) : 2025,
+                        Ano = form.ContainsKey("Ano") ? int.Parse(form["Ano"]) : DateTime.Now.Year,
                         Cuotas = int.Parse(form["Cuotas"]),
                         Detalle = form["Detalle"].ToString(),
                         EntidadCompra = form["EntidadCompra"].ToString(),

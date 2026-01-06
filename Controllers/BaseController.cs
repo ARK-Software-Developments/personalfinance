@@ -37,7 +37,7 @@ namespace PersonalFinance.Controllers
 
         public BaseController() 
         {
-            this.keyValuePairs.Add("year", 2025);
+            this.keyValuePairs.Add("year", DateTime.Now.Year);
         }
 
         public void Inicialized()
@@ -47,7 +47,7 @@ namespace PersonalFinance.Controllers
             
             if (!this.keyValuePairs.ContainsKey("year"))
             {
-                this.keyValuePairs.Add("year", 2025);
+                this.keyValuePairs.Add("year", DateTime.Now.Year);
             }
         }
     }

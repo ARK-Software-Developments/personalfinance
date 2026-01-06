@@ -13,7 +13,7 @@
     var colorMayor = "background-color: #E89B3C;";
     var colorMenor = "background-color: #A7C282;";
 
-    var tituloMesAnterior =  Utils.LetraCapital((new DateTime(anoActual, mesActual - 1, 1)).ToString("MMMM", culturaEspañol));
+    var tituloMesAnterior = Utils.LetraCapital((new DateTime(anoActual, (mesActual == 1 ? 1 : mesActual - 1), 1)).ToString("MMMM", culturaEspañol));
     var tituloMesActual = Utils.LetraCapital((new DateTime(anoActual, mesActual, 1)).ToString("MMMM", culturaEspañol));
     var tituloMesSiguiente = Utils.LetraCapital((new DateTime(anoActual, mesActual == 12 ? 1 : mesActual + 1, 1)).ToString("MMMM", culturaEspañol));
 

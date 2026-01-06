@@ -164,7 +164,7 @@ public class GastosController : BaseController
                          new Parametro()
                          {
                              Nombre = "pYear",
-                             Valor = 2025,
+                             Valor = DateTime.Now.Year,
                          },
                          new Parametro()
                          {
