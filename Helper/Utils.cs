@@ -300,5 +300,29 @@
             var result = Regex.Replace(cadena.ToLower(), @"\b(\w)", m => m.Value.ToUpper());
             return Regex.Replace(result, @"(\s(of|in|by|and)|\'[st])\b", m => m.Value.ToLower(), RegexOptions.IgnoreCase);
         }
+
+        public static int GetYear(HttpContext httpContext, int selectYear = 0)
+        {
+            int year = 0;
+            if(selectYear == 0)
+            {
+                if (CacheAdmin.Existe(httpContext, "Year"))
+                {
+                    year = int.Parse(httpContext.Session.GetString("Year"));
+                }
+                else
+                {
+                    year = DateTime.Now.Year;
+                    httpContext.Session.SetString("Year", year.ToString());
+                }
+            }
+            else
+            {
+                year = selectYear;
+                httpContext.Session.SetString("Year", year.ToString());
+            }
+
+            return year;
+        }
     }
 }

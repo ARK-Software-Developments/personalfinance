@@ -4,6 +4,7 @@ namespace PersonalFinance.Controllers
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using PersonalFinance.Helper;
     using PersonalFinance.Models;
     using PersonalFinance.Models.Categorias;
     using PersonalFinance.Models.Entidades;
@@ -37,7 +38,7 @@ namespace PersonalFinance.Controllers
 
         public BaseController() 
         {
-            this.keyValuePairs.Add("year", DateTime.Now.Year);
+            //this.keyValuePairs.Add("year", Utils.GetYear(HttpContext));
         }
 
         public void Inicialized()
@@ -47,7 +48,7 @@ namespace PersonalFinance.Controllers
             
             if (!this.keyValuePairs.ContainsKey("year"))
             {
-                this.keyValuePairs.Add("year", DateTime.Now.Year);
+                this.keyValuePairs.Add("year", Utils.GetYear(HttpContext));
             }
         }
     }

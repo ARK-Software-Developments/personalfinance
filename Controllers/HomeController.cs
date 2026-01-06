@@ -2,6 +2,7 @@ namespace PersonalFinance.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Pedidos;
 using System.Diagnostics;
@@ -28,9 +29,15 @@ public class HomeController : Controller
     {
         _logger.LogInformation("Inicializando HomeController => Index()");
 
-        await this.CargarEstados();
+        var ano = this.HttpContext.Request.Query["area"];
+        ano = string.IsNullOrEmpty(ano) ? DateTime.Now.Year.ToString() : ano;
+        int year = Utils.GetYear(HttpContext, int.Parse(ano));
+        ViewBag.Year = year;
 
-        return View();
+       await this.CargarEstados();
+
+        //return View(ViewBag);
+        return await Task.FromResult<IActionResult>(View("Index", ViewBag));
     }
 
     private async Task CargarEstados()
