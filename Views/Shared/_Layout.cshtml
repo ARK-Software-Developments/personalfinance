@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using PersonalFinance.Helper
+@{
+    var year = Utils.GetYear(Context);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -45,6 +50,7 @@
                     </ul>
                 </div>
             </div>
+            <div>(Año contable: <span style="font-weight: bold; color: blue;">@year</span>)</div>
         </nav>
     </header>
     <div class="container">

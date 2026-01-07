@@ -158,7 +158,7 @@ public class ConsumosTarjetasController : BaseController
                          new Parametro()
                          {
                              Nombre = "pYear",
-                             Valor = DateTime.Now.Year,
+                             Valor = tarjetaConsumo.Ano,
                          },
                          new Parametro()
                          {
