@@ -9,6 +9,8 @@
     using PersonalFinance.Models.Entidades;
     using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Gastos;
+    using PersonalFinance.Models.IngresosMensuales;
+    using PersonalFinance.Models.IngresosTipo;
     using PersonalFinance.Models.Pagos;
     using PersonalFinance.Models.TarjetaConsumos;
     using PersonalFinance.Models.Tarjetas;
@@ -288,6 +290,31 @@
                     };
 
                     return (T)pago;
+
+                case ServicioEnum.Ingresos:
+                    object ingreso = new Ingreso()
+                    {
+                        Id = int.Parse(form["Id"]),
+                        Enero = ConvertirMonto(form["Enero"]),
+                        Febrero = ConvertirMonto(form["Febrero"]),
+                        Marzo = ConvertirMonto(form["Marzo"]),
+                        Abril = ConvertirMonto(form["Abril"]),
+                        Mayo = ConvertirMonto(form["Mayo"]),
+                        Junio = ConvertirMonto(form["Junio"]),
+                        Julio = ConvertirMonto(form["Julio"]),
+                        Agosto = ConvertirMonto(form["Agosto"]),
+                        Septiembre = ConvertirMonto(form["Septiembre"]),
+                        Octubre = ConvertirMonto(form["Octubre"]),
+                        Noviembre = ConvertirMonto(form["Noviembre"]),
+                        Diciembre = ConvertirMonto(form["Diciembre"]),
+                        Ano = form.ContainsKey("Ano") ? int.Parse(form["Ano"]) : DateTime.Now.Year,                        
+                        TipoIngreso = new IngresosTipo()
+                        {
+                            Id = int.Parse(form["TipoIngresoSel"]),
+                        },
+                    };
+
+                    return (T)ingreso;
 
                 default:
                     return (T)new object();
