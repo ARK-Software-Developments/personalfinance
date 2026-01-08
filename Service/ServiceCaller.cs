@@ -103,6 +103,7 @@ namespace PersonalFinance.Service
             HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(servicio, metodoEnum), content);
 
             // Ensure the request was successful
+            
             response.EnsureSuccessStatusCode();
 
             if (response.IsSuccessStatusCode)

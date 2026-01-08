@@ -9,6 +9,8 @@ namespace PersonalFinance.Controllers
     using PersonalFinance.Models.Categorias;
     using PersonalFinance.Models.Entidades;
     using PersonalFinance.Models.Gastos;
+    using PersonalFinance.Models.IngresosMensuales;
+    using PersonalFinance.Models.IngresosTipo;
     using PersonalFinance.Models.Pagos;
     using PersonalFinance.Models.Pedidos;
     using PersonalFinance.Models.TarjetaConsumos;
@@ -33,6 +35,8 @@ namespace PersonalFinance.Controllers
         public TransaccionesResponse transaccionesResponse;
         public TiposGastosResponse tiposGastosResponse;
         public PagosResponse pagosResponse;
+        public IngresosResponse ingresosResponse;
+        public IngresosTipoResponse ingresosTipoResponse;
 
         public HttpContext httpContext;
 
