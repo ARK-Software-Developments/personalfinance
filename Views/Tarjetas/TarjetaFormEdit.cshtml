@@ -1,13 +1,16 @@
 ﻿@using PersonalFinance.Models.Entidades
+@using PersonalFinance.Models.TarjetaConsumos
 @using PersonalFinance.Models.Tarjetas
+@using System.Globalization
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
-@{    
+@{
 
     Tarjeta tarjeta = ViewBag.Tarjeta;
     List<Entidad> entidades = ViewBag.Entidades;
+    List<TarjetaConsumoResumen> tarjetaConsumoResumen = ViewBag.TarjetaResumen;
     string modeView = ViewBag.ModeView ? "disabled" : "";
     var listaEntidades = new List<SelectListItem>();
     foreach (var e in entidades)
@@ -93,6 +96,46 @@
                 </tr>     
             </table>
             <p></p>
+            <table class="table table-secondary">
+                <thead>
+                    <tr>
+                        <th scope="col">Entidad de Compra</th>
+                        <th scope="col" align="right">Enero</th>
+                        <th scope="col" align="right">Febrero</th>
+                        <th scope="col" align="right">Marzo</th>
+                        <th scope="col" align="right">Abril</th>
+                        <th scope="col" align="right">Mayo</th>
+                        <th scope="col" align="right">Junio</th>
+                        <th scope="col" align="right">Julio</th>
+                        <th scope="col" align="right">Agosto</th>
+                        <th scope="col" align="right">Septiembre</th>
+                        <th scope="col" align="right">Octubre</th>
+                        <th scope="col" align="right">Noviembre</th>
+                        <th scope="col" align="right">Diciembre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in @tarjetaConsumoResumen)
+                    {
+                        <tr>
+                            <td scope="row">@detalle.EntidadCompra</td>
+                            <td scope="row" align="right">@detalle.Enero.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Febrero.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Marzo.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Abril.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Mayo.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Junio.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Julio.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Agosto.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Septiembre.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Octubre.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Noviembre.ToString("C", new CultureInfo("es-AR"))</td>
+                            <td scope="row" align="right">@detalle.Diciembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
         </div>
         <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="TarjetasCredito" name="action" value="actualizar">Actualizar</button>
     </form>

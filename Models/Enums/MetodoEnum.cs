@@ -21,5 +21,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "updatecreditcardspending")]
         ActualizarTransConsumo = 100,
+
+        [Api(Method = "resumenbycard")]
+        TarjetaConsumoResumen = 101,
     }
 }

@@ -37,6 +37,7 @@ namespace PersonalFinance.Controllers
         public PagosResponse pagosResponse;
         public IngresosResponse ingresosResponse;
         public IngresosTipoResponse ingresosTipoResponse;
+        public TarjetaConsumoResumenResponse tarjetaConsumoResumenResponse;
 
         public HttpContext httpContext;
 

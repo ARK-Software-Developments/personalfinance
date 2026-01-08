@@ -60,6 +60,38 @@ namespace PersonalFinance.Service
             }
         }
 
+        public async Task<T> ObtenerRegistros<T>(ServicioEnum servicio, GeneralRequest generalRequest, MetodoEnum metodo = MetodoEnum.Todos)
+        {
+            object apiResponse;
+
+            var jsonContent = JsonConvert.SerializeObject(generalRequest.Parametros);
+
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            // Hacer la solicitud GET a la API
+            HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(servicio, metodo), content);
+
+            // Ensure the request was successful
+            response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Leer el contenido de la respuesta como una cadena JSON
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                // Deserializar la cadena JSON a un objeto o lista de objetos
+                apiResponse = JsonConvert.DeserializeObject<T>(jsonResponse);
+
+                return (T)apiResponse;
+            }
+            else
+            {
+                // Manejar el error si la respuesta no fue exitosa
+                return (T)new object();
+            }
+        }
+
+
         public async Task<T> GenerarRegistro<T>(ServicioEnum servicio, GeneralRequest generalRequest)
         {
             object apiResponse;

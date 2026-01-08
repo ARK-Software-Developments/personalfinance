@@ -5,6 +5,7 @@ using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
+using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Service;
 using System.Diagnostics;
@@ -236,8 +237,29 @@ public class TarjetasController : BaseController
 
                 this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
 
+                this.generalRequest = new()
+                {
+                    Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pYear",
+                             Valor = Utils.GetYear(HttpContext),
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pCardsId",
+                             Valor = entidad.Id,
+                         },
+                     ],
+                };
+
+                this.tarjetaConsumoResumenResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResumenResponse>(ServicioEnum.ConsumosTarjetaResumen, this.generalRequest, MetodoEnum.TarjetaConsumoResumen);
+
+
                 ViewBag.ModeView = action == "openFormView" ? true : false;
                 ViewBag.Tarjeta = entidad;
+                ViewBag.TarjetaResumen = this.tarjetaConsumoResumenResponse.TarjetaConsumoResumenes;
                 ViewBag.Entidades = entidadesResponse.Entidades;
 
                 return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
