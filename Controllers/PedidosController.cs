@@ -171,19 +171,6 @@
                     case "editOrder":
                         
                         pedido.Estado = this.estadosResponse.Estados.Find(e => e.Id == EstadoSel);
-                        montoTotal = pedido.MontoTotal.Replace("$ ", string.Empty);
-                        decena = 0;
-                        decimales = 0;
-
-                        if (montoTotal.Contains(","))
-                        {
-                            decena = decimal.Parse(montoTotal.Split(",")[0]);
-                            decimales = decimal.Parse(montoTotal.Split(",")[1]);
-                        }
-                        else
-                        {
-                            decena = decimal.Parse(montoTotal);
-                        }
 
                         this.generalRequest = new()
                         {
@@ -201,8 +188,13 @@
                              },
                              new Parametro()
                              {
+                                 Nombre = "pFechaPagado",
+                                 Valor = pedido.FechaPagado?.ToString("yyyy-MM-dd"),
+                             },
+                             new Parametro()
+                             {
                                  Nombre = "pMontoTotal",
-                                 Valor = decimal.Parse($"{decena.ToString()},{decimales.ToString()}"),
+                                 Valor = Utils.ConvertirMonto(pedido.MontoTotal),
                              },
                              new Parametro()
                              {
