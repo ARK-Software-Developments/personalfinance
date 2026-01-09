@@ -35,11 +35,6 @@
             Text = e.Tipo,
         });
     }
-
-    void HandleChange(ChangeEventArgs args)
-    {
-        var algo = args;
-    }
 }
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -98,32 +93,32 @@
             <tr>
                 <td>
                     <div class="form-group">
-                        <span class="form-label">Entidad:</span>
-                        <select id="Entidad" name="Entidad" class="form-control" asp-items="@listaEntidades" onabort="CambioEntidad()" required>
+                        <span class="form-label">Recurso Del Pago:</span>
+                        <select id="RecursoDelPago" name="RecursoDelPago" class="form-control" asp-items="@listaEntidades" onabort="CambioEntidad()" required>
                         </select>
                         <span class="select-arrow"></span>
-                        <input id="EntidadSel" name="EntidadSel" class="form-control" value="@entidades[0].Id" hidden>
+                        <input id="RecursoDelPagoSel" name="RecursoDelPagoSel" class="form-control" value="@listaEntidades[0].Value" hidden>
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        <span class="form-label">Recurso Del Pago:</span>
-                        <select id="RecursoDelPago" name="RecursoDelPago" class="form-control" asp-for="@tiposGastos[0].Id" asp-items="@listaTipoGasto" onchange="CambioConsumoTarjeta()" required>
+                        <span class="form-label">Tipo de Gasto:</span>
+                        <select id="TipoDeGasto" name="TipoDeGasto" class="form-control" asp-items="@listaTipoGasto" onchange="CambioConsumoTarjeta()" required>
                         </select>
                         <span class="select-arrow"></span>
-                        <input id="RecursoDelPagoSel" name="RecursoDelPagoSel" class="form-control" value="@entidades[0].Id" hidden>
+                        <input id="TipoDeGastoSel" name="TipoDeGastoSel" class="form-control" value="@listaTipoGasto[0].Value" hidden>
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Monto Presupuestado:</span>
-                        <input id="MontoPresupuestado" name="MontoPresupuestado" class="form-control" type="number" value="" required>
+                        <input id="MontoPresupuestado" name="MontoPresupuestado" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="0" required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Monto Pagado:</span>
-                        <input id="MontoPagado" name="MontoPagado" class="form-control" type="number" value="" required>
+                        <input id="MontoPagado" name="MontoPagado" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="0" required />
                     </div>
                 </td>
             </tr>

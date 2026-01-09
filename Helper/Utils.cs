@@ -294,15 +294,15 @@
                         MontoPagado = ConvertirMonto(form["MontoPagado"]),
                         MontoPresupuestado = ConvertirMonto(form["MontoPresupuestado"]),
                         TipoDePago = form["TipoDePago"].ToString(),
-                        RecursoDelPago = form.ContainsKey("EntidadSel") ?
+                        RecursoDelPago = form.ContainsKey("RecursoDelPagoSel") ?
                         new Entidad()
                         {
-                            Id = int.Parse(form["EntidadSel"]),
+                            Id = int.Parse(form["RecursoDelPagoSel"]),
                         } : null,
-                        TipoDeGasto = form.ContainsKey("RecursoDelPagoSel") ?
+                        TipoDeGasto = form.ContainsKey("TipoDeGastoSel") ?
                         new TipoGasto()
                         {
-                            Id = int.Parse(form["RecursoDelPagoSel"]),
+                            Id = int.Parse(form["TipoDeGastoSel"]),
                         } : null,
                     };
 
