@@ -5,7 +5,18 @@
     ViewData["Title"] = ViewBag.Title;
     ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
     List<Ingreso> ingresos = ViewBag.Ingresos;
+
+    DateTime fechaActual = DateTime.Now;
+
+    string mesCompletoAnterior = Utils.LetraCapital(fechaActual.AddMonths(-1).ToString("MMMM", new CultureInfo("es-ES")));
+    string mesCompletoActual = Utils.LetraCapital(fechaActual.ToString("MMMM", new CultureInfo("es-ES")));
+    string mesCompletoSiguiente = Utils.LetraCapital(fechaActual.AddMonths(1).ToString("MMMM", new CultureInfo("es-ES")));
+    var mesActual = DateTime.Now.Month;
+    var colorMenor = "background-color: #E89B3C;";
+    var colorMayor = "background-color: #A7C282;";
+    var colorNeutro = "background-color: #F5EFC6;";
 }
+
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
@@ -15,11 +26,35 @@
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
 
-</script>
+ </script>
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Message</h1>
     <p>Listado de @ViewBag.Modulo.</p>
+</div> 
+
+<!-- Estructura del Modal -->
+<div class="modal fade" id="miModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de copia de Presupuesto Mensual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar la copia del Presupuesto del mes
+                @mesCompletoActual a @mesCompletoSiguiente ?.
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                    <input type="text" id="MesDesde" name="MesDesde" class="form-control" asp-for="@mesCompletoActual" value="@mesCompletoActual" hidden />
+                    <input type="text" id="MesHasta" name="MesHasta" class="form-control" asp-for="@mesCompletoSiguiente" value="@mesCompletoSiguiente" hidden />
+                    <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensuales" name="action" value="copyBudget">Confirmar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="tab-content">
@@ -29,12 +64,15 @@
                 <th scope="col">Id</th>
                 <th scope="col">Codigo</th>
                 <th scope="col">Detalle</th>
-                <th scope="col">Mes Anterior</th>
-                <th scope="col">Mes Actual</th>
-                <th colspan="2">
+                <th scope="col" style="text-align: right; padding-right: 5px;">@mesCompletoAnterior</th>
+                <th scope="col" style="text-align: right; padding-right: 5px;">@mesCompletoActual</th>
+                <th scope="col" style="text-align: right; padding-right: 5px;">@mesCompletoSiguiente</th>
+                <th scope="col" colspan="3" style="text-align: center;">
                     &nbsp;
                     <form method="post" asp-controller="@ViewBag.Modulo">
-                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensualesFormAdd" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
+                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensualesFormAdd" name="action" value="openFormAdd" title="Agregar nuevo item">Add new</button>
+                        &nbsp;|&nbsp;
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Copiar presupuesto mes anterior">Copy budget</button>
                     </form>
                 </th>
             </tr>
@@ -44,21 +82,52 @@
             {
                 var collapseN = "#collapse" + entidad.Id;
                 var collapse = "collapse" + entidad.Id;
-                var mesActual = DateTime.Now.Month;
-                //var colorMayor = "background-color: #E89B3C;";
-                //var colorMenor = "background-color: #A7C282;";
+               
+                var difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Ingreso>(entidad));
+                decimal gastoMesAnterior = difMeses["anterior"];
+                decimal gastoMesActual = difMeses["actual"];
+                decimal gastoMesSiguiente = difMeses["siguiente"];
 
-                
+                var colorActual = string.Empty;
+                if (gastoMesActual > gastoMesAnterior)
+                {
+                    colorActual = colorMayor;
+                }
+                else if (gastoMesAnterior > gastoMesActual)
+                {
+                    colorActual = colorMenor;
+                }
+                else
+                {
+                    colorActual = colorNeutro;
+                }
+
+                var colorSiguiente = string.Empty;
+                if (gastoMesSiguiente > gastoMesActual)
+                {
+                    colorSiguiente = colorMayor;
+                }
+                else if (gastoMesActual > gastoMesSiguiente)
+                {
+                    colorSiguiente = colorMenor;
+                }
+                else
+                {
+                    colorSiguiente = colorNeutro;
+                }
+
                 <tr>
                     <td scope="row" id="Id">@entidad.Id</td>
-                    <td scope="row" id="Codigo">@entidad.TipoIngreso.Codigo</td>
+                    <td scope="row" id="Codigo">@entidad.TipoIngreso.Codigo.ToString().PadLeft(4, '0')</td>
                     <td scope="row" id="Detalle">@entidad.TipoIngreso.Detalle</td>
-                    <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;">0</td>
-                    <td scope="row" id="MesActual" style="padding-right: 20px; text-align: right;">0</td>                  
-                    <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
+                    <td scope="row" id="@mesCompletoAnterior" style="padding-right: 20px; text-align: right;">@gastoMesAnterior.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="@mesCompletoActual" style="padding-right: 20px; text-align: right;@colorActual">@gastoMesActual.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="@mesCompletoSiguiente" style="padding-right: 20px; text-align: right;@colorSiguiente">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row"  data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
+                        &nbsp;
                         <i class="fa" aria-hidden="false"></i>
                     </td>
-                    <td>
+                    <td scope="row" style="text-align: center;">
                         <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
                             <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
                             <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensualesFormEdit" name="action" value="openFormEdit">Edit Entitty</button>
@@ -68,7 +137,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="9" id="@collapse" class="collapse acc" data-parent="#accordion">
+                    <td colspan="6" id="@collapse" class="collapse acc" data-parent="#accordion">
                         <div class="dv3">
                             <table class="table myaccordion table-hover" id="accordion">
                                 <thead>

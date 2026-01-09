@@ -57,8 +57,8 @@ public class IngresosMensualesController : BaseController
     {
         this.Inicialized();
         ViewBag.Modulo = Modulo;
-        ViewBag.Title = "Gastos";
-        ViewBag.Message = $"{Gestion} {Modulo}";
+        ViewBag.Title = $"{Gestion}";
+        ViewBag.Message = $"Gestión de {Modulo}";
 
         try
         {
@@ -162,6 +162,11 @@ public class IngresosMensualesController : BaseController
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Ingresos);
             }
+            else if(action == "copyBudget")
+            {
+                //generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Ingresos, generalRequest);
+                this.EjecutarProceso();
+            }
 
             ingresosResponse = await this.serviceCaller.ObtenerRegistros<IngresosResponse>(ServicioEnum.Ingresos, keyValuePairs);
 
@@ -186,6 +191,8 @@ public class IngresosMensualesController : BaseController
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
+        ViewBag.Title = $"{Gestion}";
+        ViewBag.Message = $"Gestión de {Modulo}";
         ViewBag.Action = action;
         ViewBag.Year = Utils.GetYear(HttpContext);
 
@@ -205,6 +212,8 @@ public class IngresosMensualesController : BaseController
         // Procesa los datos del formulario que están en el objeto 'model'
         // Por ejemplo, guarda en una base de datos  
         ViewBag.Modulo = Modulo;
+        ViewBag.Title = $"{Gestion}";
+        ViewBag.Message = $"Gestión de {Modulo}";
         ViewBag.Action = action;
 
         switch (action)
@@ -242,5 +251,11 @@ public class IngresosMensualesController : BaseController
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private async void EjecutarProceso()
+    {
+        var mesDesde = this.Request.Form["MesDesde"];
+        var mesHasta = this.Request.Form["MesHasta"];
     }
 }

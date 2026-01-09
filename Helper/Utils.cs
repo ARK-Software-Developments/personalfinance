@@ -17,6 +17,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
+    using System.Net.NetworkInformation;
     using System.Text.RegularExpressions;
     using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -108,6 +109,22 @@
                     meses.Octubre = tc!.Octubre;
                     meses.Noviembre = tc!.Noviembre;
                     meses.Diciembre = tc!.Diciembre;
+                    break;
+
+                case "Ingreso":
+                    var ing = ((T)entidad as Ingreso);
+                    meses.Enero = ing!.Enero;
+                    meses.Febrero = ing!.Febrero;
+                    meses.Marzo = ing!.Marzo;
+                    meses.Abril = ing!.Abril;
+                    meses.Mayo = ing!.Mayo;
+                    meses.Junio = ing!.Junio;
+                    meses.Julio = ing!.Julio;
+                    meses.Agosto = ing!.Agosto;
+                    meses.Septiembre = ing!.Septiembre;
+                    meses.Octubre = ing!.Octubre;
+                    meses.Noviembre = ing!.Noviembre;
+                    meses.Diciembre = ing!.Diciembre;
                     break;
             }
             
