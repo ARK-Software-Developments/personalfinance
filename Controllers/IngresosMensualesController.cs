@@ -3,6 +3,7 @@ namespace PersonalFinance.Controllers;
 #pragma warning disable CS8601 // Posible asignación de referencia nula
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Enums;
@@ -10,6 +11,7 @@ using PersonalFinance.Models.IngresosMensuales;
 using PersonalFinance.Models.IngresosTipo;
 using PersonalFinance.Models.TarjetaConsumos;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 
 public class IngresosMensualesController : BaseController
@@ -39,7 +41,7 @@ public class IngresosMensualesController : BaseController
         try
         {
             ingresosResponse = await this.serviceCaller.ObtenerRegistros<IngresosResponse>(ServicioEnum.Ingresos, keyValuePairs);
-
+            
             ViewBag.Ingresos = ingresosResponse.Ingresos;
 
             return await Task.FromResult<IActionResult>(View(ViewBag));
@@ -66,7 +68,7 @@ public class IngresosMensualesController : BaseController
             {
                 ingreso = Utils.MapRequest<Ingreso>(this.Request.Form, ServicioEnum.Ingresos);
                 
-                generalRequest = new()
+                this.generalRequest = new()
                 {
                     Parametros =
                         [
@@ -157,15 +159,16 @@ public class IngresosMensualesController : BaseController
                 }
                 else
                 {
-                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Ingresos, generalRequest);
+                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Ingresos, this.generalRequest);
                 }
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Ingresos);
             }
             else if(action == "copyBudget")
             {
-                //generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Ingresos, generalRequest);
-                this.EjecutarProceso();
+                generalDataResponse = await this.EjecutarProceso();
+
+                CacheAdmin.Remove(HttpContext, ServicioEnum.Ingresos);
             }
 
             ingresosResponse = await this.serviceCaller.ObtenerRegistros<IngresosResponse>(ServicioEnum.Ingresos, keyValuePairs);
@@ -253,9 +256,42 @@ public class IngresosMensualesController : BaseController
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private async void EjecutarProceso()
+    private async Task<GeneralDataResponse> EjecutarProceso()
     {
-        var mesDesde = this.Request.Form["MesDesde"];
-        var mesHasta = this.Request.Form["MesHasta"];
+        var anoDesde = int.Parse(this.Request.Form["AnoDesde"]);
+        var anoHasta = int.Parse(this.Request.Form["AnoHasta"]);
+        var mesDesde = int.Parse(this.Request.Form["MesDesde"]);
+        var mesHasta = int.Parse(this.Request.Form["MesHasta"]);
+
+        this.generalRequest = new()
+        {
+            Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pYearFrom",
+                             Valor = anoDesde,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pYearTo",
+                             Valor = anoHasta,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pMonthFrom",
+                             Valor = mesDesde,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pMonthTo",
+                             Valor = mesHasta,
+                         },
+                     ],
+        };
+
+        generalDataResponse = await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(ServicioEnum.IngresosCopiaPresupuesto, this.generalRequest, MetodoEnum.CopiarPresupuestoIngresos);
+
+        return this.generalDataResponse;
     }
 }

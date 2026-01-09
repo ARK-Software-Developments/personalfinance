@@ -59,5 +59,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "creditcardspending", Cache = "cacheDataConsumosTarjetaResumen")]
         [Description("ConsumosTarjetaResumen")]
         ConsumosTarjetaResumen = 14,
+
+        [Api(Route = "income", Cache = "cacheDataIngresosCopiaPresupuesto")]
+        [Description("ConsumosTarjetaResumen")]
+        IngresosCopiaPresupuesto = 15,
     }
 }

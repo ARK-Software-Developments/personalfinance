@@ -24,5 +24,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "resumenbycard")]
         TarjetaConsumoResumen = 101,
+
+        [Api(Method = "incomecopybudget")]
+        CopiarPresupuestoIngresos = 102,
     }
 }

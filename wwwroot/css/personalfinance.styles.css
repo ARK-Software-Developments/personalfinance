@@ -2029,6 +2029,7 @@ pre {
 .table-warning > th,
 .table-warning > td {
     background-color: #ffeeba;
+    width: 90%;
 }
 
     .table-warning th,
@@ -2036,15 +2037,18 @@ pre {
     .table-warning thead th,
     .table-warning tbody + tbody {
         border-color: #ffdf7e;
+        width: 90%;
     }
 
 .table-hover .table-warning:hover {
     background-color: #ffe8a1;
+    width: 90%;
 }
 
     .table-hover .table-warning:hover > td,
     .table-hover .table-warning:hover > th {
         background-color: #ffe8a1;
+        width: 90%;
     }
 
 .table-danger,
