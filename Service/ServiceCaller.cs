@@ -154,5 +154,37 @@ namespace PersonalFinance.Service
                 return (T)new object();
             }
         }
+
+        public async Task<T> EjecutarProceso<T>(ServicioEnum servicio, GeneralRequest generalRequest, MetodoEnum metodoEnum = MetodoEnum.Actualizar)
+        {
+            object apiResponse;
+
+            var jsonContent = JsonConvert.SerializeObject(generalRequest.Parametros);
+
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            // Hacer la solicitud GET a la API
+            HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(servicio, metodoEnum), content);
+
+            // Ensure the request was successful
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Leer el contenido de la respuesta como una cadena JSON
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                // Deserializar la cadena JSON a un objeto o lista de objetos
+                apiResponse = JsonConvert.DeserializeObject<T>(jsonResponse);
+
+                return (T)apiResponse;
+            }
+            else
+            {
+                // Manejar el error si la respuesta no fue exitosa
+                return (T)new object();
+            }
+        }
     }
 }
