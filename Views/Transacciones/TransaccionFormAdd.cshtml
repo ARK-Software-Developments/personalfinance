@@ -9,7 +9,7 @@
 @{
     
     List<Tarjeta> tarjetas = ViewBag.Tarjetas;
-
+    
     var listaTarjetas = new List<SelectListItem>();
     foreach (var e in tarjetas)
     {
@@ -107,6 +107,11 @@
                         <span class="form-label">Observaciones:</span>
                         <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="" required >
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="FromConsumoTC" name="FromConsumoTC" class="form-control" value="@ViewBag.FromConsumoTC.ToString()" hidden>
                 </td>
             </tr>
         </table>

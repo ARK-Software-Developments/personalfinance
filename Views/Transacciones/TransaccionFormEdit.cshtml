@@ -120,6 +120,15 @@
         </div>
         @if (string.IsNullOrEmpty(@modeView))
         {
+            <table class="table table-primary">
+                <tr>
+                    <div class="form-group">
+                        <span class="form-label">Id Consumo Tarjeta:</span>
+                        <input id="ConsumoTarjeta" name="ConsumoTarjeta" class="form-control" type="number" value="@transaccion.TarjetaConsumoId" readonly>
+                    </div>
+                </tr>
+            </table>
+           
             <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="Transacciones" name="action" value="actualizar">Actualizar</button>
         }
     </form>

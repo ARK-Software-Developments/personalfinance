@@ -64,6 +64,11 @@ public class TransaccionesController : BaseController
         ViewBag.Title = "Transacciones de Tarjetas";
         ViewBag.Message = $"{Gestion} {Modulo}";
 
+        bool bolFromConsumoTC = httpContext.Request.Form.ContainsKey("FromConsumoTC")
+                        && !string.IsNullOrEmpty(httpContext.Request.Form["FromConsumoTC"])
+                        && bool.Parse(httpContext.Request.Form["FromConsumoTC"])
+                        && httpContext.Request.Form.ContainsKey("ConsumoTarjeta");
+
         try
         {
             if (action == "generar" || action == "actualizar")
@@ -109,9 +114,14 @@ public class TransaccionesController : BaseController
                              Nombre = "pObservations",
                              Valor = transaccion.Observaciones,
                          },
+                         new Parametro()
+                         {
+                             Nombre = "pCreditCardsPendingId",
+                             Valor = int.Parse(httpContext.Request.Form["ConsumoTarjeta"].ToString()),
+                         },
                      ],
                 };
-
+                
                 if (action == "actualizar")
                 {
                     generalRequest.Parametros.Add(
@@ -122,39 +132,10 @@ public class TransaccionesController : BaseController
                         });
 
                     generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest);
-
                 }
                 else
                 {
-                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest);
-
-                    if (this.Request.Form.ContainsKey("ConsumoTarjeta"))
-                    {
-                        int ConsumoTarjetaId = int.Parse(this.Request.Form["ConsumoTarjeta"]);
-
-                        int transactionCodeId = int.Parse(generalDataResponse.Data[0].ToString());
-
-                        generalRequest = new()
-                        {
-                            Parametros =
-                        [
-                         new Parametro()
-                         {
-                             Nombre = "pId",
-                             Valor = ConsumoTarjetaId,
-                         },
-                         new Parametro()
-                         {
-                             Nombre = "pCreditCardsPendingId",
-                             Valor = transactionCodeId,
-                         }
-                        ],
-                        };
-
-                        await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest, MetodoEnum.ActualizarTransConsumo);
-                    }
-
-
+                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Transacciones, generalRequest);                    
                 }
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Transacciones);
@@ -165,6 +146,11 @@ public class TransaccionesController : BaseController
 
             ViewBag.Transacciones = transaccionesResponse?.Transacciones;
             
+            if (bolFromConsumoTC)
+            { 
+                return await Task.FromResult<IActionResult>(RedirectToAction("Index", "ConsumosTarjetas"));
+            }
+
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
 
         }
@@ -190,7 +176,8 @@ public class TransaccionesController : BaseController
 
         tarjetasResponse = await this.serviceCaller.ObtenerRegistros<TarjetasResponse>(ServicioEnum.Tarjetas);
 
-        ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("Id") ? int.Parse(this.Request.Form["Id"]) : 0;
+        ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("TarjetaConsumoId") ? int.Parse(this.Request.Form["TarjetaConsumoId"]) : 0;
+        ViewBag.FromConsumoTC = this.Request.Form.ContainsKey("fromConsumoTC") ? bool.Parse(this.Request.Form["fromConsumoTC"]) : false;
         ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaSel") ? int.Parse(this.Request.Form["TarjetaSel"]) : 0;
         
         ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
