@@ -1,0 +1,282 @@
+﻿@using PersonalFinance.Helper
+@{
+    var year = Utils.GetYear(Context);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Personal Finance</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/personalfinance.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Personal Finance</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-link">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="GastosMensuales" asp-action="Index">Gastos Mensuales</a>
+                        </li>
+                        <li class="nav-link">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="IngresosMensuales" asp-action="Index">Ingresos Mensuales</a>
+                        </li>
+                        <li class="nav-link">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
+                        </li>
+                        <li class="nav-link">|</li>                        
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Tarjetas" asp-action="Index">Tarjetas de Créditos</a>
+                        </li>
+                        <li class="nav-link">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Administracion" asp-action="Index">Administracion</a>
+                        </li>
+                        <li class="nav-link">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Pagos" asp-action="Index">Pagos</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div>(Año contable: <span style="font-weight: bold; color: blue;">@year</span>)</div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+
+        <p></p>
+        <p></p>
+
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/dashboard/index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0)">Dashboard</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Dashboard-active</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="row">
+
+            <div class="col-md-6 col-xl-2">
+                <div class="card bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2 text-white">Total Gasto Mensual</h6>
+                                <h3 class="text-white mb-0 f-w-300">$0,00</h3>
+                                <p class="text-white-50 mb-0">
+                                    <i class="ph ph-arrow-up me-1"></i>
+                                    +12.5% from last month
+                                </p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-2">
+                <div class="card bg-secondary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2 text-white">Total Ingreso Mensual</h6>
+                                <h3 class="text-white mb-0 f-w-300">$0,00</h3>
+                                <p class="text-white-50 mb-0">
+                                    <i class="ph ph-arrow-up me-1"></i>
+                                    +12.5% from last month
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-2">
+                <div class="card bg-success">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2 text-white">Total Ingreso Mensual</h6>
+                                <h3 class="text-white mb-0 f-w-300">$0,00</h3>
+                                <p class="text-white-50 mb-0">
+                                    <i class="ph ph-arrow-up me-1"></i>
+                                    +12.5% from last month
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-2">
+                <div class="card bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2 text-white">Total Ingreso Mensual</h6>
+                                <h3 class="text-white mb-0 f-w-300">$0,00</h3>
+                                <p class="text-white-50 mb-0">
+                                    <i class="ph ph-arrow-up me-1"></i>
+                                    +12.5% from last month
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-2">
+                <div class="card bg-info">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2 text-white">Total Ingreso Mensual</h6>
+                                <h3 class="text-white mb-0 f-w-300">$0,00</h3>
+                                <p class="text-white-50 mb-0">
+                                    <i class="ph ph-arrow-up me-1"></i>
+                                    +12.5% from last month
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-2">
+                <div class="card bg-danger">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2 text-white">Total Ingreso Mensual</h6>
+                                <h3 class="text-white mb-0 f-w-300">$0,00</h3>
+                                <p class="text-white-50 mb-0">
+                                    <i class="ph ph-arrow-up me-1"></i>
+                                    +12.5% from last month
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5>Alertar y Recordatorios</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="advanced-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+
+                                            <div>
+                                                <h6 class="mb-0">Sarah Johnson</h6>
+                                                <span class="text-muted f-12">sarah@example.com</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Premium Plan</h6>
+                                            <span class="text-muted f-12">Monthly Subscription</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-success">$299.00</h6>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completed</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">Jan 07, 2025</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">Michael Chen</h6>
+                                                <span class="text-muted f-12">michael@example.com</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Enterprise Plan</h6>
+                                            <span class="text-muted f-12">Annual Subscription</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-success">$2,999.00</h6>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Pending</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">Jan 06, 2025</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <p></p>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - Personal Finance v1.0.0
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
