@@ -4,12 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
+using PersonalFinance.Models.Balance;
+using PersonalFinance.Models.Entidades;
+using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Pedidos;
+using PersonalFinance.Models.TarjetaConsumos;
+using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 
-public class HomeController : Controller
+public class HomeController : BaseController
 {
     private readonly ILogger<HomeController> _logger;
     private readonly HttpClient _httpClient;
@@ -34,9 +39,44 @@ public class HomeController : Controller
         int year = Utils.GetYear(HttpContext, int.Parse(ano));
         ViewBag.Year = year;
 
-       await this.CargarEstados();
+        await this.CargarEstados();
 
-        //return View(ViewBag);
+        await this.CargarBalance();
+
+        var balance = this.balanceResponse.Balances;
+
+        var mesActual = DateTime.Now.Month;
+
+        var difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Balance>(balance.Find(b => b.Concepto == "PRESUPUESTO")));
+        decimal presupuestoAnterior = 2826819.19m;
+        decimal presupuestoActual = Utils.ConvertirMonto(difMeses["actual"].ToString());
+        decimal variacion = (presupuestoActual - presupuestoAnterior) / presupuestoAnterior * 100;
+        ViewBag.PresupuestoAnterior = presupuestoAnterior;
+        ViewBag.Presupuesto = presupuestoActual;
+        ViewBag.PresupuestoV = variacion < 0 ? $"{variacion.ToString("F2")}" : $"{variacion.ToString("F2")}";
+
+
+        difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Balance>(balance.Find(b => b.Concepto == "INGRESO")));
+        decimal ingresosAnterior = 2086174.60m;
+        decimal ingresoActual = Utils.ConvertirMonto(difMeses["actual"].ToString());
+        variacion = (ingresoActual - ingresosAnterior) / ingresosAnterior * 100;
+        ViewBag.IngresosAnterior = ingresosAnterior;
+        ViewBag.Ingresos = ingresoActual;
+        ViewBag.IngresosV = variacion < 0 ? $"{variacion.ToString("F2")}" : $"{variacion.ToString("F2")}";
+
+
+        difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Balance>(balance.Find(b => b.Concepto == "EGRESO")));
+        decimal gastosAnterior = 599500.00m;
+        decimal gastosActual = Utils.ConvertirMonto(difMeses["actual"].ToString());
+        variacion = (gastosActual - gastosAnterior) / gastosAnterior * 100;
+        ViewBag.GastosAnterior = gastosAnterior;
+        ViewBag.Gastos = gastosActual;
+        ViewBag.GastosV = variacion < 0 ? $"{variacion.ToString("F2")}" : $"{variacion.ToString("F2")}";
+
+
+        var balanceActual = ingresoActual - presupuestoActual;
+        ViewBag.BalanceActual = balanceActual;
+
         return await Task.FromResult<IActionResult>(View("Index", ViewBag));
     }
 
@@ -60,6 +100,26 @@ public class HomeController : Controller
             HttpContext.Session.SetString("dataEstados", JsonConvert.SerializeObject(estadosResponse));
         }
     }
+
+    private async Task CargarBalance()
+    {
+        // Hacer la solicitud GET a la API
+        this.keyValuePairs.Add("year", Utils.GetYear(HttpContext));
+        HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(ServicioEnum.Balance, MetodoEnum.Todos, keyValuePairs));
+
+        // Ensure the request was successful
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Leer el contenido de la respuesta como una cadena JSON
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserializar la cadena JSON a un objeto o lista de objetos
+            this.balanceResponse = JsonConvert.DeserializeObject<BalanceResponse>(jsonResponse);
+        }
+    }
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

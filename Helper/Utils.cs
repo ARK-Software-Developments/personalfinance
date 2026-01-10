@@ -6,6 +6,7 @@
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
     using PersonalFinance.Models;
+    using PersonalFinance.Models.Balance;
     using PersonalFinance.Models.Entidades;
     using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Gastos;
@@ -126,11 +127,28 @@
                     meses.Noviembre = ing!.Noviembre;
                     meses.Diciembre = ing!.Diciembre;
                     break;
+
+                case "Balance":
+                    var b = ((T)entidad as Balance);
+                    meses.Enero = b!.Enero;
+                    meses.Febrero = b!.Febrero;
+                    meses.Marzo = b!.Marzo;
+                    meses.Abril = b!.Abril;
+                    meses.Mayo = b!.Mayo;
+                    meses.Junio = b!.Junio;
+                    meses.Julio = b!.Julio;
+                    meses.Agosto = b!.Agosto;
+                    meses.Septiembre = b!.Septiembre;
+                    meses.Octubre = b!.Octubre;
+                    meses.Noviembre = b!.Noviembre;
+                    meses.Diciembre = b!.Diciembre;
+                    break;
             }
             
 
             return meses;
         }
+        
         public static Dictionary<string, decimal> CalcularDiferenciasMeses(int mesActual, Meses entidad)
         {
             Dictionary<string, decimal> result = new ();

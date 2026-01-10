@@ -10,7 +10,9 @@ namespace PersonalFinance.Service
         {
             if ((servicio == ServicioEnum.GastosMensuales 
                 || servicio == ServicioEnum.ConsumosTarjeta
-                || servicio == ServicioEnum.Ingresos) && metodo == MetodoEnum.Todos)
+                || servicio == ServicioEnum.Ingresos
+                || servicio == ServicioEnum.Balance) 
+                && metodo == MetodoEnum.Todos)
             {
                 string tmp = url.Replace("{0}", servicio.ToRoute()).Replace("{1}", metodo.ToMethod());
                 return $"{tmp}/{keyValuePairs["year"]}";

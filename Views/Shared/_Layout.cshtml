@@ -1,4 +1,6 @@
 ﻿@using PersonalFinance.Helper
+@using PersonalFinance.Models.Balance
+@using System.Globalization
 @{
     var year = Utils.GetYear(Context);
 }
@@ -60,7 +62,7 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
-        </main>
+        </main>        
     </div>
 
     <footer class="border-top footer text-muted">

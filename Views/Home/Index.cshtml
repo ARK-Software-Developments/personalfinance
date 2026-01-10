@@ -1,6 +1,14 @@
 ﻿@using PersonalFinance.Helper
+@using System.Globalization
 @{
     ViewData["Title"] = "Home Page";
+    var presupuesto = ViewBag.Presupuesto.ToString("C", new CultureInfo("es-AR"));
+    var ingresos = ViewBag.Ingresos.ToString("C", new CultureInfo("es-AR"));
+    var gastos = ViewBag.Gastos.ToString("C", new CultureInfo("es-AR"));
+    decimal balanceActual = ViewBag.BalanceActual;
+
+    var resultBalance = balanceActual < 0 ? "bg-danger" : (balanceActual > 0 ? "bg-success" : "bg-warning");
+
 }
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -25,4 +33,84 @@
             </div>
         </div>
     </nav>
+
+    <p></p>
+    <p></p>
+
+    <div class="row">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2 text-white">Total Presupuesto Mensual</h6>
+                            <h3 class="text-white mb-0 f-w-300">@presupuesto</h3>
+                            <p class="text-white-50 mb-0">
+                                <i class="ph ph-arrow-up me-1"></i>
+                                @ViewBag.PresupuestoV% from last month (@ViewBag.PresupuestoAnterior.ToString("C", new CultureInfo("es-AR")))
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2 text-white">Total Ingresos Mensual</h6>
+                            <h3 class="text-white mb-0 f-w-300">@ingresos</h3>
+                            <p class="text-white-50 mb-0">
+                                <i class="ph ph-arrow-up me-1"></i>
+                                @ViewBag.IngresosV% from last month (@ViewBag.IngresosAnterior.ToString("C", new CultureInfo("es-AR")))
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-secondary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2 text-white">Total Gastos Mensual</h6>
+                            <h3 class="text-white mb-0 f-w-300">@gastos</h3>
+                            <p class="text-white-50 mb-0">
+                                <i class="ph ph-arrow-up me-1"></i>
+                                @ViewBag.GastosV% from last month (@ViewBag.GastosAnterior.ToString("C", new CultureInfo("es-AR")))
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card @resultBalance">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2 text-white">Total Balance Mensual</h6>
+                            <h3 class="text-white mb-0 f-w-300">@ViewBag.BalanceActual.ToString("C", new CultureInfo("es-AR"))</h3>
+                            <p class="text-white-50 mb-0">
+                                <i class="ph ph-arrow-up me-1"></i>
+                                
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <p></p>
 </div>
