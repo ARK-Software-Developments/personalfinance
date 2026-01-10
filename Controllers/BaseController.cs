@@ -6,6 +6,7 @@ namespace PersonalFinance.Controllers
     using Microsoft.AspNetCore.Mvc;
     using PersonalFinance.Helper;
     using PersonalFinance.Models;
+    using PersonalFinance.Models.Balance;
     using PersonalFinance.Models.Categorias;
     using PersonalFinance.Models.Entidades;
     using PersonalFinance.Models.Gastos;
@@ -38,6 +39,8 @@ namespace PersonalFinance.Controllers
         public IngresosResponse ingresosResponse;
         public IngresosTipoResponse ingresosTipoResponse;
         public TarjetaConsumoResumenResponse tarjetaConsumoResumenResponse;
+        public BalanceResponse balanceResponse;
+
 
         public HttpContext httpContext;
 
