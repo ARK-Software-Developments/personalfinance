@@ -14,6 +14,39 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
 
+<script>
+
+    var textoCodificado = '@ViewBag.Notificaciones';
+    var temp = document.createElement('textarea');
+    temp.innerHTML = textoCodificado;
+    var textoDecodificado = temp.value;
+
+
+    sessionStorage.setItem('Notificaciones', textoDecodificado);
+
+    setTimeout(function() {
+            showNotifier();
+                }, 3000);
+
+    async function showNotifier() {
+        var textoDecodificado = sessionStorage.getItem('Notificaciones');
+        var datos = JSON.parse(textoDecodificado);
+
+        // Usamos for...of para poder usar await correctamente
+        for (const item of datos) {
+            notifier.show(item.Titulo, item.Mensaje, '', '~/../images/' + item.Imagen, 4500);
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos antes de la siguiente notificación
+        }
+
+        // Volvemos a llamar a la función después de 25 segundos
+        setTimeout(function() {
+            showNotifier();
+        }, 25000);
+    }
+
+            
+</script>
+
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Message</h1>
     <p>Bienvenido a Personal Finance.</p>
@@ -113,4 +146,13 @@
 
     </div>
     <p></p>
+
+   
+    
 </div>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/main.js"></script>
+<script src="~/js/notifier.js"></script>
