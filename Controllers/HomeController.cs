@@ -5,12 +5,15 @@ using Newtonsoft.Json;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Balance;
+using PersonalFinance.Models.Categorias;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
+using PersonalFinance.Models.Notificaciones;
 using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Service;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 
@@ -38,6 +41,10 @@ public class HomeController : BaseController
         ano = string.IsNullOrEmpty(ano) ? DateTime.Now.Year.ToString() : ano;
         int year = Utils.GetYear(HttpContext, int.Parse(ano));
         ViewBag.Year = year;
+
+
+        await this.CargarNotificaciones();
+        ViewBag.Notificaciones = JsonConvert.SerializeObject(this.notificacionResponse.Notificaciones);
 
         await this.CargarEstados();
 
@@ -117,6 +124,24 @@ public class HomeController : BaseController
 
             // Deserializar la cadena JSON a un objeto o lista de objetos
             this.balanceResponse = JsonConvert.DeserializeObject<BalanceResponse>(jsonResponse);
+        }
+    }
+
+    private async Task CargarNotificaciones()
+    {
+        // Hacer la solicitud GET a la API
+        HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(ServicioEnum.Notificacion, MetodoEnum.Todos));
+
+        // Ensure the request was successful
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Leer el contenido de la respuesta como una cadena JSON
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserializar la cadena JSON a un objeto o lista de objetos
+            this.notificacionResponse = JsonConvert.DeserializeObject<NotificacionesResponse>(jsonResponse);
         }
     }
 

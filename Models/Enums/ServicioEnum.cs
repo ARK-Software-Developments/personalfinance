@@ -67,5 +67,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "balance", Cache = "cacheDataBalance")]
         [Description("Balance")]
         Balance = 16,
+
+        [Api(Route = "notifications", Cache = "cacheDataNotificacion")]
+        [Description("Notificacion")]
+        Notificacion = 17,
     }
 }

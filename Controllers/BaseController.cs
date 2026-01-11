@@ -12,6 +12,7 @@ namespace PersonalFinance.Controllers
     using PersonalFinance.Models.Gastos;
     using PersonalFinance.Models.IngresosMensuales;
     using PersonalFinance.Models.IngresosTipo;
+    using PersonalFinance.Models.Notificaciones;
     using PersonalFinance.Models.Pagos;
     using PersonalFinance.Models.Pedidos;
     using PersonalFinance.Models.TarjetaConsumos;
@@ -40,7 +41,7 @@ namespace PersonalFinance.Controllers
         public IngresosTipoResponse ingresosTipoResponse;
         public TarjetaConsumoResumenResponse tarjetaConsumoResumenResponse;
         public BalanceResponse balanceResponse;
-
+        public NotificacionesResponse notificacionResponse;
 
         public HttpContext httpContext;
 
