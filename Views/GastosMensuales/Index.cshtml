@@ -5,6 +5,12 @@
     ViewData["Title"] = ViewBag.Title;
     ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
     List<Gasto> gastos = ViewBag.Gastos;
+
+    DateTime fechaActual = DateTime.Now;
+
+    string mesCompletoAnterior = Utils.LetraCapital(fechaActual.AddMonths(-1).ToString("MMMM", new CultureInfo("es-ES")));
+    string mesCompletoActual = Utils.LetraCapital(fechaActual.ToString("MMMM", new CultureInfo("es-ES")));
+    string mesCompletoSiguiente = Utils.LetraCapital(fechaActual.AddMonths(1).ToString("MMMM", new CultureInfo("es-ES")));
 }
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -30,9 +36,9 @@
                 <th scope="col">Id</th>
                 <th scope="col">Tipo de Gasto</th>
                 <th scope="col">Villetera</th>
-                <th scope="col">Mes Anterior</th>
-                <th scope="col">Mes Actual</th>
-                <th scope="col">Mes Siguiente</th>
+                <th scope="col">@mesCompletoAnterior</th>
+                <th scope="col">@mesCompletoActual</th>
+                <th scope="col">@mesCompletoSiguiente</th>
                 <th scope="col">Resumen</th>
                 <th scope="col">Observaciones</th>
                 <th scope="col">V</th>
