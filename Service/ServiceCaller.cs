@@ -91,7 +91,6 @@ namespace PersonalFinance.Service
             }
         }
 
-
         public async Task<T> GenerarRegistro<T>(ServicioEnum servicio, GeneralRequest generalRequest)
         {
             object apiResponse;
@@ -164,7 +163,7 @@ namespace PersonalFinance.Service
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             // Hacer la solicitud GET a la API
-            HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(servicio, metodoEnum), content);
+            HttpResponseMessage response = await this._httpClient.PutAsync(Microservicios.get(servicio, metodoEnum), content);
 
             // Ensure the request was successful
 

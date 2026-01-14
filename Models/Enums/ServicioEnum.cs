@@ -71,5 +71,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "notifications", Cache = "cacheDataNotificacion")]
         [Description("Notificacion")]
         Notificacion = 17,
+
+        [Api(Route = "process", Cache = "cacheDataConsumosTarjetaExecuteBudgetUpdate")]
+        [Description("ConsumosTarjetaExecuteBudgetUpdate")]
+        ConsumosTarjetaExecuteBudgetUpdate = 18,
     }
 }

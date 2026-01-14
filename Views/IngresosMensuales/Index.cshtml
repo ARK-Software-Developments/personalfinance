@@ -55,12 +55,12 @@
             <div class="modal-body">
                 Desea confirmar la copia del Presupuesto del Año/Mes?.
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: ruby;">
                 <form method="post" asp-controller="@ViewBag.Modulo">
-                    <div class="form-group">
-                        <table style="background-color: #ffeeba; position: center;">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
                             <tr>
-                                <td>
+                                <td style="width:50%;">
                                     <div class="form-group">
                                         <span class="form-label">Mes desde:</span>
                                         <select id="MesDesde" name="MesDesde" class="form-control" required>
@@ -79,7 +79,7 @@
                                         <span class="select-arrow"></span>
                                     </div>
                                 </td>
-                                <td>
+                                <td style ="width:50%;">
                                     <div class="form-group">
                                         <span class="form-label">Año Desde:</span>
                                         <input type="text" id="AnoDesde" name="AnoDesde" class="form-control" value="@anoAnterior" required />
@@ -87,7 +87,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                                <td style="width:50%;">
                                     <div class="form-group">
                                         <span class="form-label">Mes hasta:</span>
                                         <select id="MesHasta" name="MesHasta" class="form-control" required>
@@ -106,18 +106,19 @@
                                         <span class="select-arrow"></span>
                                     </div>
                                 </td>
-                                <td>
+                                <td style="width:50%;">
                                     <div class="form-group">
                                         <span class="form-label">Año hasta:</span>
                                         <input type="text" id="AnoHasta" name="AnoHasta" class="form-control" value="@anoActual" required />
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensuales" name="action" value="copyBudget">Confirmar</button></td>
+                            </tr>
                         </table>
                     </div>
-                    <p></p>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>                    
-                    <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensuales" name="action" value="copyBudget">Confirmar</button>
                 </form>
             </div>
         </div>
