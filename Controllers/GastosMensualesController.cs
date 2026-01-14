@@ -34,7 +34,7 @@ public class GastosMensualesController : BaseController
         _logger.LogInformation("Inicializando TarjetasController => Index()");
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
-        ViewBag.Message = $"Gestión de {Modulo}";
+        ViewBag.Message = $"Gestión de Presupuestos";
         @ViewBag.Year = Utils.GetYear(httpContext);
         try
         {

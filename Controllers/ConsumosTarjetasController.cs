@@ -193,6 +193,26 @@ public class ConsumosTarjetasController : BaseController
 
                 AsociarATransaccion(tarjetaConsumo.Id);
 
+            } else if(action == "executeBudgetUpdate")
+            {
+                this.generalRequest = new()
+                {
+                    Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pYear",
+                             Valor = int.Parse(this.Request.Form["Ano"]),
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pMonth",
+                             Valor = int.Parse(this.Request.Form["Mes"]),
+                         },
+                     ],
+                };
+
+                this.generalDataResponse = await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(ServicioEnum.ConsumosTarjetaExecuteBudgetUpdate, this.generalRequest, MetodoEnum.ExecuteBudgetUpdate);
             }
 
             tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);

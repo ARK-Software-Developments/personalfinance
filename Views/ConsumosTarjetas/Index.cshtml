@@ -9,6 +9,7 @@
     ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
     List<TarjetaConsumo> tarjetaConsumos = ViewBag.TarjetaConsumos;
     var anoActual = DateTime.Now.Year;
+    int anoAnterior = DateTime.Now.Year - 1;
     var mesActual = DateTime.Now.Month;
     var colorMayor = "background-color: #E89B3C;";
     var colorMenor = "background-color: #A7C282;";
@@ -17,6 +18,18 @@
     var tituloMesActual = Utils.LetraCapital((new DateTime(anoActual, mesActual, 1)).ToString("MMMM", culturaEspañol));
     var tituloMesSiguiente = Utils.LetraCapital((new DateTime(anoActual, mesActual == 12 ? 1 : mesActual + 1, 1)).ToString("MMMM", culturaEspañol));
 
+    List<SelectListItem> meses = new List<SelectListItem>();
+    for (int i = 1; i <= 12; i++)
+    {
+        // Formatea el número del mes para obtener el nombre (ej: "Enero", "Febrero")
+        string nombreMes = new DateTime(2023, i, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+        meses.Add(new SelectListItem 
+            { 
+            Text = nombreMes, 
+            Value = i.ToString(),
+            Selected = i == mesActual ? true : false,
+        });
+    }    
 }
 
 
@@ -33,6 +46,60 @@
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Message</h1>
     <p>Listado de @ViewBag.Modulo.</p>
+</div>
+
+<!-- Estructura del Modal -->
+<div class="modal fade" id="miModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de actualización del Presupuesto Mensual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar la copia del Presupuesto del Año/Mes?.
+            </div>
+            <div class="modal-footer" style="display: ruby;">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
+                            <tr>
+                                <td style="width:50%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Mes:</span>
+                                        <select id="Mes" name="Mes" class="form-control" required>
+                                            @foreach (var item in @meses)
+                                            {
+                                                if (item.Selected)
+                                                {
+                                                    <option value="@item.Value" selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="select-arrow"></span>
+                                    </div>
+                                </td>
+                                <td style="width:50%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Año:</span>
+                                        <input type="text" id="Ano" name="Ano" class="form-control" value="@anoActual" required />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="ConsumosTarjetas" name="action" value="executeBudgetUpdate">Confirmar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="tab-content">
@@ -52,7 +119,9 @@
                 <th colspan="2">
                     &nbsp;
                     <form method="post" asp-controller="@ViewBag.Modulo">
-                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="ConsumosTarjetasFormAdd" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
+                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="ConsumosTarjetasFormAdd" name="action" value="openFormAdd">Add new</button>
+                        &nbsp;|&nbsp;
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Ejecutar proceso actualizacion de presupuestos">Execute budget update</button>
                     </form>
                 </th>
             </tr>
