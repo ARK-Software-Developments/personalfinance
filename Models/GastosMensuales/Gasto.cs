@@ -1,9 +1,10 @@
 ﻿namespace PersonalFinance.Models.Gastos
 {
     using Microsoft.AspNetCore.Mvc;
+    using PersonalFinance.Models.Balance;
 
 #pragma warning disable CS8618
-    
+
     using PersonalFinance.Models.Entidades;
     using System.Text.Json.Serialization;
 
@@ -58,5 +59,7 @@
         /// Gets or sets propiedad Activo.
         /// </summary>
         public bool Activo { get; set; }
+
+        public List<CalendarioVencimiento>? Vencimientos { get; set; }
     }
 }

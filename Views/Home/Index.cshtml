@@ -1,10 +1,16 @@
 ﻿@using PersonalFinance.Helper
 @using System.Globalization
+@using PersonalFinance.Models.Gastos
 @{
     ViewData["Title"] = "Home Page";
     var presupuesto = ViewBag.Presupuesto.ToString("C", new CultureInfo("es-AR"));
     var ingresos = ViewBag.Ingresos.ToString("C", new CultureInfo("es-AR"));
     var gastos = ViewBag.Gastos.ToString("C", new CultureInfo("es-AR"));
+    var pendientePago = ViewBag.PendientePago.ToString("C", new CultureInfo("es-AR"));
+
+
+    List<Gasto> gastosMensualesPendientes = ViewBag.GastosMensualesPendientes;
+
     decimal balanceActual = ViewBag.BalanceActual;
 
     var resultBalance = balanceActual < 0 ? "bg-danger" : (balanceActual > 0 ? "bg-success" : "bg-warning");
@@ -99,25 +105,7 @@
                             <h3 class="text-white mb-0 f-w-300">@ingresos</h3>
                             <p class="text-white-50 mb-0">
                                 <i class="ph ph-arrow-up me-1"></i>
-                                @ViewBag.IngresosV% from last month (@ViewBag.IngresosAnterior.ToString("C", new CultureInfo("es-AR")))
-                            </p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xl-3">
-            <div class="card bg-secondary">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-2 text-white">Total Gastos Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@gastos</h3>
-                            <p class="text-white-50 mb-0">
-                                <i class="ph ph-arrow-up me-1"></i>
-                                @ViewBag.GastosV% from last month (@ViewBag.GastosAnterior.ToString("C", new CultureInfo("es-AR")))
+                                @ViewBag.IngresosV% from last month (@ViewBag.IngresosAnterior?.ToString("C", new CultureInfo("es-AR")))
                             </p>
                         </div>
 
@@ -132,7 +120,7 @@
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h6 class="mb-2 text-white">Total Balance Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@ViewBag.BalanceActual.ToString("C", new CultureInfo("es-AR"))</h3>
+                            <h3 class="text-white mb-0 f-w-300">@ViewBag.BalanceActual?.ToString("C", new CultureInfo("es-AR"))</h3>
                             <p class="text-white-50 mb-0">
                                 <i class="ph ph-arrow-up me-1"></i>
                                 
@@ -146,7 +134,139 @@
 
     </div>
     <p></p>
+    <div class="row">
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-wallet">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2 text-white">Total Gastos Mensual</h6>
+                            <h3 class="text-white mb-0 f-w-300">@gastos</h3>
+                            <p class="text-white-50 mb-0">
+                                <i class="ph ph-arrow-up me-1"></i>
+                                @ViewBag.GastosV% from last month (@ViewBag.GastosAnterior.ToString("C", new CultureInfo("es-AR")))
+                            </p>
+                        </div>
 
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-secondary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2 text-white">Pendiente de Pago Mensual</h6>
+                            <h3 class="text-white mb-0 f-w-300">@pendientePago</h3>
+                            <p class="text-white-50 mb-0">
+                                <i class="ph ph-arrow-up me-1"></i>
+                               
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p></p>
+    <p></p>
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5>Alertar y Recordatorios</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="advanced-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tipo/Categoria</th>
+                                <th scope="col">Resumen</th>
+                                <th scope="col">Observaciones</th>
+                                <th scope="col">Monto</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Fecha Vencimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var gmp in @gastosMensualesPendientes)
+                            {
+                                decimal saldoMesActual = 0;
+                                switch(DateTime.Now.Month)
+                                {
+                                    case 1: saldoMesActual = gmp.Enero; break;
+                                    case 2: saldoMesActual = gmp.Febrero; break;
+                                    case 3: saldoMesActual = gmp.Marzo; break;
+                                    case 4: saldoMesActual = gmp.Abril; break;
+                                    case 5: saldoMesActual = gmp.Mayo; break;
+                                    case 6: saldoMesActual = gmp.Junio; break;
+                                    case 7: saldoMesActual = gmp.Julio; break;
+                                    case 8: saldoMesActual = gmp.Agosto; break;
+                                    case 9: saldoMesActual = gmp.Septiembre; break;
+                                    case 10: saldoMesActual = gmp.Octubre; break;
+                                    case 11: saldoMesActual = gmp.Noviembre; break;
+                                    case 12: saldoMesActual = gmp.Diciembre; break;
+                                }
+                                <tr>
+                                    <td scope ="row">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">@gmp.TipoGasto?.Tipo?.Trim()</h6>
+                                                <span class="text-muted f-12">@gmp.TipoGasto?.Categoria?.Nombre.Trim()</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">@gmp.Resumen.Trim()</h6>
+                                                <span class="text-muted f-12"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">@gmp.Observaciones.Trim()</h6>
+                                                <span class="text-muted f-12"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0 text-success">@saldoMesActual.ToString("C", new CultureInfo("es-AR"))</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <span class="badge bg-warning" style="font-size: 100%;">Pending</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        @foreach (var vto in @gmp?.Vencimientos)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <span class="text-muted" style="font-size: 14px;">@vto.FechaVencimiento.GetValueOrDefault().ToString("dd/MM/yyy", new CultureInfo("es-ES"))</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
    
     
 </div>

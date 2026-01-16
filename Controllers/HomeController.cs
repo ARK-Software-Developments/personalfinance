@@ -8,6 +8,7 @@ using PersonalFinance.Models.Balance;
 using PersonalFinance.Models.Categorias;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
+using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Notificaciones;
 using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
@@ -48,6 +49,8 @@ public class HomeController : BaseController
 
         await this.CargarEstados();
 
+        await this.CargarCalendariosVencimientos();
+
         await this.CargarBalance();
 
         var balance = this.balanceResponse.Balances;
@@ -72,7 +75,7 @@ public class HomeController : BaseController
         ViewBag.IngresosV = variacion < 0 ? $"{variacion.ToString("F2")}" : $"{variacion.ToString("F2")}";
 
 
-        difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Balance>(balance.Find(b => b.Concepto == "EGRESO")));
+        difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Balance>(balance?.Find(b => b.Concepto == "EGRESO")));
         decimal gastosAnterior = 599500.00m;
         decimal gastosActual = Utils.ConvertirMonto(difMeses["actual"].ToString());
         variacion = (gastosActual - gastosAnterior) / gastosAnterior * 100;
@@ -83,6 +86,24 @@ public class HomeController : BaseController
 
         var balanceActual = ingresoActual - presupuestoActual;
         ViewBag.BalanceActual = balanceActual;
+
+        ViewBag.PendientePago = presupuestoActual - gastosActual;
+
+        await this.CargarGastosMensuales();
+
+        var g = this.gastosResponse?.Gastos?.FindAll(x => x.Pagado == false);
+
+        foreach (var i in g)
+        {
+            i.Vencimientos = [];
+            i.Vencimientos = this.calendarioVencimientoResponse?.CalendarioVencimientos?.FindAll(c => c.TipoGastoId == i.TipoGasto.Id);
+        }
+
+        ViewBag.GastosMensualesPendientes = g
+            .OrderBy(o => o.Vencimientos?
+                .Min(v => v.FechaVencimiento.GetValueOrDefault(DateTime.MaxValue)))
+            .ToList();
+
 
         return await Task.FromResult<IActionResult>(View("Index", ViewBag));
     }
@@ -145,6 +166,43 @@ public class HomeController : BaseController
         }
     }
 
+    private async Task CargarGastosMensuales()
+    {
+        // Hacer la solicitud GET a la API
+        this.keyValuePairs.Clear();
+        this.keyValuePairs.Add("year", Utils.GetYear(HttpContext));
+        HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(ServicioEnum.GastosMensuales, MetodoEnum.Todos, this.keyValuePairs));
+
+        // Ensure the request was successful
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Leer el contenido de la respuesta como una cadena JSON
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserializar la cadena JSON a un objeto o lista de objetos
+            this.gastosResponse = JsonConvert.DeserializeObject<GastosResponse>(jsonResponse);
+        }
+    }
+
+    private async Task CargarCalendariosVencimientos()
+    {
+        // Hacer la solicitud GET a la API
+        HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(ServicioEnum.CalendariosVencimientos, MetodoEnum.Todos));
+
+        // Ensure the request was successful
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Leer el contenido de la respuesta como una cadena JSON
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserializar la cadena JSON a un objeto o lista de objetos
+            this.calendarioVencimientoResponse = JsonConvert.DeserializeObject<CalendarioVencimientoResponse>(jsonResponse);
+        }
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
