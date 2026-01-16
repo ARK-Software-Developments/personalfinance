@@ -100,10 +100,10 @@ public class HomeController : BaseController
         }
 
         ViewBag.GastosMensualesPendientes = g
-            .OrderBy(o => o.Vencimientos?
-                .Min(v => v.FechaVencimiento.GetValueOrDefault(DateTime.MaxValue)))
+            .OrderBy(o => o.Vencimientos != null && o.Vencimientos.Any()
+                ? o.Vencimientos.Min(v => v.FechaVencimiento.GetValueOrDefault(DateTime.MaxValue))
+                : DateTime.MaxValue)
             .ToList();
-
 
         return await Task.FromResult<IActionResult>(View("Index", ViewBag));
     }
