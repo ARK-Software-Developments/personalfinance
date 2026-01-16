@@ -75,5 +75,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "process", Cache = "cacheDataConsumosTarjetaExecuteBudgetUpdate")]
         [Description("ConsumosTarjetaExecuteBudgetUpdate")]
         ConsumosTarjetaExecuteBudgetUpdate = 18,
+
+        [Api(Route = "duedatesschedules", Cache = "cacheDataCalendariosVencimientos")]
+        [Description("CalendariosVencimientos")]
+        CalendariosVencimientos = 19,
     }
 }

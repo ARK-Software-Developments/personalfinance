@@ -7259,6 +7259,16 @@ button.bg-secondary:focus {
     background-color: #545b62 !important;
 }
 
+.bg-wallet {
+    background-color: #7c4dff !important;
+}
+
+a.bg-wallet:hover, a.bg-wallet:focus,
+button.bg-wallet:hover,
+button.bg-wallet:focus {
+    background-color: #7c4dff !important;
+}
+
 .bg-success {
     background-color: #28a745 !important;
 }
