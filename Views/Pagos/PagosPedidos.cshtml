@@ -55,8 +55,8 @@
                     <td scope="row" id="CodigoRegistro">@pago.CodigoRegistro</td>
                     <td scope="row" id="RecursoDelPago">@pago.RecursoDelPago.Nombre-@pago.RecursoDelPago.Tipo</td>
                     <td scope="row" id="TipoDePago">@pago.TipoDePago</td>
-                    <td scope="row" id="MontoPagado">@pago.MontoPagado.ToString("C", new CultureInfo("es-AR"))</td>
                     <td scope="row" id="MontoPresupuestado">@pago.MontoPresupuestado.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" id="MontoPagado">@pago.MontoPagado.ToString("C", new CultureInfo("es-AR"))</td>                    
                     <td scope="row" id="MontoDesvio" align="center" style="@cssDesvPresup">
                         @desvPresup.ToString("C", new CultureInfo("es-AR"))
                     </td>
