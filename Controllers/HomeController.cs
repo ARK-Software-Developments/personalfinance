@@ -45,7 +45,8 @@ public class HomeController : BaseController
 
 
         await this.CargarNotificaciones();
-        ViewBag.Notificaciones = JsonConvert.SerializeObject(this.notificacionResponse.Notificaciones);
+        ViewBag.Notificaciones = this.notificacionResponse.Notificaciones;
+
 
         await this.CargarEstados();
 

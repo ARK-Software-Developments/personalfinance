@@ -1,4 +1,5 @@
-﻿@using PersonalFinance.Helper
+﻿@using Newtonsoft.Json
+@using PersonalFinance.Helper
 @using System.Globalization
 @using PersonalFinance.Models.Gastos
 @{
@@ -7,7 +8,7 @@
     var ingresos = ViewBag.Ingresos.ToString("C", new CultureInfo("es-AR"));
     var gastos = ViewBag.Gastos.ToString("C", new CultureInfo("es-AR"));
     var pendientePago = ViewBag.PendientePago.ToString("C", new CultureInfo("es-AR"));
-
+    var notificacionesJson = JsonConvert.SerializeObject(ViewBag.Notificaciones);
 
     List<Gasto> gastosMensualesPendientes = ViewBag.GastosMensualesPendientes;
 
@@ -22,7 +23,7 @@
 
 <script>
 
-    var textoCodificado = '@ViewBag.Notificaciones';
+    var textoCodificado = '@notificacionesJson';
     var temp = document.createElement('textarea');
     temp.innerHTML = textoCodificado;
     var textoDecodificado = temp.value;
@@ -37,10 +38,10 @@
     async function showNotifier() {
         var textoDecodificado = sessionStorage.getItem('Notificaciones');
         var datos = JSON.parse(textoDecodificado);
-
+        let ocultar = parseInt(datos.length + 4 + "000");
         // Usamos for...of para poder usar await correctamente
-        for (const item of datos) {
-            notifier.show(item.Titulo, item.Mensaje, '', '~/../images/' + item.Imagen, 4500);
+        for (const item of datos) {            
+            notifier.show(item.Titulo, item.Mensaje, '', '~/../images/' + item.Imagen, ocultar);
             await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos antes de la siguiente notificación
         }
 
@@ -75,19 +76,17 @@
 
     <p></p>
     <p></p>
-
     <div class="row">
 
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-xl-2">
             <div class="card bg-primary">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
+                        <div class="flex-sm-grow-1">
                             <h6 class="mb-2 text-white">Total Presupuesto Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@presupuesto</h3>
-                            <p class="text-white-50 mb-0">
-                                <i class="ph ph-arrow-up me-1"></i>
-                                @ViewBag.PresupuestoV% from last month (@ViewBag.PresupuestoAnterior.ToString("C", new CultureInfo("es-AR")))
+                            <h4 class="text-white mb-0 f-w-300">@presupuesto</h4>
+                            <p class="text-white-50 mb-0" title="@ViewBag.PresupuestoAnterior.ToString("C", new CultureInfo("es-AR"))">
+                                <h7>@ViewBag.PresupuestoV% from last month</h7>
                             </p>
                         </div>
 
@@ -96,16 +95,15 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-xl-2">
             <div class="card bg-info">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
+                        <div class="flex-sm-grow-1">
                             <h6 class="mb-2 text-white">Total Ingresos Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@ingresos</h3>
-                            <p class="text-white-50 mb-0">
-                                <i class="ph ph-arrow-up me-1"></i>
-                                @ViewBag.IngresosV% from last month (@ViewBag.IngresosAnterior?.ToString("C", new CultureInfo("es-AR")))
+                            <h4 class="text-white mb-0 f-w-300">@ingresos</h4>
+                            <p class="text-white-50 mb-0" title="@ViewBag.IngresosAnterior?.ToString("C", new CultureInfo("es-AR"))">
+                                <h7>@ViewBag.IngresosV% from last month</h7>
                             </p>
                         </div>
 
@@ -114,16 +112,15 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-xl-2">
             <div class="card @resultBalance">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
+                        <div class="flex-sm-grow-1">
                             <h6 class="mb-2 text-white">Total Balance Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@ViewBag.BalanceActual?.ToString("C", new CultureInfo("es-AR"))</h3>
+                            <h4 class="text-white mb-0 f-w-300">@ViewBag.BalanceActual?.ToString("C", new CultureInfo("es-AR"))</h4>
                             <p class="text-white-50 mb-0">
-                                <i class="ph ph-arrow-up me-1"></i>
-                                
+                                <h7>&nbsp;</h7>
                             </p>
                         </div>
 
@@ -132,37 +129,32 @@
             </div>
         </div>
 
-    </div>
-    <p></p>
-    <div class="row">
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-xl-2">
             <div class="card bg-wallet">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
+                        <div class="flex-sm-grow-1">
                             <h6 class="mb-2 text-white">Total Gastos Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@gastos</h3>
-                            <p class="text-white-50 mb-0">
-                                <i class="ph ph-arrow-up me-1"></i>
-                                @ViewBag.GastosV% from last month (@ViewBag.GastosAnterior.ToString("C", new CultureInfo("es-AR")))
+                            <h4 class="text-white mb-0 f-w-300">@gastos</h4>
+                            <p class="text-white-50 mb-0" title="@ViewBag.GastosAnterior.ToString("C", new CultureInfo("es-AR"))">
+                                <h7>@ViewBag.GastosV% from last month</h7>
                             </p>
                         </div>
 
                     </div>
                 </div>
             </div>
-        </div>  
-        
-        <div class="col-md-6 col-xl-3">
+        </div>
+
+        <div class="col-md-6 col-xl-2">
             <div class="card bg-secondary">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
+                        <div class="flex-sm-grow-1">
                             <h6 class="mb-2 text-white">Pendiente de Pago Mensual</h6>
-                            <h3 class="text-white mb-0 f-w-300">@pendientePago</h3>
+                            <h4 class="text-white mb-0 f-w-300">@pendientePago</h4>
                             <p class="text-white-50 mb-0">
-                                <i class="ph ph-arrow-up me-1"></i>
-                               
+                                <h7>&nbsp;</h7>
                             </p>
                         </div>
 
@@ -171,6 +163,54 @@
             </div>
         </div>
     </div>
+    <p></p>
+    <table class="table table-hover mb-0" id="advanced-table">
+        <thead>
+        </thead>
+        <tbody>
+            @foreach (var not in @ViewBag.Notificaciones)
+            {
+                DateTime fechaActual = DateTime.Now;
+                DateTime vto = @not.FechaNotificacion;
+
+                var css = "text-success mb-0";
+                var ico = "ok-48.png";
+
+                if (vto.Day < fechaActual.Day)
+                {
+                    css = "text-danger mb-0";
+                    ico = "high_priority-48.png";
+                }
+                else if (vto.Day == fechaActual.Day)
+                {
+                    css = "text-warning mb-0";
+                    ico = "medium_priority-48.png";
+                }
+                <tr>
+                    <td scope="row" align="left">
+                        <div class="flex-grow-1 ms-3">
+                            <div class="row g-1">
+                                <div class="col-6">
+                                    <h6 class="mb-0">@not.Titulo</h6>
+                                    <p class="text-muted mb-0"><small>@not.Mensaje</small></p>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <h6 class="mb-1">@not.FechaNotificacion?.ToString("dd/MM/yyy", new CultureInfo("es-ES"))</h6>
+                                    <p class="@css">
+                                        <img src="~/images/@ico" style="height: 25px; width: 25px" />
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+       
+    
+    
     <p></p>
     <p></p>
     <div class="col-xl">
