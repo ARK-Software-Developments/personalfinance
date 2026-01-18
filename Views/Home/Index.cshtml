@@ -6,6 +6,8 @@
     ViewData["Title"] = "Home Page";
     var presupuesto = ViewBag.Presupuesto.ToString("C", new CultureInfo("es-AR"));
     var presupuestoProximo = ViewBag.PresupuestoProximo.ToString("C", new CultureInfo("es-AR"));
+    var presupuestoDif = (ViewBag.PresupuestoProximo - ViewBag.Presupuesto).ToString("C", new CultureInfo("es-AR"));
+    var presupuestoDifPor = ((ViewBag.PresupuestoProximo - ViewBag.Presupuesto) / ViewBag.Presupuesto * 100).ToString("F2");
     var ingresos = ViewBag.Ingresos.ToString("C", new CultureInfo("es-AR"));
     var gastos = ViewBag.Gastos.ToString("C", new CultureInfo("es-AR"));
     var pendientePago = ViewBag.PendientePago.ToString("C", new CultureInfo("es-AR"));
@@ -16,6 +18,9 @@
     decimal balanceActual = ViewBag.BalanceActual;
 
     var resultBalance = balanceActual < 0 ? "bg-danger" : (balanceActual > 0 ? "bg-success" : "bg-warning");
+
+    var mesActual = Utils.LetraCapital(DateTime.Now.ToString("MMMM"));
+    var mesProximo = Utils.LetraCapital(DateTime.Now.AddMonths(1).ToString("MMMM"));
 
 }
 
@@ -83,7 +88,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Total Presupuesto Mensual</h6>
+                            <h6 class="mb-2 text-white">Total Presupuesto @mesActual</h6>
                             <h4 class="text-white mb-0 f-w-300">@presupuesto</h4>
                             <p class="text-white-50 mb-0" title="@ViewBag.PresupuestoAnterior.ToString("C", new CultureInfo("es-AR"))">
                                 <h7>@ViewBag.PresupuestoV% from last month</h7>
@@ -100,7 +105,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Total Ingresos Mensual</h6>
+                            <h6 class="mb-2 text-white">Total Ingresos @mesActual</h6>
                             <h4 class="text-white mb-0 f-w-300">@ingresos</h4>
                             <p class="text-white-50 mb-0" title="@ViewBag.IngresosAnterior?.ToString("C", new CultureInfo("es-AR"))">
                                 <h7>@ViewBag.IngresosV% from last month</h7>
@@ -117,7 +122,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Total Balance Mensual</h6>
+                            <h6 class="mb-2 text-white">Total Balance @mesActual</h6>
                             <h4 class="text-white mb-0 f-w-300">@ViewBag.BalanceActual?.ToString("C", new CultureInfo("es-AR"))</h4>
                             <p class="text-white-50 mb-0">
                                 <h7>&nbsp;</h7>
@@ -134,7 +139,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Total Gastos Mensual</h6>
+                            <h6 class="mb-2 text-white">Total Gastos @mesActual</h6>
                             <h4 class="text-white mb-0 f-w-300">@gastos</h4>
                             <p class="text-white-50 mb-0" title="@ViewBag.GastosAnterior.ToString("C", new CultureInfo("es-AR"))">
                                 <h7>@ViewBag.GastosV% from last month</h7>
@@ -151,7 +156,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Pendiente de Pago Mensual</h6>
+                            <h6 class="mb-2 text-white">Pendiente de Pago @mesActual</h6>
                             <h4 class="text-white mb-0 f-w-300">@pendientePago</h4>
                             <p class="text-white-50 mb-0">
                                 <h7>&nbsp;</h7>
@@ -168,10 +173,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Proximo Presupuesto Mensual</h6>
+                            <h6 class="mb-2 text-white">Proximo Presupuesto @mesProximo</h6>
                             <h4 class="text-white mb-0 f-w-300">@presupuestoProximo</h4>
                             <p class="text-white-50 mb-0">
-                                <h7>&nbsp;</h7>
+                                <h7>@presupuestoDif (@presupuestoDifPor%)</h7>
                             </p>
                         </div>
 
