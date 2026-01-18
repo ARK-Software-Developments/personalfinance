@@ -240,7 +240,7 @@
 
                     object gasto = new Gasto()
                     {
-                        Id = form.ContainsKey("Pagado") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
                         Enero = ConvertirMonto(form["Enero"]),
                         Febrero = ConvertirMonto(form["Febrero"]),
                         Marzo = ConvertirMonto(form["Marzo"]),
