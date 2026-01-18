@@ -49,11 +49,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Proceso de copia de Presupuesto Mensual</h5>
+                <h5 class="modal-title">Proceso de copia de Ingreso Mensual</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                Desea confirmar la copia del Presupuesto del Año/Mes?.
+                Desea confirmar la copia del Ingreso del Año/Mes?.
             </div>
             <div class="modal-footer" style="display: ruby;">
                 <form method="post" asp-controller="@ViewBag.Modulo">
@@ -115,7 +115,7 @@
                             </tr>
                             <tr>
                                 <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
-                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensuales" name="action" value="copyBudget">Confirmar</button></td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensuales" name="action" value="copyIncome">Confirmar</button></td>
                             </tr>
                         </table>
                     </div>
@@ -138,9 +138,9 @@
                 <th scope="col" colspan="3" style="text-align: center;">
                     &nbsp;
                     <form method="post" asp-controller="@ViewBag.Modulo">
-                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensualesFormAdd" name="action" value="openFormAdd" title="Agregar nuevo item">Add new</button>
+                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="IngresosMensualesFormAdd" name="action" value="openFormAdd" title="Agregar nuevo item">Nuevo Ingreso</button>
                         &nbsp;|&nbsp;
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Copiar presupuesto mes anterior">Copy budget</button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Copiar presupuesto mes anterior">Copiar Ingreso</button>
                     </form>
                 </th>
             </tr>
