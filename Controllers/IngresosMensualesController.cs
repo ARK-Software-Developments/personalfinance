@@ -164,9 +164,9 @@ public class IngresosMensualesController : BaseController
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Ingresos);
             }
-            else if(action == "copyBudget")
+            else if(action == "copyIncome")
             {
-                generalDataResponse = await this.EjecutarProceso();
+                generalDataResponse = await this.EjecutarProceso(ServicioEnum.IngresosCopiaMensual, MetodoEnum.CopiarIngresoMensual);
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Ingresos);
             }
@@ -254,44 +254,5 @@ public class IngresosMensualesController : BaseController
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-    private async Task<GeneralDataResponse> EjecutarProceso()
-    {
-        var anoDesde = int.Parse(this.Request.Form["AnoDesde"]);
-        var anoHasta = int.Parse(this.Request.Form["AnoHasta"]);
-        var mesDesde = int.Parse(this.Request.Form["MesDesde"]);
-        var mesHasta = int.Parse(this.Request.Form["MesHasta"]);
-
-        this.generalRequest = new()
-        {
-            Parametros =
-                        [
-                         new Parametro()
-                         {
-                             Nombre = "pYearFrom",
-                             Valor = anoDesde,
-                         },
-                         new Parametro()
-                         {
-                             Nombre = "pYearTo",
-                             Valor = anoHasta,
-                         },
-                         new Parametro()
-                         {
-                             Nombre = "pMonthFrom",
-                             Valor = mesDesde,
-                         },
-                         new Parametro()
-                         {
-                             Nombre = "pMonthTo",
-                             Valor = mesHasta,
-                         },
-                     ],
-        };
-
-        generalDataResponse = await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(ServicioEnum.IngresosCopiaPresupuesto, this.generalRequest, MetodoEnum.CopiarPresupuestoIngresos);
-
-        return this.generalDataResponse;
-    }
+    }    
 }

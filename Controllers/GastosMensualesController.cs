@@ -198,6 +198,12 @@ public class GastosMensualesController : BaseController
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
             }
+            else if (action == "copyBudget")
+            {
+                generalDataResponse = await this.EjecutarProceso(ServicioEnum.PresupuestosCopiaMensual, MetodoEnum.CopiarPresupuestoMensual);
+
+                CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
+            }
 
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 

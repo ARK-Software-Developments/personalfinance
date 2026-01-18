@@ -9,6 +9,7 @@ namespace PersonalFinance.Controllers
     using PersonalFinance.Models.Balance;
     using PersonalFinance.Models.Categorias;
     using PersonalFinance.Models.Entidades;
+    using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Gastos;
     using PersonalFinance.Models.IngresosMensuales;
     using PersonalFinance.Models.IngresosTipo;
@@ -59,6 +60,45 @@ namespace PersonalFinance.Controllers
             {
                 this.keyValuePairs.Add("year", Utils.GetYear(HttpContext));
             }
+        }
+
+        public async Task<GeneralDataResponse> EjecutarProceso(ServicioEnum servicioEnum, MetodoEnum metodoEnum)
+        {
+            var anoDesde = int.Parse(this.Request.Form["AnoDesde"]);
+            var anoHasta = int.Parse(this.Request.Form["AnoHasta"]);
+            var mesDesde = int.Parse(this.Request.Form["MesDesde"]);
+            var mesHasta = int.Parse(this.Request.Form["MesHasta"]);
+
+            this.generalRequest = new()
+            {
+                Parametros =
+                            [
+                             new Parametro()
+                         {
+                             Nombre = "pYearFrom",
+                             Valor = anoDesde,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pYearTo",
+                             Valor = anoHasta,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pMonthFrom",
+                             Valor = mesDesde,
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pMonthTo",
+                             Valor = mesHasta,
+                         },
+                     ],
+            };
+
+            generalDataResponse = await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(servicioEnum, this.generalRequest, metodoEnum);
+
+            return this.generalDataResponse;
         }
     }
 }

@@ -61,8 +61,8 @@ namespace PersonalFinance.Models.Enums
         ConsumosTarjetaResumen = 14,
 
         [Api(Route = "income", Cache = "cacheDataIngresosCopiaPresupuesto")]
-        [Description("ConsumosTarjetaResumen")]
-        IngresosCopiaPresupuesto = 15,
+        [Description("IngresosCopiaMensual")]
+        IngresosCopiaMensual = 15,
 
         [Api(Route = "balance", Cache = "cacheDataBalance")]
         [Description("Balance")]
@@ -79,5 +79,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "duedatesschedules", Cache = "cacheDataCalendariosVencimientos")]
         [Description("CalendariosVencimientos")]
         CalendariosVencimientos = 19,
+
+        [Api(Route = "bills", Cache = "cacheDataPresupuestosCopiaMensual")]
+        [Description("PresupuestosCopiaMensual")]
+        PresupuestosCopiaMensual = 20,
     }
 }
