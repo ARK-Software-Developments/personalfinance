@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Home Page";
     var presupuesto = ViewBag.Presupuesto.ToString("C", new CultureInfo("es-AR"));
+    var presupuestoProximo = ViewBag.PresupuestoProximo.ToString("C", new CultureInfo("es-AR"));
     var ingresos = ViewBag.Ingresos.ToString("C", new CultureInfo("es-AR"));
     var gastos = ViewBag.Gastos.ToString("C", new CultureInfo("es-AR"));
     var pendientePago = ViewBag.PendientePago.ToString("C", new CultureInfo("es-AR"));
@@ -162,6 +163,23 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-6 col-xl-2">
+            <div class="card bg-brand-color-2">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-sm-grow-1">
+                            <h6 class="mb-2 text-white">Proximo Presupuesto Mensual</h6>
+                            <h4 class="text-white mb-0 f-w-300">@presupuestoProximo</h4>
+                            <p class="text-white-50 mb-0">
+                                <h7>&nbsp;</h7>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <p></p>
     <table class="table table-hover mb-0" id="advanced-table">
@@ -208,9 +226,6 @@
         </tbody>
     </table>
 
-       
-    
-    
     <p></p>
     <p></p>
     <div class="col-xl">
@@ -307,8 +322,6 @@
             </div>
         </div>
     </div>
-   
-    
 </div>
 
 <script src="~/js/jquery.min.js"></script>
