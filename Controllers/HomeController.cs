@@ -64,6 +64,7 @@ public class HomeController : BaseController
         decimal variacion = (presupuestoActual - presupuestoAnterior) / presupuestoAnterior * 100;
         ViewBag.PresupuestoAnterior = presupuestoAnterior;
         ViewBag.Presupuesto = presupuestoActual;
+        ViewBag.PresupuestoProximo = Utils.ConvertirMonto(difMeses["siguiente"].ToString()); ;
         ViewBag.PresupuestoV = variacion < 0 ? $"{variacion.ToString("F2")}" : $"{variacion.ToString("F2")}";
 
 
