@@ -329,7 +329,7 @@
                 case ServicioEnum.Ingresos:
                     object ingreso = new Ingreso()
                     {
-                        Id = int.Parse(form["Id"]),
+                        Id = form.ContainsKey("Id") ? int.Parse(form["Id"]) : 0,
                         Enero = ConvertirMonto(form["Enero"]),
                         Febrero = ConvertirMonto(form["Febrero"]),
                         Marzo = ConvertirMonto(form["Marzo"]),

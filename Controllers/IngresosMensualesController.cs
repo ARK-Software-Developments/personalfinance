@@ -3,15 +3,12 @@ namespace PersonalFinance.Controllers;
 #pragma warning disable CS8601 // Posible asignación de referencia nula
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.IngresosMensuales;
 using PersonalFinance.Models.IngresosTipo;
-using PersonalFinance.Models.TarjetaConsumos;
 using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http;
 
 public class IngresosMensualesController : BaseController
@@ -163,6 +160,23 @@ public class IngresosMensualesController : BaseController
                 }
 
                 CacheAdmin.Remove(HttpContext, ServicioEnum.Ingresos);
+
+
+                // actualiza balance de ingresos mensuales
+                this.generalRequest = new()
+                {
+                    Parametros =
+                        [
+                         new Parametro()
+                         {
+                             Nombre = "pYear",
+                             Valor = ingreso.Ano,
+                         },
+                     ],
+                };
+
+                await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(ServicioEnum.Ingresos, generalRequest, MetodoEnum.ExecuteUpdateMonthlyIncomes);
+
             }
             else if(action == "copyIncome")
             {
