@@ -1,0 +1,144 @@
+﻿@using Newtonsoft.Json
+@using PersonalFinance.Helper
+@using System.Globalization
+@using PersonalFinance.Models.Balance
+@using PersonalFinance.Models.Gastos
+@{
+
+    List<Balance> balances = ViewBag.Balances;
+
+    var labelsArray = (string[])ViewBag.BalancesLabels; // Convertir a array
+    var labels = string.Join(",", labelsArray.Select(l => $"'{l}'"));
+    var valoresArray = (int[])ViewBag.BalancesVals.ToArray(); // Convertir a array
+    var strBalances = string.Join(",", valoresArray);
+
+    valoresArray = (int[])ViewBag.PresupuestosVals.ToArray(); // Convertir a array
+    var strPresupuestos = string.Join(",", valoresArray);
+
+    valoresArray = (int[])ViewBag.IngresosVals.ToArray(); // Convertir a array
+    var strIngresos = string.Join(",", valoresArray);
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="text-center">
+    <div class="row">
+        <table class="table myaccordion table-hover" id="accordion">
+            <thead>
+                <tr style="padding-right: 20px; text-align: right;">
+                    <th scope="col">Concepto</th>
+                    <th scope="col">Enero</th>
+                    <th scope="col">Febrero</th>
+                    <th scope="col">Marzo</th>
+                    <th scope="col">Abril</th>
+                    <th scope="col">Mayo</th>
+                    <th scope="col">Junio</th>
+                    <th scope="col">Julio</th>
+                    <th scope="col">Agosto</th>
+                    <th scope="col">Septiembre</th>
+                    <th scope="col">Octubre</th>
+                    <th scope="col">Noviembre</th>
+                    <th scope="col">Diciembre</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entidad in @balances)
+                {
+                    var colorFila = "#E6F5F0";
+
+                    switch (entidad.Concepto)
+                    {
+                        case "PRESUPUESTO":
+                            colorFila = "#F2EDD3";
+                            break;
+
+                        case "INGRESO":
+                            colorFila = "#E4F5ED";
+                            break;
+
+                        case "BALANCE":
+                            colorFila = "#E6F2D3";
+                            break;
+                    }
+
+                    <tr style="padding-right: 20px; text-align: right; background-color: @colorFila">
+                        <td scope="row" id="Id">@entidad.Concepto</td>
+                        <td scope="row" id="Enero">@entidad.Enero.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Febrero">@entidad.Febrero.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Marzo">@entidad.Marzo.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Abril">@entidad.Abril.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Mayo">@entidad.Mayo.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Junio">@entidad.Junio.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Julio">@entidad.Julio.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Agosto">@entidad.Agosto.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Septiembre">@entidad.Septiembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Octubre">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Noviembre">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Diciembre">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p></p>
+    <p></p>
+    <div class="row">
+        
+        <!-- -->
+
+        <canvas id="miGrafico" style="height: 500px; border: 2px;"></canvas>
+
+        <script>
+            const ctx = document.getElementById('miGrafico').getContext('2d');
+            const miGrafico = new Chart(ctx, {
+                type: 'bar', // Puedes usar 'bar' 'line', 'pie', etc.
+                data: {
+                    labels: [@Html.Raw(labels)],
+                    datasets: [{
+                        label: 'Balance',
+                        data: [@Html.Raw(strBalances)],
+                        backgroundColor: '#1abc9c',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Presupuesto',
+                        data: [@Html.Raw(strPresupuestos)],
+                        backgroundColor: '#4680ff',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Ingresos',
+                        data: [@Html.Raw(strIngresos)],
+                        backgroundColor: '#3ebfea',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+
+
+        <!-- -->
+
+    </div>
+
+</div>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/main.js"></script>
+<script src="~/js/notifier.js"></script>
