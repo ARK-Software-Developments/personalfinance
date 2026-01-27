@@ -25,10 +25,53 @@
             Selected = e.Id == tarjetaConsumo.Tarjeta?.Id ? true : false,
         });
     }
+
 }
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<script>
+    function CambioTarjeta() {
+                console.log($('#Tarjeta :selected').val());
+
+                $('#TarjetaSel').val($('#Tarjeta :selected').val());
+            };
+
+    function CalularCuotas() {
+        console.log($('#Cuotas').val());
+        let fechaActual = new Date();
+        let numeroMes = fechaActual.getMonth() + 1;
+        
+        let lstMeses = [];
+
+        for (let i = 1; i <= 12; i++) {
+            // Crear una fecha con el mes actual
+            let fecha = new Date(2023, i - 1, 1); // i-1 porque en JS los meses van de 0 a 11
+            // Obtener el nombre del mes en español
+            let nombreMes = fecha.toLocaleString('es-ES', { month: 'long' });
+            // Agregar al array como objeto con Text y Value
+            lstMeses.push({ Text: nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1), Value: i.toString() });
+        }
+
+        //console.log(lstMeses);
+
+        let cuotas = parseInt($('#Cuotas').val());
+        let mesesDisabled = lstMeses.filter(x => x.Value >= numeroMes);
+
+        mesesDisabled.forEach(mes => {            
+            if (cuotas == 0 || mes.Value <= cuotas){
+                $('#'+mes.Text).prop('disabled', false);
+            }
+            else{
+                $('#'+mes.Text).prop('disabled', true);
+            }        
+        });
+
+
+            };
+
+</script>
 
 <div class="text-center">
     <h1 class="display-5">@ViewBag.Title</h1>
@@ -62,7 +105,7 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Cuotas:</span>
-                        <input id="Cuotas" name="Cuotas" class="form-control" type="number" min="0.00" max="1000000.00" step="0.01" value="0" required />
+                        <input id="Cuotas" name="Cuotas" class="form-control" type="number" min="0.00" max="1000000.00" step="0.01" value="" onchange="CalularCuotas()" required />
                     </div>
                 </td>
                 <td colspan="2">
@@ -82,37 +125,37 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Enero:</span>
-                        <input id="Enero" name="Enero" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Enero" name="Enero" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Febrero:</span>
-                        <input id="Febrero" name="Febrero" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Febrero" name="Febrero" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Marzo:</span>
-                        <input id="Marzo" name="Marzo" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Marzo" name="Marzo" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Abril:</span>
-                        <input id="Abril" name="Abril" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Abril" name="Abril" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Mayo:</span>
-                        <input id="Mayo" name="Mayo" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Mayo" name="Mayo" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Junio:</span>
-                        <input id="Junio" name="Junio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Junio" name="Junio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>                
             </tr>
@@ -120,37 +163,37 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Julio:</span>
-                        <input id="Julio" name="Julio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Julio" name="Julio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Agosto:</span>
-                        <input id="Agosto" name="Agosto" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Agosto" name="Agosto" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Septiembre:</span>
-                        <input id="Septiembre" name="Septiembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Septiembre" name="Septiembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Octubre:</span>
-                        <input id="Octubre" name="Octubre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Octubre" name="Octubre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Noviembre:</span>
-                        <input id="Noviembre" name="Noviembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Noviembre" name="Noviembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <span class="form-label">Diciembre:</span>
-                        <input id="EnDiciembreero" name="Diciembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" required />
+                        <input id="Diciembre" name="Diciembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="" disabled required />
                     </div>
                 </td>
             </tr>
