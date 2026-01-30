@@ -22,4 +22,14 @@
     <EditorConfigFiles Remove="D:\IT\ark\PersonalFinancialProject\personalfinance\.editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\AbstractModelExternder.cs" Link="Models\Link\AbstractModelExternder.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Prestamo.cs" Link="Models\Link\Prestamo.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\PrestamoDetalle.cs" Link="Models\Link\PrestamoDetalle.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Link\" />
+  </ItemGroup>
+
 </Project>

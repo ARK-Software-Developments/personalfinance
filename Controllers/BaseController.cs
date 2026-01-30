@@ -16,6 +16,7 @@ namespace PersonalFinance.Controllers
     using PersonalFinance.Models.Notificaciones;
     using PersonalFinance.Models.Pagos;
     using PersonalFinance.Models.Pedidos;
+    using PersonalFinance.Models.Prestamos;
     using PersonalFinance.Models.TarjetaConsumos;
     using PersonalFinance.Models.Tarjetas;
     using PersonalFinance.Models.Transacciones;
@@ -44,6 +45,7 @@ namespace PersonalFinance.Controllers
         public BalanceResponse balanceResponse;
         public NotificacionesResponse notificacionResponse;
         public CalendarioVencimientoResponse calendarioVencimientoResponse;
+        public PrestamoResponse prestamoResponse;
 
         public HttpContext httpContext;
 

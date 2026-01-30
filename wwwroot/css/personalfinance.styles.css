@@ -11830,3 +11830,56 @@ h1, h2, h3, h4, h5,
     border-left-color: #e74c3c;
 }
 
+
+.datatable-top {
+    padding: 0 4px 14px
+}
+
+    .datatable-top > div {
+        margin: 0 0 5px
+    }
+
+.datatable-bottom {
+    padding: 14px 4px 0
+}
+
+.card.table-card .datatable-top {
+    padding-top: 0
+}
+
+.card.table-card .datatable-top, .card.table-card .datatable-bottom {
+    padding-left: var(--bs-card-spacer-x);
+    padding-right: var(--bs-card-spacer-x)
+}
+
+.datatable-top > nav:first-child, .datatable-top > div:first-child {
+    float: left
+}
+
+.datatable-bottom > nav:first-child, .datatable-bottom > div:first-child {
+    float: left
+}
+
+.datatable-top > nav:last-child, .datatable-top > div:last-child {
+    float: left
+}
+
+
+.datatable-bottom > nav:last-child, .datatable-bottom > div:last-child {
+    float: left
+}
+
+.dataTable-dropdown label {
+    display: flex;
+    align-items: center;
+    width: 230px;
+    white-space: nowrap
+}
+
+    .dataTable-dropdown label select {
+        margin-right: 8px
+    }
+
+.datatable-selector {
+    padding: 6px;
+}
