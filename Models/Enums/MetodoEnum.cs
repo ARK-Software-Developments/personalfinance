@@ -36,5 +36,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "updatemonthlyincomes")]
         ExecuteUpdateMonthlyIncomes = 105,
+
+        [Api(Method = "monthlybalance")]
+        IniciarBalanceMensual = 106,
     }
 }

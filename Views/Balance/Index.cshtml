@@ -17,11 +17,82 @@
 
     valoresArray = (int[])ViewBag.IngresosVals.ToArray(); // Convertir a array
     var strIngresos = string.Join(",", valoresArray);
+
+    int mesActual = DateTime.Now.Month;
+    List<SelectListItem> meses = new List<SelectListItem>();
+    for (int i = 1; i <= 12; i++)
+    {
+        // Formatea el número del mes para obtener el nombre (ej: "Enero", "Febrero")
+        string nombreMes = new DateTime(2023, i, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+        meses.Add(new SelectListItem 
+            { 
+                Text = nombreMes, 
+                Value = i.ToString(),
+                Selected = i == mesActual ? true : false,
+            });
+    }
+
+    int anoActual = DateTime.Now.Year;
+   
 }
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Estructura del Modal -->
+<div class="modal fade" id="miModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de Balance Mensual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar asentar el Balance?.
+            </div>
+            <div class="modal-footer" style="display: ruby;">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
+                            <tr>
+                                <td style="width:50%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Mes:</span>
+                                        <select id="Mes" name="Mes" class="form-control" required>
+                                            @foreach (var item in @meses)
+                                            {
+                                                if (item.Selected)
+                                                {
+                                                    <option value="@item.Value" selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="select-arrow"></span>
+                                    </div>
+                                </td>
+                                <td style="width:50%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Año:</span>
+                                        <input type="text" id="Ano" name="Ano" class="form-control" value="@anoActual" required />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="Balance" asp-action="Index" name="action" value="asentar">Confirmar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="text-center">
     <div class="row">
@@ -134,7 +205,8 @@
         <!-- -->
 
     </div>
-
+    <p></p>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Proceso de cierre del mes">Asentar Balance</button>
 </div>
 
 <script src="~/js/jquery.min.js"></script>

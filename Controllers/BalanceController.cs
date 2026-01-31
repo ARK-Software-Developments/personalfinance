@@ -22,16 +22,39 @@ public class BalanceController : BaseController
     public BalanceController(ILogger<BalanceController> logger)
     {
         _logger = logger;
-        HttpClientHandler httpClientHandler = new()
+        this.httpClientHandler = new()
         {
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
         };
         _httpClient = new HttpClient(httpClientHandler);
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromForm] Balance balance, string action)
     {
+        this.Inicialized();
+
         int year = Utils.GetYear(HttpContext);
+
+        if(!string.IsNullOrEmpty(action) && action == "asentar")
+        {
+            this.generalRequest = new GeneralRequest()
+            {
+                Parametros = [
+                    new Parametro()
+                    {
+                        Nombre = "pYear",
+                        Valor = int.Parse(this.Request.Form["Ano"].ToString()),
+                    },
+                    new Parametro()
+                    {
+                        Nombre = "pMonth",
+                        Valor = int.Parse(this.Request.Form["Mes"].ToString()),
+                    }
+                    ]
+            };
+            
+            await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(ServicioEnum.Procesos, this.generalRequest, MetodoEnum.IniciarBalanceMensual);
+        }
 
         await this.CargarBalance(year);
 
@@ -109,7 +132,6 @@ public class BalanceController : BaseController
     private async Task CargarBalance(int year)
     {
         // Hacer la solicitud GET a la API
-        this.keyValuePairs.Add("year", year);
         HttpResponseMessage response = await this._httpClient.GetAsync(Microservicios.get(ServicioEnum.Balance, MetodoEnum.Todos, keyValuePairs));
 
         // Ensure the request was successful

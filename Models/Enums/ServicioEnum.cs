@@ -87,5 +87,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "loans", Cache = "cacheDataPrestamos")]
         [Description("Prestamos")]
         Prestamos = 21,
+
+        [Api(Route = "process", Cache = "cacheDataProcesos")]
+        [Description("Procesos")]
+        Procesos = 22,
     }
 }
