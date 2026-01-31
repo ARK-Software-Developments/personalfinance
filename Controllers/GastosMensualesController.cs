@@ -1,6 +1,7 @@
 namespace PersonalFinance.Controllers;
 
 #pragma warning disable CS8601 // Posible asignación de referencia nula
+#pragma warning disable CS8600 // Se va a convertir un literal nulo o un posible valor nulo en un tipo que no acepta valores NULL
 
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinance.Helper;
@@ -9,6 +10,7 @@ using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Service;
+using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
 using System.Net.Http;
 
@@ -35,12 +37,41 @@ public class GastosMensualesController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de Presupuestos";
-        @ViewBag.Year = Utils.GetYear(httpContext);
+        ViewBag.Year = Utils.GetYear(httpContext);
+        ViewBag.Buscar = "Buscar";
+
+        List<Gasto> gastos = [];
+
         try
         {
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
+            gastos = gastosResponse.Gastos;
 
-            ViewBag.Gastos = gastosResponse.Gastos;
+            if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
+            {
+                string search = this.Request.Query["search"].ToString().ToUpper();
+
+                gastos = this.gastosResponse.Gastos?.FindAll(x => !string.IsNullOrEmpty(x.TipoGasto.Tipo) && x.TipoGasto.Tipo.Contains(search));
+
+                if (gastos?.Count == 0)
+                {
+                    gastos = this.gastosResponse.Gastos?.FindAll(x => !string.IsNullOrEmpty(x.Villetera.Tipo) && x.Villetera.Tipo.Contains(search));
+                }
+
+                if (gastos?.Count == 0)
+                {
+                    gastos = this.gastosResponse.Gastos?.FindAll(x => !string.IsNullOrEmpty(x.Resumen) && x.Resumen.Contains(search));
+                }
+
+                if (gastos?.Count == 0)
+                {
+                    gastos = this.gastosResponse.Gastos?.FindAll(x => !string.IsNullOrEmpty(x.Observaciones) && x.Observaciones.Contains(search));
+                }
+
+                ViewBag.Buscar = "Limpiar";
+            }
+
+            ViewBag.Gastos = gastos;
 
             return View(ViewBag);
 

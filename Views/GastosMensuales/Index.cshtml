@@ -123,122 +123,150 @@
 </div>
 
 <div class="tab-content">
-    <table class="table myaccordion table-hover" id="accordion">
-        <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Tipo de Gasto</th>
-                <th scope="col">Villetera</th>
-                <th scope="col">@mesCompletoAnterior</th>
-                <th scope="col">@mesCompletoActual</th>
-                <th scope="col">@mesCompletoSiguiente</th>
-                <th scope="col">Resumen</th>
-                <th scope="col">Observaciones</th>
-                <th scope="col">V</th>
-                <th scope="col">R</th>
-                <th scope="col">P</th>
-                <th scope="col">Activo</th>
-                <th colspan="2">
-                    &nbsp;
-                    <form method="post" asp-controller="Pedidos">
-                        <button type="submit" class="btn btn-primary" asp-controller="GastosMensuales" asp-action="GastosMensualesFormAdd" name="action" value="openFormAdd">Nuevo Presupuesto</button>
-                        &nbsp;|&nbsp;
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Copiar presupuesto mes anterior">Copiar Presupuesto</button>
-                    </form>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var entidad in @gastos)
-            {
-                var collapseN = "#collapse" + entidad.Id;
-                var collapse = "collapse" + entidad.Id;
-                var mesActual = DateTime.Now.Month;
-                var colorMayor = "background-color: #E89B3C;";
-                var colorMenor = "background-color: #A7C282;";
+    <div class="row">
+        <div class="datatable-top">
+            <div class="datatable-search">
 
-                var difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Gasto>(entidad));
+                <form method="get">
+                    @if (@ViewBag.Buscar == "Buscar")
+                    {
+                        <input type="text"
+                               name="search"
+                               value=""
+                               placeholder="Buscar..."
+                               class="form-control"
+                               style="width: 250px; display:inline-block;" />
+                    }
 
-                decimal gastoMesAnterior = difMeses["anterior"];
-                decimal gastoMesActual = difMeses["actual"];
-                decimal gastoMesSiguiente = difMeses["siguiente"];
-                var checkedV = entidad.Verificado ? "checked" : string.Empty;
-                var checkedR = entidad.Reservado ? "checked" : string.Empty;
-                var checkedP = entidad.Pagado ? "checked" : string.Empty;
-                var checkedA = entidad.Activo ? "checked" : string.Empty;
-                
-                
+
+                    <button type="submit" class="btn btn-primary">
+                        @ViewBag.Buscar
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <p></p>
+    <div class="row">
+        <table class="table myaccordion table-hover" id="accordion">
+            <thead>
                 <tr>
-                    <td scope="row" id="Id">@entidad.Id</td>
-                    <td scope="row" id="Tipo">@entidad.TipoGasto.Tipo</td>
-                    <td scope="row" id="Villetera">@entidad.Villetera.Tipo</td>
-                    <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;">@gastoMesAnterior.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td scope="row" id="MesActual" style="padding-right: 20px; text-align: right;@(@gastoMesActual >= @gastoMesAnterior ? @colorMayor : @colorMenor)">@gastoMesActual.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td scope="row" id="MesSiguiente" style="padding-right: 20px; text-align: right;@(@gastoMesSiguiente >= @gastoMesActual ? @colorMayor : @colorMenor)">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td scope="row" id="Resumen">@entidad.Resumen.ToUpper()</td>
-                    <td scope="row" id="Observaciones">@entidad.Observaciones</td>
-                    <td scope="row" id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
-                    <td scope="row" id="Reservado"><input id="CReservado" type="checkbox" @checkedR></td>
-                    <td scope="row" id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
-                    <td scope="row" id="Activo"><input id="CPagado" type="checkbox" @checkedA></td>
-                    <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
-                        <i class="fa" aria-hidden="false"></i>
-                    </td>
-                    <td scope ="row">
-                        <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
-                            <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
-                            <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensualesFormEdit" name="action" value="openFormEdit">Edit Entitty</button>
+                    <th scope="col">Id</th>
+                    <th scope="col">Tipo de Gasto</th>
+                    <th scope="col">Villetera</th>
+                    <th scope="col">@mesCompletoAnterior</th>
+                    <th scope="col">@mesCompletoActual</th>
+                    <th scope="col">@mesCompletoSiguiente</th>
+                    <th scope="col">Resumen</th>
+                    <th scope="col">Observaciones</th>
+                    <th scope="col">V</th>
+                    <th scope="col">R</th>
+                    <th scope="col">P</th>
+                    <th scope="col">Activo</th>
+                    <th colspan="2">
+                        &nbsp;
+                        <form method="post" asp-controller="Pedidos">
+                            <button type="submit" class="btn btn-primary" asp-controller="GastosMensuales" asp-action="GastosMensualesFormAdd" name="action" value="openFormAdd">Nuevo Presupuesto</button>
                             &nbsp;|&nbsp;
-                            <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensualesFormEdit" name="action" value="openFormView">View Entitty</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Copiar presupuesto mes anterior">Copiar Presupuesto</button>
                         </form>
-                    </td>
+                    </th>
                 </tr>
-                <tr>
-                    <td colspan="9" id="@collapse" class="collapse acc" data-parent="#accordion">
-                        <div class="dv3">
-                            <table class="table myaccordion table-hover" id="accordion">
-                                <thead>
-                                    <tr style ="padding-right: 20px; text-align: right;">
-                                        <th scope="col">Enero</th>
-                                        <th scope="col">Febrero</th>
-                                        <th scope="col">Marzo</th>
-                                        <th scope="col">Abril</th>
-                                        <th scope="col">Mayo</th>
-                                        <th scope="col">Junio</th>
-                                        <th scope="col">Julio</th>
-                                        <th scope="col">Agosto</th>
-                                        <th scope="col">Septiembre</th>
-                                        <th scope="col">Octubre</th>
-                                        <th scope="col">Noviembre</th>
-                                        <th scope="col">Diciembre</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="padding-right: 20px; text-align: right;">
-                                        <th scope="row" id="Enero" style="@(@mesActual == 1 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Enero.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Febrero" style="@(@mesActual == 2 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Febrero.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Marzo" style="@(@mesActual == 3 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Marzo.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Abril" style="@(@mesActual == 4 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Abril.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Mayo" style="@(@mesActual == 5 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Mayo.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Junio" style="@(@mesActual == 6 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Junio.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Julio" style="@(@mesActual == 7 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Julio.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Agosto" style="@(@mesActual == 8 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Agosto.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Septiembre" style="@(@mesActual == 9 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Septiembre.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Octubre" style="@(@mesActual == 10 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Noviembre" style="@(@mesActual == 11 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</th>
-                                        <th scope="row" id="Diciembre" style="@(@mesActual == 12 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</th>
+            </thead>
+            <tbody>
+                @foreach (var entidad in @gastos)
+                {
+                    var collapseN = "#collapse" + entidad.Id;
+                    var collapse = "collapse" + entidad.Id;
+                    var mesActual = DateTime.Now.Month;
+                    var colorMayor = "background-color: #E89B3C;";
+                    var colorMenor = "background-color: #A7C282;";
 
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                        </div>
-                        
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    var difMeses = Utils.CalcularDiferenciasMeses(mesActual, Utils.CargarMeses<Gasto>(entidad));
+
+                    decimal gastoMesAnterior = difMeses["anterior"];
+                    decimal gastoMesActual = difMeses["actual"];
+                    decimal gastoMesSiguiente = difMeses["siguiente"];
+                    var checkedV = entidad.Verificado ? "checked" : string.Empty;
+                    var checkedR = entidad.Reservado ? "checked" : string.Empty;
+                    var checkedP = entidad.Pagado ? "checked" : string.Empty;
+                    var checkedA = entidad.Activo ? "checked" : string.Empty;
+
+
+                    <tr>
+                        <td scope="row" id="Id">@entidad.Id</td>
+                        <td scope="row" id="Tipo">@entidad.TipoGasto.Tipo</td>
+                        <td scope="row" id="Villetera">@entidad.Villetera.Tipo</td>
+                        <td scope="row" id="MesAnterior" style="padding-right: 20px; text-align: right;">@gastoMesAnterior.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="MesActual" style="padding-right: 20px; text-align: right;@(@gastoMesActual >= @gastoMesAnterior ? @colorMayor : @colorMenor)">@gastoMesActual.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="MesSiguiente" style="padding-right: 20px; text-align: right;@(@gastoMesSiguiente >= @gastoMesActual ? @colorMayor : @colorMenor)">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Resumen">@entidad.Resumen.ToUpper()</td>
+                        <td scope="row" id="Observaciones">@entidad.Observaciones</td>
+                        <td scope="row" id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
+                        <td scope="row" id="Reservado"><input id="CReservado" type="checkbox" @checkedR></td>
+                        <td scope="row" id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
+                        <td scope="row" id="Activo"><input id="CPagado" type="checkbox" @checkedA></td>
+                        <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
+                            <i class="fa" aria-hidden="false"></i>
+                        </td>
+                        <td scope="row">
+                            <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
+                                <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />
+                                <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensualesFormEdit" name="action" value="openFormEdit">Edit Entitty</button>
+                                &nbsp;|&nbsp;
+                                <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensualesFormEdit" name="action" value="openFormView">View Entitty</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" id="@collapse" class="collapse acc" data-parent="#accordion">
+                            <div class="dv3">
+                                <table class="table myaccordion table-hover" id="accordion">
+                                    <thead>
+                                        <tr style="padding-right: 20px; text-align: right;">
+                                            <th scope="col">Enero</th>
+                                            <th scope="col">Febrero</th>
+                                            <th scope="col">Marzo</th>
+                                            <th scope="col">Abril</th>
+                                            <th scope="col">Mayo</th>
+                                            <th scope="col">Junio</th>
+                                            <th scope="col">Julio</th>
+                                            <th scope="col">Agosto</th>
+                                            <th scope="col">Septiembre</th>
+                                            <th scope="col">Octubre</th>
+                                            <th scope="col">Noviembre</th>
+                                            <th scope="col">Diciembre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="padding-right: 20px; text-align: right;">
+                                            <th scope="row" id="Enero" style="@(@mesActual == 1 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Enero.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Febrero" style="@(@mesActual == 2 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Febrero.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Marzo" style="@(@mesActual == 3 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Marzo.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Abril" style="@(@mesActual == 4 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Abril.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Mayo" style="@(@mesActual == 5 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Mayo.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Junio" style="@(@mesActual == 6 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Junio.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Julio" style="@(@mesActual == 7 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Julio.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Agosto" style="@(@mesActual == 8 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Agosto.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Septiembre" style="@(@mesActual == 9 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Septiembre.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Octubre" style="@(@mesActual == 10 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Noviembre" style="@(@mesActual == 11 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</th>
+                                            <th scope="row" id="Diciembre" style="@(@mesActual == 12 ? "background-color: #3CE8DF;" : string.Empty)">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</th>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
 </div>
 
 <p></p>
