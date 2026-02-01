@@ -239,8 +239,7 @@ public class GastosMensualesController : BaseController
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 
             ViewBag.Gastos = gastosResponse?.Gastos;
-            
-            //return View("Index");
+            ViewBag.Buscar = "Buscar";
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
 
         }
