@@ -46,6 +46,8 @@ namespace PersonalFinance.Controllers
         public NotificacionesResponse notificacionResponse;
         public CalendarioVencimientoResponse calendarioVencimientoResponse;
         public PrestamoResponse prestamoResponse;
+        public InversionesResponse inversionesResponse;
+        public InversionTipoResponse inversionTipoResponse;
 
         public HttpContext httpContext;
 

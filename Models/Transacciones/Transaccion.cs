@@ -1,10 +1,10 @@
 ﻿namespace PersonalFinance.Models.Transacciones
 {
-    using Newtonsoft.Json;
-    using PersonalFinance.Models.Tarjetas;
 #pragma warning disable CS8618
 
-    using System.Text.Json.Serialization;
+    using Newtonsoft.Json;
+    using PersonalFinance.Models.Tarjetas;
+    using PersonalFinanceApiNetCoreModel;
 
     /// <summary>
     /// Clase Transaccion.

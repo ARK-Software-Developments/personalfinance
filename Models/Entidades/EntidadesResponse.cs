@@ -2,7 +2,7 @@
 namespace PersonalFinance.Models.Entidades;
 
 using Newtonsoft.Json;
-
+using PersonalFinanceApiNetCoreModel;
 public class EntidadesResponse : GeneralResponse
 {
     public EntidadesResponse() { }

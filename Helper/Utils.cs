@@ -7,7 +7,7 @@
     using Newtonsoft.Json;
     using PersonalFinance.Models;
     using PersonalFinance.Models.Balance;
-    using PersonalFinance.Models.Entidades;
+    using PersonalFinanceApiNetCoreModel;
     using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Gastos;
     using PersonalFinance.Models.IngresosMensuales;
@@ -350,6 +350,27 @@
                     };
 
                     return (T)ingreso;
+
+                case ServicioEnum.Inversiones:
+                    object inversion = new Inversion()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        FechaOperacion = form.ContainsKey("FechaOperacion") ? DateTime.ParseExact(form["FechaOperacion"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        FechaActualizacion = form.ContainsKey("FechaActualizacion") ? DateTime.ParseExact(form["FechaActualizacion"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        MontoGanado = form.ContainsKey("MontoGanado") && !string.IsNullOrEmpty(form["MontoGanado"]) ? ConvertirMonto(form["MontoGanado"]) : 0,
+                        MontoInvertido = form.ContainsKey("MontoInvertido") && !string.IsNullOrEmpty(form["MontoInvertido"]) ? ConvertirMonto(form["MontoInvertido"]) : 0,
+                        Estado = form["Estado"].ToString() == "1" ? "ACTIVO" : "COMPLETADO",
+                        Entidad = new Entidad()
+                        {
+                            Id = int.Parse(form["Entidad"]),
+                        },
+                        Tipo = new InversionTipo()
+                        {
+                            Id = int.Parse(form["InversionTipo"]),
+                        },
+                    };
+
+                    return (T)inversion;
 
                 default:
                     return (T)new object();
