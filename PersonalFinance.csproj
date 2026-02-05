@@ -23,7 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\AbstractModel.cs" Link="Models\Link\AbstractModel.cs" />
     <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\AbstractModelExternder.cs" Link="Models\Link\AbstractModelExternder.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Entidad.cs" Link="Models\Link\Entidad.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Inversion.cs" Link="Models\Link\Inversion.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\InversionElemento.cs" Link="Models\Link\InversionElemento.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\InversionInstrumento.cs" Link="Models\Link\InversionInstrumento.cs" />
+    <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\InversionTipo.cs" Link="Models\Link\InversionTipo.cs" />
     <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Prestamo.cs" Link="Models\Link\Prestamo.cs" />
     <Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\PrestamoDetalle.cs" Link="Models\Link\PrestamoDetalle.cs" />
   </ItemGroup>

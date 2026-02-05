@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinance.Models.Categorias;
-using System.Text.Json.Serialization;
+﻿using PersonalFinance.Models.Categorias;
+using PersonalFinanceApiNetCoreModel;
 
 namespace PersonalFinance.Models.Gastos
 {

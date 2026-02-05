@@ -1,0 +1,209 @@
+﻿@using PersonalFinanceApiNetCoreModel;
+@using PersonalFinance.Models.IngresosMensuales
+@using System.Globalization
+@using PersonalFinance.Models.IngresosTipo
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    CultureInfo culturaArgentina = new CultureInfo("es-AR");
+    Inversion inversion = ViewBag.Inversion;
+    string modeView = ViewBag.ModeView ? "disabled" : "";
+    List<InversionTipo> inversionTipos = ViewBag.InversionesTipos;
+    List<InversionElemento> inversionElementos = ViewBag.InversionElementos;
+    List<Entidad> entidades = ViewBag.Entidades;
+    List<SelectListItem> lstEstados = (List<SelectListItem>)ViewBag.Estados;
+    
+    var fechaActual = DateTime.Now.ToString("yyyy-MM-dd");
+
+    var lstInversionesTipos = new List<SelectListItem>();
+    foreach (var e in inversionTipos)
+    {
+        lstInversionesTipos.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = e.Id == inversion.Tipo.Id ? true : false,
+        });
+    }
+
+    var lstEntidades = new List<SelectListItem>();
+    foreach (var e in entidades)
+    {
+        lstEntidades.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = e.Id == inversion.Entidad.Id ? true : false,
+        });
+    }
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Actualización de @ViewBag.Modulo.</p>
+</div>
+
+<div class="tab-content">
+    <form method="post" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" enctype="application/x-www-form-urlencoded">
+        <div class="form-group">
+            <table class="table table-primary">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Identificador:</span>
+                            <input id="Id" name="Id" class="form-control" type="number" data-language='es' value="@inversion.Id" disabled />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Entidad:</span>
+                            <select id="Entidad" name="Entidad" class="form-control" required @modeView>
+                                @foreach (var item in @lstEntidades)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Tipo de Inversión:</span>
+                            <select id="InversionTipo" name="InversionTipo" class="form-control" required @modeView>
+                                @foreach (var item in @lstInversionesTipos)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Estado:</span>
+                            <select id="Estado" name="Estado" class="form-control" required @modeView>
+                                @foreach (var item in @lstEstados)
+                                {
+                                    if (item.Text == inversion.Estado)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Operacion:</span>
+                            <input id="FechaOperacion" name="FechaOperacion" class="form-control" type="date" data-language='es' value="@inversion.FechaOperacion?.ToString("yyyy-MM-dd")" required @modeView />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Fecha Actualización:</span>
+                            <input id="FechaActualizacion" name="FechaActualizacion" class="form-control" type="date" data-language='es' value="@inversion.FechaActualizacion?.ToString("yyyy-MM-dd")" required @modeView />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto Invertido:</span>
+                            <input id="MontoInvertido" name="MontoInvertido" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@inversion.MontoInvertido.ToString("C", new CultureInfo("es-AR"))" required @modeView />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto Ganado:</span>
+                            <input id="MontoGanado" name="MontoGanado" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@inversion.MontoGanado" required @modeView />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p></p>
+        </div>
+        @if (string.IsNullOrEmpty(@modeView))
+        {
+            <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="actualizar">Actualizar</button>
+        }
+
+    </form>
+     <p></p>
+    <p></p>
+    <table class="table table-secondary">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Código</th>                
+                <th scope="col">Detalle</th>
+                <th scope="col" align="center">Fecha de Operación</th>
+                <th scope="col">Nro Operación</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col" style="text-align: right; padding-right: 10px;">Monto Unitario</th>
+                <th scope="col" style="text-align: right; padding-right: 10px;">Monto Invertido</th>
+                <th scope="col" style="text-align: right; padding-right: 10px;">Monto Impuestos</th>
+                <th scope="col" style="text-align: right; padding-right: 10px;">Monto Resultado</th>
+                <th scope="col">Estado</th>
+                <th scope="col">
+                    &nbsp;
+                    <form method="post" asp-controller="InversionElementos">
+                        <input id="InversionId" name="InversionId" class="form-control" style="width: 70px;" type="number" min="0.00" max="1000000.00" step="0.01" value="@inversion.Id" hidden />
+                        <input id="fromInversion" name="fromInversion" class="form-control" style="width: 70px;" type="text" min="0.00" max="1000000.00" step="0.01" value="true" hidden />
+                        <button type="submit" class="btn btn-primary" asp-controller="InversionElementos" asp-action="InversionElementosFormAdd" name="action" value="addInversionElemento">Add new Element</button>
+                    </form>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @inversionElementos)
+            {
+                <tr>
+                    <td scope="row" align="center">@item.Id</td>
+                    <td scope="row">@item.Instrumento.Codigo</td>
+                    <td scope="row">@item.Instrumento.Detalle</td>
+                    <td scope="row" align="center">@item.FechaOperacion?.ToString("dd/MM/yyyy")</td>
+                    <td scope="row">@item.NumeroOperacion</td>
+                    <td scope="row">@item.Cantidad</td>
+                    <td scope="row" style="text-align: right; padding-right: 20px;">@item.MontoUnitario.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" style="text-align: right; padding-right: 20px;">@item.MontoInvertido.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" style="text-align: right; padding-right: 20px;">@item.MontoImpuestos.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row" style="text-align: right; padding-right: 20px;">@item.MontoResultado.ToString("C", new CultureInfo("es-AR"))</td>
+                    <td scope="row">@item.Estado</td>
+                    <td scope="row">
+                        <form method="post" asp-controller="InversionElementos">
+                            <input id="ElementoId" name="ElementoId" class="form-control" style="width: 70px;" type="number" min="0.00" max="1000000.00" step="0.01" value="@item.Id" hidden />
+                            <input id="fromInversion" name="fromInversion" class="form-control" style="width: 70px;" type="text" min="0.00" max="1000000.00" step="0.01" value="true" hidden />
+                            <button type="submit" class="btn btn-secondary" asp-controller="InversionElementos" asp-action="InversionElementosFormEdit" name="action" value="updateInversionElemento">Update new Element</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<p></p>
+
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>

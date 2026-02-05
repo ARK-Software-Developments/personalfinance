@@ -1,4 +1,6 @@
-﻿namespace PersonalFinance.Models.Balance
+﻿using PersonalFinanceApiNetCoreModel;
+
+namespace PersonalFinance.Models.Balance
 {
     public class CalendarioVencimiento : AbstractModelExternder
     {

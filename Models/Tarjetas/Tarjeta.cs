@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PersonalFinance.Models.Entidades;
+using PersonalFinanceApiNetCoreModel;
 
 namespace PersonalFinance.Models.Tarjetas
 {

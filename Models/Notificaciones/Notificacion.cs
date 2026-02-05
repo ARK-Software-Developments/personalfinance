@@ -1,8 +1,6 @@
 ﻿namespace PersonalFinance.Models.Notificaciones
 {
-    using Newtonsoft.Json;
-    using PersonalFinance.Models;
-    using System.Text.Json.Serialization;
+    using PersonalFinanceApiNetCoreModel;
 
     /// <summary>
     /// Clase Notificacion.

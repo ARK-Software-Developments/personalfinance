@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PersonalFinance.Models.Entidades;
+using PersonalFinanceApiNetCoreModel;
 using PersonalFinance.Models.Gastos;
 
 namespace PersonalFinance.Models.Pagos

@@ -91,5 +91,21 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "process", Cache = "cacheDataProcesos")]
         [Description("Procesos")]
         Procesos = 22,
+
+        [Api(Route = "investments", Cache = "cacheDataInversiones")]
+        [Description("Inversiones")]
+        Inversiones = 23,
+
+        [Api(Route = "investmenttype", Cache = "cacheDataInversionesTipos")]
+        [Description("InversionesTipos")]
+        InversionesTipos = 24,
+
+        [Api(Route = "investmentselements", Cache = "cacheDataInversionesElementos")]
+        [Description("InversionesElementos")]
+        InversionesElementos = 25,
+
+        [Api(Route = "investmentinstruments", Cache = "cacheDataInversionesInstrumentos")]
+        [Description("InversionesInstrumentos")]
+        InversionesInstrumentos = 26,
     }
 }

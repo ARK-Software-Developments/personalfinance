@@ -13,6 +13,10 @@ namespace PersonalFinance.Controllers
     using PersonalFinance.Models.Gastos;
     using PersonalFinance.Models.IngresosMensuales;
     using PersonalFinance.Models.IngresosTipo;
+    using PersonalFinance.Models.Inversiones;
+    using PersonalFinance.Models.InversionesElementos;
+    using PersonalFinance.Models.InversionesInstrumentos;
+    using PersonalFinance.Models.InversionTipo;
     using PersonalFinance.Models.Notificaciones;
     using PersonalFinance.Models.Pagos;
     using PersonalFinance.Models.Pedidos;
@@ -46,6 +50,10 @@ namespace PersonalFinance.Controllers
         public NotificacionesResponse notificacionResponse;
         public CalendarioVencimientoResponse calendarioVencimientoResponse;
         public PrestamoResponse prestamoResponse;
+        public InversionesResponse inversionesResponse;
+        public InversionTipoResponse inversionTipoResponse;
+        public InversionesElementosResponse inversionesElementosResponse;
+        public InversionesInstrumentosResponse inversionesInstrumentosResponse;
 
         public HttpContext httpContext;
 

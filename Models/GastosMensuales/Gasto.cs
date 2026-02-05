@@ -1,12 +1,9 @@
 ﻿namespace PersonalFinance.Models.Gastos
 {
-    using Microsoft.AspNetCore.Mvc;
-    using PersonalFinance.Models.Balance;
-
 #pragma warning disable CS8618
 
-    using PersonalFinance.Models.Entidades;
-    using System.Text.Json.Serialization;
+    using PersonalFinanceApiNetCoreModel;
+    using PersonalFinance.Models.Balance;
 
     /// <summary>
     /// Clase Gasto.

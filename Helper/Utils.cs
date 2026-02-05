@@ -7,7 +7,7 @@
     using Newtonsoft.Json;
     using PersonalFinance.Models;
     using PersonalFinance.Models.Balance;
-    using PersonalFinance.Models.Entidades;
+    using PersonalFinanceApiNetCoreModel;
     using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Gastos;
     using PersonalFinance.Models.IngresosMensuales;
@@ -350,6 +350,51 @@
                     };
 
                     return (T)ingreso;
+
+                case ServicioEnum.Inversiones:
+                    object inversion = new Inversion()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        FechaOperacion = form.ContainsKey("FechaOperacion") ? DateTime.ParseExact(form["FechaOperacion"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        FechaActualizacion = form.ContainsKey("FechaActualizacion") ? DateTime.ParseExact(form["FechaActualizacion"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        MontoGanado = form.ContainsKey("MontoGanado") && !string.IsNullOrEmpty(form["MontoGanado"]) ? ConvertirMonto(form["MontoGanado"]) : 0,
+                        MontoInvertido = form.ContainsKey("MontoInvertido") && !string.IsNullOrEmpty(form["MontoInvertido"]) ? ConvertirMonto(form["MontoInvertido"]) : 0,
+                        Estado = form["Estado"].ToString() == "1" ? "ACTIVO" : "COMPLETADO",
+                        Entidad = new Entidad()
+                        {
+                            Id = int.Parse(form["Entidad"]),
+                        },
+                        Tipo = new InversionTipo()
+                        {
+                            Id = int.Parse(form["InversionTipo"]),
+                        },
+                    };
+
+                    return (T)inversion;
+
+                case ServicioEnum.InversionesElementos:
+                    object inversionElemento = new InversionElemento()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        FechaOperacion = form.ContainsKey("FechaOperacion") ? DateTime.ParseExact(form["FechaOperacion"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        Cantidad = form.ContainsKey("Cantidad") && !string.IsNullOrEmpty(form["Cantidad"]) ? int.Parse(form["Cantidad"]) : 0,
+                        MontoImpuestos = form.ContainsKey("MontoImpuestos") && !string.IsNullOrEmpty(form["MontoImpuestos"]) ? ConvertirMonto(form["MontoImpuestos"]) : 0,
+                        MontoInvertido = form.ContainsKey("MontoInvertido") && !string.IsNullOrEmpty(form["MontoInvertido"]) ? ConvertirMonto(form["MontoInvertido"]) : 0,
+                        MontoResultado = form.ContainsKey("MontoResultado") && !string.IsNullOrEmpty(form["EMontoResultadonero"]) ? ConvertirMonto(form["MontoResultado"]) : 0,
+                        MontoUnitario = form.ContainsKey("MontoUnitario") && !string.IsNullOrEmpty(form["MontoUnitario"]) ? ConvertirMonto(form["MontoUnitario"]) : 0,
+                        NumeroOperacion = form.ContainsKey("NumeroOperacion") && !string.IsNullOrEmpty(form["NumeroOperacion"]) ? form["NumeroOperacion"].ToString() : string.Empty,
+                        Instrumento = new InversionInstrumento()
+                        {
+                            Id = form.ContainsKey("Instrumento") && !string.IsNullOrEmpty(form["Instrumento"]) ? int.Parse(form["Instrumento"]) : 0,
+                        },
+                        Inversion = new Inversion()
+                        {
+                            Id = form.ContainsKey("InversionId") && !string.IsNullOrEmpty(form["InversionId"]) ? int.Parse(form["InversionId"]) : 0,
+                        },
+                        Estado = form.ContainsKey("Estado") && !string.IsNullOrEmpty(form["Estado"]) ? (form["Estado"].ToString() == "1" ? "ACTIVO" : "COMPLETADO") : "ACTIVO",
+                    };
+
+                    return (T)inversionElemento;
 
                 default:
                     return (T)new object();

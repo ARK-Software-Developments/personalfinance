@@ -1,0 +1,140 @@
+﻿@using PersonalFinance.Helper
+@using PersonalFinance.Models.Entidades
+@using PersonalFinance.Models.Gastos
+@using System.Globalization
+@using PersonalFinance.Models.IngresosTipo
+@using PersonalFinanceApiNetCoreModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@{
+    CultureInfo culturaArgentina = new CultureInfo("es-AR");
+
+    List<InversionTipo> inversionTipos = ViewBag.InversionesTipos;
+    List<Entidad> entidades = ViewBag.Entidades;
+    List<SelectListItem> lstEstados = (List<SelectListItem>)ViewBag.Estados;
+    var fechaActual = DateTime.Now.ToString("yyyy-MM-dd");
+
+    var lstInversionesTipos = new List<SelectListItem>();
+    foreach (var e in inversionTipos)
+    {
+        lstInversionesTipos.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = false,
+        });
+    }
+
+    var lstEntidades = new List<SelectListItem>();
+    foreach (var e in entidades)
+    {
+        lstEntidades.Add(
+        new SelectListItem()
+        {
+            Value = e.Id.ToString(),
+            Text = e.Nombre,
+            Selected = false,
+        });
+    }
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/personalfinance.styles.css">
+
+<div class="text-center">
+    <h1 class="display-5">@ViewBag.Title</h1>
+    <p>Generación de @ViewBag.Modulo.</p>
+</div>
+
+<form method="post" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo">
+    <div class="form-group">
+        <table class="table table-primary">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Entidad:</span>
+                        <select id="Entidad" name="Entidad" class="form-control" required>
+                            @foreach (var item in @lstEntidades)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Tipo de Inversión:</span>
+                        <select id="InversionTipo" name="InversionTipo" class="form-control"  required>
+                            @foreach (var item in @lstInversionesTipos)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Estado:</span>
+                        <select id="Estado" name="Estado" class="form-control" required>
+                            @foreach (var item in @lstEstados)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Fecha Operacion:</span>
+                        <input id="FechaOperacion" name="FechaOperacion" class="form-control" type="date" data-language='es' value="@fechaActual" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Monto Invertido:</span>
+                        <input id="MontoInvertido" name="MontoInvertido" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="0" required />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Monto Ganado:</span>
+                        <input id="MontoGanado" name="MontoGanado" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="0" required />
+                    </div>
+                </td>                
+            </tr>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="generar">Generar</button>
+</form>
+
+<p></p>
+
+<a href="/@ViewBag.Modulo" class="btn btn-secondary">Volver</a>

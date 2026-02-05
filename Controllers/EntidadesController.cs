@@ -8,9 +8,9 @@ using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Service;
+using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 
 public class EntidadesController : BaseController
 {

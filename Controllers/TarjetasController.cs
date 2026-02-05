@@ -7,7 +7,7 @@ using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
-using PersonalFinance.Service;
+using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
 using System.Net.Http;
 
