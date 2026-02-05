@@ -6,16 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
-using PersonalFinance.Models.Categorias;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
-using PersonalFinance.Models.Gastos;
-using PersonalFinance.Models.IngresosTipo;
-using PersonalFinance.Models.Pagos;
-using PersonalFinance.Models.Prestamos;
+using PersonalFinance.Models.Inversiones;
+using PersonalFinance.Models.InversionesElementos;
+using PersonalFinance.Models.InversionTipo;
 using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http;
 
 public class InversionesController : BaseController
@@ -114,6 +111,7 @@ public class InversionesController : BaseController
         ViewBag.Title = Modulo;
         ViewBag.Message = $"{Gestion} {Modulo}";
         List<Inversion> inversiones = [];
+        List<InversionElemento> inversionElementos = [];
         ViewBag.Buscar = "Buscar";
         ViewBag.ModeView = action == "openFormView" ? true : false;
         this.inversionesResponse = await this.serviceCaller.ObtenerRegistros<InversionesResponse>(ServicioEnum.Inversiones);
@@ -122,7 +120,7 @@ public class InversionesController : BaseController
                         .ToList();
 
         ViewBag.Inversiones = inversiones;
-
+        ViewBag.InversionElementos = inversionElementos;
         var lstEstados = new List<SelectListItem>();
         lstEstados.Add(
             new SelectListItem()
@@ -164,6 +162,15 @@ public class InversionesController : BaseController
                     else
                     {
                         ViewBag.Inversion = inversiones?.Find(i => i.Id == int.Parse(this.Request.Form["Id"]));
+
+                        var inversionId = new Dictionary<string, object>()
+                        {
+                            { "year", int.Parse(this.Request.Form["Id"])}
+                        };
+
+                        this.inversionesElementosResponse = await this.serviceCaller.ObtenerRegistros<InversionesElementosResponse>(ServicioEnum.InversionesElementos, inversionId, MetodoEnum.Todos);
+
+                        ViewBag.InversionElementos = this.inversionesElementosResponse.InversionElementos;
 
                         return await Task.FromResult<IActionResult>(View("InversionFormEdit", ViewBag));
                     } 
@@ -221,7 +228,7 @@ public class InversionesController : BaseController
                     {
                         var parametro = new Parametro()
                         {
-                            Nombre = "intId",
+                            Nombre = "inId",
                             Valor = mapInversion.Id,
                         };
                         this.generalRequest.Parametros.Add(parametro);

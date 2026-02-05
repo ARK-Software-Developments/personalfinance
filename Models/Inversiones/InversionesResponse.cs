@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using PersonalFinanceApiNetCoreModel;
 
-namespace PersonalFinance.Models.Prestamos;
+namespace PersonalFinance.Models.Inversiones;
 
 public class InversionesResponse : GeneralResponse
 {

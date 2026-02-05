@@ -1,12 +1,11 @@
 using Newtonsoft.Json;
-using PersonalFinanceApiNetCoreModel;
 
-namespace PersonalFinance.Models.Prestamos;
+namespace PersonalFinance.Models.InversionTipo;
 
 public class InversionTipoResponse : GeneralResponse
 {
     public InversionTipoResponse() { }
 
     [JsonProperty("data")]
-    public List<InversionTipo>? InversionTipos { get; set; }
+    public List<PersonalFinanceApiNetCoreModel.InversionTipo>? InversionTipos { get; set; }
 }

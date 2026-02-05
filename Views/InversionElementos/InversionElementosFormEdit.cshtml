@@ -58,7 +58,7 @@
                     <td>
                         <div class="form-group">
                             <span class="form-label">Identificador:</span>
-                            <input id="Id" name="Id" class="form-control" type="number" data-language='es' value="@inversion.Id" readonly />
+                            <input id="Id" name="Id" class="form-control" type="number" data-language='es' value="@inversion.Id" disabled />
                         </div>
                     </td>
                     <td>
@@ -171,10 +171,8 @@
                     &nbsp;
                     <form method="post" asp-controller="InversionElementos">
                         <input id="InversionId" name="InversionId" class="form-control" style="width: 70px;" type="number" min="0.00" max="1000000.00" step="0.01" value="@inversion.Id" hidden />
-                        <input id="EntidadId" name="EntidadId" class="form-control" style="width: 70px;" type="number" min="0.00" max="1000000.00" step="0.01" value="@inversion.Entidad.Id" hidden />
-                        <input id="InversionTipoId" name="InversionTipoId" class="form-control" style="width: 70px;" type="number" min="0.00" max="1000000.00" step="0.01" value="@inversion.Tipo.Id" hidden />
                         <input id="fromInversion" name="fromInversion" class="form-control" style="width: 70px;" type="text" min="0.00" max="1000000.00" step="0.01" value="true" hidden />
-                        <button type="submit" class="btn btn-primary" asp-controller="InversionElementos" asp-action="InversionElementos" name="action" value="openFormAdd">Add new Element</button>
+                        <button type="submit" class="btn btn-primary" asp-controller="InversionElementos" asp-action="InversionElementosFormAdd" name="action" value="addInversionElemento">Add new Element</button>
                     </form>
                 </th>
             </tr>

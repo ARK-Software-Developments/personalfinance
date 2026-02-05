@@ -11,11 +11,20 @@ namespace PersonalFinance.Service
             if ((servicio == ServicioEnum.GastosMensuales 
                 || servicio == ServicioEnum.ConsumosTarjeta
                 || servicio == ServicioEnum.Ingresos
-                || servicio == ServicioEnum.Balance) 
+                || servicio == ServicioEnum.Balance
+                || servicio == ServicioEnum.InversionesElementos) 
                 && metodo == MetodoEnum.Todos)
             {
                 string tmp = url.Replace("{0}", servicio.ToRoute()).Replace("{1}", metodo.ToMethod());
-                return $"{tmp}/{keyValuePairs["year"]}";
+
+                if (keyValuePairs != null)
+                {
+                    return $"{tmp}/{keyValuePairs["year"]}";
+                }
+                else
+                {
+                    return tmp;
+                }                
             }
             else if ((servicio == ServicioEnum.DetallePedido && metodo == MetodoEnum.DetallePedidoByOrderId) ||
                     (servicio == ServicioEnum.ConsumosTarjeta && metodo == MetodoEnum.Uno) ||

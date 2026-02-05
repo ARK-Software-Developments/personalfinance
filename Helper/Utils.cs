@@ -372,6 +372,30 @@
 
                     return (T)inversion;
 
+                case ServicioEnum.InversionesElementos:
+                    object inversionElemento = new InversionElemento()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        FechaOperacion = form.ContainsKey("FechaOperacion") ? DateTime.ParseExact(form["FechaOperacion"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        Cantidad = form.ContainsKey("Cantidad") && !string.IsNullOrEmpty(form["Cantidad"]) ? int.Parse(form["Cantidad"]) : 0,
+                        MontoImpuestos = form.ContainsKey("MontoImpuestos") && !string.IsNullOrEmpty(form["MontoImpuestos"]) ? ConvertirMonto(form["MontoImpuestos"]) : 0,
+                        MontoInvertido = form.ContainsKey("MontoInvertido") && !string.IsNullOrEmpty(form["MontoInvertido"]) ? ConvertirMonto(form["MontoInvertido"]) : 0,
+                        MontoResultado = form.ContainsKey("MontoResultado") && !string.IsNullOrEmpty(form["EMontoResultadonero"]) ? ConvertirMonto(form["MontoResultado"]) : 0,
+                        MontoUnitario = form.ContainsKey("MontoUnitario") && !string.IsNullOrEmpty(form["MontoUnitario"]) ? ConvertirMonto(form["MontoUnitario"]) : 0,
+                        NumeroOperacion = form.ContainsKey("NumeroOperacion") && !string.IsNullOrEmpty(form["NumeroOperacion"]) ? form["NumeroOperacion"].ToString() : string.Empty,
+                        Instrumento = new InversionInstrumento()
+                        {
+                            Id = form.ContainsKey("Instrumento") && !string.IsNullOrEmpty(form["Instrumento"]) ? int.Parse(form["Instrumento"]) : 0,
+                        },
+                        Inversion = new Inversion()
+                        {
+                            Id = form.ContainsKey("InversionId") && !string.IsNullOrEmpty(form["InversionId"]) ? int.Parse(form["InversionId"]) : 0,
+                        },
+                        Estado = form.ContainsKey("Estado") && !string.IsNullOrEmpty(form["Estado"]) ? (form["Estado"].ToString() == "1" ? "ACTIVO" : "COMPLETADO") : "ACTIVO",
+                    };
+
+                    return (T)inversionElemento;
+
                 default:
                     return (T)new object();
             }
