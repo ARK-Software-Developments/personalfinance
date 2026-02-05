@@ -17,10 +17,7 @@
     using PersonalFinance.Models.Tarjetas;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Net.Http;
-    using System.Net.NetworkInformation;
     using System.Text.RegularExpressions;
-    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     public static class Utils
     {
