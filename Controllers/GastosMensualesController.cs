@@ -94,15 +94,18 @@ public class GastosMensualesController : BaseController
 
         try
         {
-            if (action == "generar" || action == "actualizar")
-            { 
-                gasto = Utils.MapRequest<Gasto>(this.Request.Form, ServicioEnum.GastosMensuales);
 
-                generalRequest = new()
-                {
-                    Parametros =
-                        [
-                         new Parametro()
+            switch (action)
+            {
+                case "generar":
+                case "actualizar":
+                    gasto = Utils.MapRequest<Gasto>(this.Request.Form, ServicioEnum.GastosMensuales);
+
+                    generalRequest = new()
+                    {
+                        Parametros =
+                            [
+                             new Parametro()
                          {
                              Nombre = "pTypeofexpenseid",
                              Valor = gasto.TipoGasto.Id,
@@ -208,34 +211,64 @@ public class GastosMensualesController : BaseController
                              Valor = 1,
                          },
                      ],
-                };
-                
-                if (action == "actualizar")
-                {
-                    generalRequest.Parametros.Add(
-                        new Parametro()
-                        {
-                            Nombre = "pId",
-                            Valor = gasto.Id,
-                        });
+                    };
 
-                    generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.GastosMensuales, generalRequest);
+                    if (action == "actualizar")
+                    {
+                        generalRequest.Parametros.Add(
+                            new Parametro()
+                            {
+                                Nombre = "pId",
+                                Valor = gasto.Id,
+                            });
 
-                }
-                else
-                {
-                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.GastosMensuales, generalRequest);
-                }
+                        generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.GastosMensuales, generalRequest);
 
-                CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
+                    }
+                    else
+                    {
+                        generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.GastosMensuales, generalRequest);
+                    }
+
+                    break;
+
+                case "copyBudget":
+                    generalDataResponse = await this.EjecutarProceso(ServicioEnum.PresupuestosCopiaMensual, MetodoEnum.CopiarPresupuestoMensual);
+                    break;
+
+                case "verificado":
+                case "reservado":
+                case "pagado":
+
+
+                    this.generalRequest = new()
+                    {
+                        Parametros = [
+                            new Parametro()
+                             {
+                                 Nombre = "pYear",
+                                 Valor = Utils.GetYear(this.httpContext),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pTipo",
+                                 Valor = action.Substring(0,1).ToUpper(),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pValue",
+                                 Valor = int.Parse(this.Request.Form["Marca"]),
+                             }
+                        ]
+                    };
+
+                    generalDataResponse = await this.EjecutarProceso(ServicioEnum.Procesos, MetodoEnum.ProcesoVRP);
+                    break;
+
             }
-            else if (action == "copyBudget")
-            {
-                generalDataResponse = await this.EjecutarProceso(ServicioEnum.PresupuestosCopiaMensual, MetodoEnum.CopiarPresupuestoMensual);
 
-                CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
-            }
 
+            CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 
             ViewBag.Gastos = gastosResponse?.Gastos;
