@@ -39,5 +39,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "monthlybalance")]
         IniciarBalanceMensual = 106,
+
+        [Api(Method = "processvrp")]
+        ProcesoVRP = 107,
     }
 }
