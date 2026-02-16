@@ -25,6 +25,7 @@ namespace PersonalFinance.Controllers
     using PersonalFinance.Models.Tarjetas;
     using PersonalFinance.Models.Transacciones;
     using PersonalFinance.Service;
+    using System.Diagnostics;
 
     public class BaseController : Controller
     {
@@ -74,16 +75,20 @@ namespace PersonalFinance.Controllers
 
         public async Task<GeneralDataResponse> EjecutarProceso(ServicioEnum servicioEnum, MetodoEnum metodoEnum)
         {
-            var anoDesde = int.Parse(this.Request.Form["AnoDesde"]);
-            var anoHasta = int.Parse(this.Request.Form["AnoHasta"]);
-            var mesDesde = int.Parse(this.Request.Form["MesDesde"]);
-            var mesHasta = int.Parse(this.Request.Form["MesHasta"]);
-
-            this.generalRequest = new()
+            try
             {
-                Parametros =
-                            [
-                             new Parametro()
+                if (metodoEnum == MetodoEnum.CopiarPresupuestoMensual || metodoEnum == MetodoEnum.CopiarIngresoMensual)
+                {
+                    var anoDesde = int.Parse(this.Request.Form["AnoDesde"]);
+                    var anoHasta = int.Parse(this.Request.Form["AnoHasta"]);
+                    var mesDesde = int.Parse(this.Request.Form["MesDesde"]);
+                    var mesHasta = int.Parse(this.Request.Form["MesHasta"]);
+
+                    this.generalRequest = new()
+                    {
+                        Parametros =
+                                    [
+                                     new Parametro()
                          {
                              Nombre = "pYearFrom",
                              Valor = anoDesde,
@@ -104,9 +109,19 @@ namespace PersonalFinance.Controllers
                              Valor = mesHasta,
                          },
                      ],
-            };
+                    };
+                }
+                else if (metodoEnum == MetodoEnum.ProcesoVRP)
+                {
+                    
+                }
 
-            generalDataResponse = await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(servicioEnum, this.generalRequest, metodoEnum);
+                generalDataResponse = await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(servicioEnum, this.generalRequest, metodoEnum);                
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("PersonalFinance", ex.ToString(), EventLogEntryType.Error);
+            }
 
             return this.generalDataResponse;
         }

@@ -41,7 +41,7 @@
     <p>Listado de @ViewBag.Modulo.</p>
 </div>
 
-<!-- Estructura del Modal -->
+<!-- Estructuras del Modales -->
 <div class="modal fade" id="miModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -122,6 +122,130 @@
     </div>
 </div>
 
+<div class="modal fade" id="miModalV" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de marcado Verificado general</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar en Marcar el Presupuesto del Mes actual a Verificado?.
+            </div>
+            <div class="modal-footer" style="display: ruby;">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
+                            <tr>
+                                <td style="width:30%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Marcar como:</span>
+                                    </div>
+                                </td>
+                                <td style="width:70%;">
+                                    <div class="form-group">
+                                        <select id="Marca" name="Marca" class="form-control" required>
+                                            <option value="1" selected>Vericado</option>
+                                            <option value="0">No verificado</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensuales" name="action" value="verificado">Confirmar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="miModalR" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de marcado Reservado general</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar en Marcar el Presupuesto del Mes actual a Reservado?.
+            </div>
+            <div class="modal-footer" style="display: ruby;">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
+                            <tr>
+                                <td style="width:30%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Marcar como:</span>
+                                    </div>
+                                </td>
+                                <td style="width:70%;">
+                                    <div class="form-group">
+                                        <select id="Marca" name="Marca" class="form-control" required>
+                                            <option value="1" selected>Reservado</option>
+                                            <option value="0">No reservado</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensuales" name="action" value="reservado">Confirmar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="miModalP" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de marcado Pagado general</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar en Marcar el Presupuesto del Mes actual a Pagado?.
+            </div>
+            <div class="modal-footer" style="display: ruby;">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
+                            <tr>
+                                <td style="width:30%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Marcar como:</span>
+                                    </div>
+                                </td>
+                                <td style="width:70%;">
+                                    <div class="form-group">
+                                        <select id="Marca" name="Marca" class="form-control" required>
+                                            <option value="1" selected>Pagado</option>
+                                            <option value="0">No pagado</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensuales" name="action" value="pagado">Confirmar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Estructuras del Modales -->
+
 <div class="tab-content">
     <div class="row">
         <div class="datatable-top">
@@ -160,9 +284,15 @@
                     <th scope="col">@mesCompletoSiguiente</th>
                     <th scope="col">Resumen</th>
                     <th scope="col">Observaciones</th>
-                    <th scope="col">V</th>
-                    <th scope="col">R</th>
-                    <th scope="col">P</th>
+                    <th scope="col" align="center">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#miModalV" title="Proceso de verificación general">V</button>
+                        </th>
+                    <th scope="col" align="center">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#miModalR" title="Proceso de reservado general">R</button>
+                    </th>
+                    <th scope="col" align="center">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#miModalP" title="Proceso de pagado general">P</button>
+                    </th>
                     <th scope="col">Activo</th>
                     <th colspan="2">
                         &nbsp;
@@ -193,7 +323,6 @@
                     var checkedP = entidad.Pagado ? "checked" : string.Empty;
                     var checkedA = entidad.Activo ? "checked" : string.Empty;
 
-
                     <tr>
                         <td scope="row" id="Id">@entidad.Id</td>
                         <td scope="row" id="Tipo">@entidad.TipoGasto.Tipo</td>
@@ -203,9 +332,9 @@
                         <td scope="row" id="MesSiguiente" style="padding-right: 20px; text-align: right;@(@gastoMesSiguiente >= @gastoMesActual ? @colorMayor : @colorMenor)">@gastoMesSiguiente.ToString("C", new CultureInfo("es-AR"))</td>
                         <td scope="row" id="Resumen">@entidad.Resumen.ToUpper()</td>
                         <td scope="row" id="Observaciones">@entidad.Observaciones</td>
-                        <td scope="row" id="Verificado"><input id="CVerificado" type="checkbox" @checkedV></td>
-                        <td scope="row" id="Reservado"><input id="CReservado" type="checkbox" @checkedR></td>
-                        <td scope="row" id="Pagado"><input id="CPagado" type="checkbox" @checkedP></td>
+                        <td scope="row" id="Verificado" align="center"><input id="CVerificado" type="checkbox" @checkedV></td>
+                        <td scope="row" id="Reservado" align="center"><input id="CReservado" type="checkbox" @checkedR></td>
+                        <td scope="row" id="Pagado" align="center"><input id="CPagado" type="checkbox" @checkedP></td>
                         <td scope="row" id="Activo"><input id="CPagado" type="checkbox" @checkedA></td>
                         <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                             <i class="fa" aria-hidden="false"></i>

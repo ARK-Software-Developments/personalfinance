@@ -30,3 +30,4 @@ yarn-error.log*
 =======
 *.bin
 /.vs
+/PersonalFinance.csproj.Backup.tmp
