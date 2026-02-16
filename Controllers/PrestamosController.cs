@@ -15,6 +15,7 @@ using PersonalFinance.Models.Prestamos;
 using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 
 public class PrestamosController : BaseController
@@ -51,7 +52,8 @@ public class PrestamosController : BaseController
         try
         {
             this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
-
+            this.prestamoDetalleResponse = await this.serviceCaller.ObtenerRegistros<PrestamoDetalleResponse>(ServicioEnum.PrestamoDetalles);
+            
             prestamos = this.prestamoResponse.Prestamos;
 
             if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
@@ -79,6 +81,7 @@ public class PrestamosController : BaseController
             }
 
             ViewBag.Prestamos = prestamos;
+            ViewBag.PrestamosDetalles = this.prestamoDetalleResponse.PrestamoDetalles;
 
             return await Task.FromResult<IActionResult>(View());
         }
@@ -144,12 +147,15 @@ public class PrestamosController : BaseController
         ViewBag.Estados = lstEstados;
         string view = "Index";
         List<Prestamo> prestamos = [];
+        List<PrestamoDetalle> prestamoDetalles = [];
 
         try
         {
             this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
             prestamos = this.prestamoResponse.Prestamos;
 
+            this.prestamoDetalleResponse = await this.serviceCaller.ObtenerRegistros<PrestamoDetalleResponse>(ServicioEnum.PrestamoDetalles);
+            
             this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
             ViewBag.Entidades = this.entidadesResponse.Entidades;
 
@@ -167,12 +173,18 @@ public class PrestamosController : BaseController
                         }
 
                         ViewBag.Prestamo = prestamos?.Find(p => p.Id == int.Parse(this.Request.Form["Id"]));
-                        view = "PrestamoFormEdit";         
+                        prestamoDetalles = this.prestamoDetalleResponse.PrestamoDetalles?.FindAll(p => p.PrestamoId == int.Parse(this.Request.Form["Id"]));
+
+                        view = "PrestamoFormEdit";
                     }
                     else
                     {
                         view = "PrestamoFormAdd";
                     }
+
+                    ViewBag.PrestamosDetalles = prestamoDetalles
+                                                    .OrderBy(o => o.Cuota)
+                                                    .ToList();
 
                     return await Task.FromResult<IActionResult>(View(view, ViewBag));
 
@@ -222,6 +234,11 @@ public class PrestamosController : BaseController
                            },
                            new Parametro()
                            {
+                               Nombre = "inFirstInstallmentAmount",
+                               Valor = mapPrestamo.MontoCuota,
+                           },
+                           new Parametro()
+                           {
                                Nombre = "inNumberOfInstallments",
                                Valor = mapPrestamo.Cuotas,
                            },
@@ -263,6 +280,7 @@ public class PrestamosController : BaseController
                     }                        
 
                     CacheAdmin.Remove(HttpContext, ServicioEnum.Prestamos);
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.PrestamoDetalles);
 
                     this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
                     prestamos = this.prestamoResponse.Prestamos;

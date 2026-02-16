@@ -10,6 +10,8 @@
     CultureInfo culturaArgentina = new CultureInfo("es-AR");
 
     Prestamo prestamo = ViewBag.Prestamo;
+    List<PrestamoDetalle> prestamoDetalles = ViewBag.PrestamosDetalles;
+
     List<Entidad> entidades = ViewBag.Entidades;
 
     string modeView = ViewBag.ModeView ? "disabled" : "";
@@ -49,8 +51,8 @@
                 console.log($('#Cuotas :selected').val());
 
                 var cuotas = parseFloat($('#Cuotas').val());
-                var montoCapital = parseFloat($('#MontoCapital').val());
-                var montoTotal = montoCapital * cuotas;
+                var MontoCuotaPromedio = parseFloat($('#MontoCuotaPromedio').val());
+                var montoTotal = MontoCuotaPromedio * cuotas;
 
                 $('#MontoTotal').val(montoTotal);
             };
@@ -137,6 +139,12 @@
                     </td>
                     <td>
                         <div class="form-group">
+                            <span class="form-label">Monto Cta Promedio:</span>
+                            <input id="MontoCuotaPromedio" name="MontoCuotaPromedio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.MontoCuota.ToString("C", new CultureInfo("es-AR"))" required />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
                             <span class="form-label">Cuotas:</span>
                             <input id="Cuotas" name="Cuotas" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.Cuotas" onchange="CalcularMonto()" required />
                         </div>
@@ -174,7 +182,51 @@
         {
             <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="actualizar">Actualizar</button>
         }
+        <p></p>
+        <table class="table table-secondary">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Observaciones</th>
+                    <th scope="col">Cuota</th>
+                    <th scope="col">Monto Cuota</th>
+                    <th scope="col">Fecha Pago</th>
+                    <th scope="col">Comprobante</th>
+                    <th scope="col">Método de Pago</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">&nbsp;</th>
+                    <th colspan="2">
+                        &nbsp;
+                        <form method="post" asp-controller="Pedidos">
+                            <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAddDetail" name="action" value="addDetail">Add new Detail</button>
+                        </form>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detalle in @prestamoDetalles)
+                {                    
+                    <tr>
+                        <td align="center">@detalle.Id</td>
+                        <td>@detalle.Observaciones</td>
+                        <td>@detalle.Cuota</td>
+                        <td align="center">@detalle.MontoCuota.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td align="center">@detalle.FechaPagado?.ToString("dd/MM/yyyy")</td>
+                        <td align="center">@detalle.ComprobantePago</td>
+                        <td align="center">@detalle.MetodoPago</td>
+                        <td align="center">@detalle.Estado</td>
+                        <td>
+                            <form method="post" asp-controller="Pedidos" asp-route-id="@detalle.Id">
+                                <input type="text" id="pedidoId" name="pedidoId" value="@prestamo.Id" hidden="hidden" />
+                                <input type="text" id="detalleId" name="detalleId" value="@detalle.Id" hidden="hidden" />
+                                <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormEditDetail" name="action" value="openFormEditDetail">Edit Detail</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
 
+        </table>
     </form>
 </div>
 <p></p>

@@ -412,6 +412,7 @@
                         Cuotas = form.ContainsKey("Cuotas") && !string.IsNullOrEmpty(form["Cuotas"]) ? int.Parse(form["Cuotas"]) : 0,
                         TotalCapital = form.ContainsKey("MontoCapital") && !string.IsNullOrEmpty(form["MontoCapital"]) ? ConvertirMonto(form["MontoCapital"]) : 0,
                         TotalDeuda = form.ContainsKey("MontoTotal") && !string.IsNullOrEmpty(form["MontoTotal"]) ? ConvertirMonto(form["MontoTotal"]) : 0,
+                        MontoCuota = form.ContainsKey("MontoCuotaPromedio") && !string.IsNullOrEmpty(form["MontoCuotaPromedio"]) ? ConvertirMonto(form["MontoCuotaPromedio"]) : 0,
                         Beneficiario = form.ContainsKey("Beneficiario") && !string.IsNullOrEmpty(form["Beneficiario"]) ? form["Beneficiario"].ToString() : string.Empty,
                         Numero = form.ContainsKey("Numero") && !string.IsNullOrEmpty(form["Numero"]) ? form["Numero"].ToString() : string.Empty,
                         CodigoTransaccion = form.ContainsKey("CodigoTransaccion") && !string.IsNullOrEmpty(form["CodigoTransaccion"]) ? form["CodigoTransaccion"].ToString() : string.Empty,
