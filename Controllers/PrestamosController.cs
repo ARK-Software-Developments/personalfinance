@@ -3,6 +3,7 @@ namespace PersonalFinance.Controllers;
 #pragma warning disable CS8600 // Se va a convertir un literal nulo o un posible valor nulo en un tipo que no acepta valores NULL
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Categorias;
@@ -96,30 +97,89 @@ public class PrestamosController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = "Pagos";
         ViewBag.Message = $"{Gestion} {Modulo}";
+        ViewBag.ModeView = false;
+        ViewBag.Buscar = "Buscar";
+
+        var lstEstados = new List<SelectListItem>();
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "1",
+                Text = "PAGO AL DIA",
+                Selected = false,
+            });
+
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "2",
+                Text = "PAGOS ATRAZADOS",
+                Selected = false,
+            });
+
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "3",
+                Text = "COMPLETADO",
+                Selected = false,
+            });
+
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "4",
+                Text = "SIN PROYECCION",
+                Selected = false,
+            });
+
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "5",
+                Text = "PERDIDO",
+                Selected = false,
+            });
+
+        ViewBag.Estados = lstEstados;
+        string view = "Index";
+        List<Prestamo> prestamos = [];
 
         try
         {
+            this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
+            prestamos = this.prestamoResponse.Prestamos;
 
-            pagosResponse = await this.serviceCaller.ObtenerRegistros<PagosResponse>(ServicioEnum.Pagos);
-
+            this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
+            ViewBag.Entidades = this.entidadesResponse.Entidades;
 
             switch (action)
             {
                 case "openFormAdd":
+                case "openFormEdit":
+                case "openFormView":
 
-                    entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
-                    var gasto = pagosResponse?.Pagos?.Find(p => p.Id == prestamo.Id);
+                    if (action == "openFormEdit" || action == "openFormView")
+                    {
+                        if (action == "openFormView")
+                        {
+                            ViewBag.ModeView = true;
+                        }
 
-                    tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
+                        ViewBag.Prestamo = prestamos?.Find(p => p.Id == int.Parse(this.Request.Form["Id"]));
+                        view = "PrestamoFormEdit";         
+                    }
+                    else
+                    {
+                        view = "PrestamoFormAdd";
+                    }
 
-                    ViewBag.Gasto = gasto;
-                    ViewBag.Entidades = entidadesResponse.Entidades;
-                    ViewBag.TiposGastos = tiposGastosResponse.TiposGastos;
-                    return await Task.FromResult<IActionResult>(View("PagosPedidosFormAdd", ViewBag));
+                    return await Task.FromResult<IActionResult>(View(view, ViewBag));
 
+                case "actualizar":
                 case "generar":
 
-                    var mapPago = Utils.MapRequest<Pago>(this.Request.Form, ServicioEnum.Pagos);
+                    var mapPrestamo = Utils.MapRequest<Prestamo>(this.Request.Form, ServicioEnum.Prestamos);
 
                     this.generalRequest = new GeneralRequest()
                     {
@@ -127,61 +187,94 @@ public class PrestamosController : BaseController
                         [
                            new Parametro()
                            {
-                               Nombre = "pRegistrationDate",
-                               Valor = mapPago.FechaRegistro?.ToString("yyyy-MM-dd"),
+                               Nombre = "inNumber",
+                               Valor = mapPrestamo.Numero,
                            },
                             new Parametro()
                            {
-                               Nombre = "pDateOfPayment",
-                               Valor = mapPago.FechaPago?.ToString("yyyy-MM-dd"),
+                               Nombre = "inBeneficiary",
+                               Valor = mapPrestamo.Beneficiario,
                            },
                             new Parametro()
                            {
-                               Nombre = "pRegistrationCode",
-                               Valor = mapPago.CodigoRegistro,
+                               Nombre = "inDepositDate",
+                               Valor = mapPrestamo.FechaDeposito?.ToString("yyyy-MM-dd"),
                            },
                             new Parametro()
                            {
-                               Nombre = "pPaymentResourceId",
-                               Valor = mapPago.RecursoDelPago.Id,
+                               Nombre = "inReason",
+                               Valor = mapPrestamo.Razon,
                            },
                             new Parametro()
                            {
-                               Nombre = "pPaymentType",
-                               Valor = mapPago.TipoDePago,
-                           },
-                            new Parametro()
-                           {
-                               Nombre = "pBudgetedAmount",
-                               Valor = mapPago.MontoPresupuestado,
+                               Nombre = "inSummary",
+                               Valor = mapPrestamo.Resumen,
                            },
                            new Parametro()
                            {
-                               Nombre = "pAmountPaid",
-                               Valor = mapPago.MontoPagado,
+                               Nombre = "inCapitalAmount",
+                               Valor = mapPrestamo.TotalCapital,
                            },
                            new Parametro()
                            {
-                               Nombre = "pReasonForPayment",
-                               Valor = mapPago.TipoDeGasto.Id,
+                               Nombre = "inTotalAmount",
+                               Valor = mapPrestamo.TotalDeuda,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "inNumberOfInstallments",
+                               Valor = mapPrestamo.Cuotas,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "inState",
+                               Valor = mapPrestamo.Estado,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "inEntityId",
+                               Valor = mapPrestamo.Entidad.Id,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "inTransactionCode",
+                               Valor = mapPrestamo.CodigoTransaccion,
                            },
                         ]
                     };
 
                     generalDataResponse = new GeneralDataResponse();
-                    generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Pagos, this.generalRequest);
 
-                    CacheAdmin.Remove(HttpContext, ServicioEnum.Pagos);
-                    pagosResponse = await this.serviceCaller.ObtenerRegistros<PagosResponse>(ServicioEnum.Pagos);
 
-                    ViewBag.Pagos = pagosResponse.Pagos;
+                    if (action == "actualizar")
+                    {
+                        var parametro = new Parametro()
+                        {
+                            Nombre = "inId",
+                            Valor = mapPrestamo.Id,
+                        };
+                        this.generalRequest.Parametros.Add(parametro);
 
-                    return await Task.FromResult<IActionResult>(View(ViewBag));
+                        this.generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.Prestamos, this.generalRequest);
+                    }
+                    else
+                    {
+                        this.generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.Prestamos, this.generalRequest);
+                    }                        
+
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.Prestamos);
+
+                    this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
+                    prestamos = this.prestamoResponse.Prestamos;
+
+                    ViewBag.Prestamos = prestamos;
+
+                    return await Task.FromResult<IActionResult>(View(view, ViewBag));
 
                 default:
-                    ViewBag.Pagos = pagosResponse.Pagos;
+                    ViewBag.Prestamos = prestamos;
 
-                    return await Task.FromResult<IActionResult>(View(ViewBag));
+                    return await Task.FromResult<IActionResult>(View(view, ViewBag));
             }
 
 

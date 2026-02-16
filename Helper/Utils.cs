@@ -393,6 +393,39 @@
 
                     return (T)inversionElemento;
 
+                case ServicioEnum.Prestamos:
+                    string estado = "ACTIVO";
+
+                    switch (form["Estado"])
+                    {
+                        case "1": estado = "PAGO AL DIA"; break;
+                        case "2": estado = "PAGO ATRAZADO"; break;
+                        case "3": estado = "COMPLETADO"; break;
+                        case "4": estado = "SIN PROYECCION"; break;
+                        case "5": estado = "PERDIDO"; break;
+                    }
+
+                    object prestamo = new Prestamo()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        FechaDeposito = form.ContainsKey("FechaDeposito") ? DateTime.ParseExact(form["FechaDeposito"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        Cuotas = form.ContainsKey("Cuotas") && !string.IsNullOrEmpty(form["Cuotas"]) ? int.Parse(form["Cuotas"]) : 0,
+                        TotalCapital = form.ContainsKey("MontoCapital") && !string.IsNullOrEmpty(form["MontoCapital"]) ? ConvertirMonto(form["MontoCapital"]) : 0,
+                        TotalDeuda = form.ContainsKey("MontoTotal") && !string.IsNullOrEmpty(form["MontoTotal"]) ? ConvertirMonto(form["MontoTotal"]) : 0,
+                        Beneficiario = form.ContainsKey("Beneficiario") && !string.IsNullOrEmpty(form["Beneficiario"]) ? form["Beneficiario"].ToString() : string.Empty,
+                        Numero = form.ContainsKey("Numero") && !string.IsNullOrEmpty(form["Numero"]) ? form["Numero"].ToString() : string.Empty,
+                        CodigoTransaccion = form.ContainsKey("CodigoTransaccion") && !string.IsNullOrEmpty(form["CodigoTransaccion"]) ? form["CodigoTransaccion"].ToString() : string.Empty,
+                        Razon = form.ContainsKey("Razon") && !string.IsNullOrEmpty(form["Razon"]) ? form["Razon"].ToString() : string.Empty,
+                        Resumen = form.ContainsKey("Resumen") && !string.IsNullOrEmpty(form["Resumen"]) ? form["Resumen"].ToString() : string.Empty,
+                        Entidad = new Entidad()
+                        {
+                            Id = int.Parse(form["Entidad"]),
+                        },
+                        Estado = estado,
+                    };
+
+                    return (T)prestamo;
+
                 default:
                     return (T)new object();
             }

@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+<TargetFramework>net8.0</TargetFramework>
+<Nullable>enable</Nullable>
+<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+<Content Remove="Views\Tarjetas\Gastos.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+<PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
+<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+<PackageReference Include="Microsoft.AspNetCore.Session" Version="2.3.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
+<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+<EditorConfigFiles Remove="D:\IT\ark\PersonalFinancialProject\personalfinance\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\AbstractModel.cs" Link="Models\Link\AbstractModel.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\AbstractModelExternder.cs" Link="Models\Link\AbstractModelExternder.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Entidad.cs" Link="Models\Link\Entidad.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Inversion.cs" Link="Models\Link\Inversion.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\InversionElemento.cs" Link="Models\Link\InversionElemento.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\InversionInstrumento.cs" Link="Models\Link\InversionInstrumento.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\InversionTipo.cs" Link="Models\Link\InversionTipo.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\Prestamo.cs" Link="Models\Link\Prestamo.cs" />
+<Compile Include="..\personalfinanceapinetcore\PersonalFinanceApiNetCoreModel\PrestamoDetalle.cs" Link="Models\Link\PrestamoDetalle.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+<Folder Include="Models\Link\" />
+  </ItemGroup>
+
+</Project>

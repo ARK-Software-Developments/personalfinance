@@ -8,20 +8,35 @@
 
 @{
     CultureInfo culturaArgentina = new CultureInfo("es-AR");
-    Ingreso ingreso = ViewBag.Ingreso;
-    List<Entidad> villeteras = ViewBag.Villeteras;
-    List<IngresosTipo> tiposGastos = ViewBag.IngresosTipos;
+
+    Prestamo prestamo = ViewBag.Prestamo;
+    List<Entidad> entidades = ViewBag.Entidades;
+
     string modeView = ViewBag.ModeView ? "disabled" : "";
 
-    var lstIngresosTipo = new List<SelectListItem>();
-    foreach (var e in tiposGastos)
+    var lstEntidades = new List<SelectListItem>();
+    foreach (var e in entidades)
     {
-        lstIngresosTipo.Add(
+        lstEntidades.Add(
         new SelectListItem()
         {
             Value = e.Id.ToString(),
-            Text = e.Detalle,
-            Selected = e.Id == ingreso.TipoIngreso.Id ? true : false,
+            Text = e.Nombre,
+            Selected = e.Id == prestamo.Entidad.Id ? true : false,
+        });
+    }
+
+    List<SelectListItem> estados = ViewBag.Estados;
+
+    var lstEstados = new List<SelectListItem>();
+    foreach (var e in estados)
+    {
+        lstEstados.Add(
+        new SelectListItem()
+        {
+            Value = e.Value.ToString(),
+            Text = e.Text,
+            Selected = e.Text == prestamo.Estado ? true : false,
         });
     }
 
@@ -30,11 +45,14 @@
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
 
 <script>
+    function CalcularMonto() {
+                console.log($('#Cuotas :selected').val());
 
-    function CambioTipoIngreso() {
-                console.log($('#TipoIngreso :selected').val());
+                var cuotas = parseFloat($('#Cuotas').val());
+                var montoCapital = parseFloat($('#MontoCapital').val());
+                var montoTotal = montoCapital * cuotas;
 
-                $('#TipoIngresoSel').val($('#TipoIngreso :selected').val());
+                $('#MontoTotal').val(montoTotal);
             };
 
 </script>
@@ -49,23 +67,41 @@
         <div class="form-group">
             <table class="table table-primary">
                 <tr>
-                    <td>
+                    <td align="center">
                         <div class="form-group">
-                            <span class="form-label">Identificador Interno:</span>
-                            <input type="text" id="Id" name="Id" class="form-control" asp-for="@ingreso.Id" value="@ingreso.Id" readonly />
+                            <span class="form-label">Identificador:</span>
+                            <input id="Id" name="Id" class="form-control" type="text" value="@prestamo.Id" required />
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div class="form-group">
+                            <span class="form-label">Número:</span>
+                            <input id="Numero" name="Numero" class="form-control" type="text" value="@prestamo.Numero" required />
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div class="form-group">
+                            <span class="form-label">Beneficiario:</span>
+                            <input id="Beneficiario" name="Beneficiario" class="form-control" type="text" value="@prestamo.Beneficiario" required />
                         </div>
                     </td>
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Código:</span>
-                            <input type="text" id="Codigo" name="Codigo" class="form-control" asp-for="@ingreso.TipoIngreso.Codigo" value="@ingreso.TipoIngreso.Codigo" disabled />
+                            <span class="form-label">Fecha Depósito/Acreditamiento:</span>
+                            <input id="FechaDeposito" name="FechaDeposito" class="form-control" type="date" data-language='es' value="@prestamo.FechaDeposito?.ToString("yyyy-MM-dd")" required>
                         </div>
                     </td>
-                    <td colspan ="2">
+                    <td align="center">
                         <div class="form-group">
-                            <span class="form-label">Tipo de Ingreso:</span>
-                            <select id="TipoIngreso" name="TipoIngreso" class="form-control" onchange="CambioTipoIngreso()" asp-for="@ingreso.TipoIngreso.Id" required>
-                                @foreach (var item in @lstIngresosTipo)
+                            <span class="form-label">Código Transacción:</span>
+                            <input id="CodigoTransaccion" name="CodigoTransaccion" class="form-control" type="text" value="@prestamo.CodigoTransaccion" required />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Entidad:</span>
+                            <select id="Entidad" name="Entidad" class="form-control" required>
+                                @foreach (var item in @lstEntidades)
                                 {
                                     if (item.Selected)
                                     {
@@ -77,90 +113,57 @@
                                     }
                                 }
                             </select>
-                            <span class="select-arrow"></span>
-                            <input id="TipoIngresoSel" name="TipoIngresoSel" class="form-control" value="@ingreso.TipoIngreso.Id" hidden>
                         </div>
                     </td>
-                    <td colspan="3" align="center">
+                    <td align="center">
                         <div class="form-group">
-                            <span class="form-label">Año:</span>
-                            <input id="Ano" name="Ano" class="form-control" type="number" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Ano" value="@ingreso.Ano" readonly />
+                            <span class="form-label">Razón:</span>
+                            <input id="Razon" name="Razon" class="form-control" type="text" value="@prestamo.Razon" required />
                         </div>
                     </td>
-                </tr>
-                <tr>
-                    <td>
+                    <td align="center">
                         <div class="form-group">
-                            <span class="form-label">Enero:</span>
-                            <input id="Enero" name="Enero" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Enero" value="@ingreso.Enero.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Febrero:</span>
-                            <input id="Febrero" name="Febrero" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Febrero" value="@ingreso.Febrero.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Marzo:</span>
-                            <input id="Marzo" name="Marzo" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Marzo" value="@ingreso.Marzo.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Abril:</span>
-                            <input id="Abril" name="Abril" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Abril" value="@ingreso.Abril.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Mayo:</span>
-                            <input id="Mayo" name="Mayo" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Mayo" value="@ingreso.Mayo.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Junio:</span>
-                            <input id="Junio" name="Junio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Junio" value="@ingreso.Junio.ToString("C", new CultureInfo("es-AR"))" required />
+                            <span class="form-label">Resumen:</span>
+                            <input id="Resumen" name="Resumen" class="form-control" type="text" value="@prestamo.Resumen" required />
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Julio:</span>
-                            <input id="Julio" name="Julio" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Julio" value="@ingreso.Julio.ToString("C", new CultureInfo("es-AR"))" required />
+                            <span class="form-label">Monto Capital:</span>
+                            <input id="MontoCapital" name="MontoCapital" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.TotalCapital.ToString("C", new CultureInfo("es-AR"))" required />
                         </div>
                     </td>
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Agosto:</span>
-                            <input id="Agosto" name="Agosto" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Agosto" value="@ingreso.Agosto.ToString("C", new CultureInfo("es-AR"))" required />
+                            <span class="form-label">Cuotas:</span>
+                            <input id="Cuotas" name="Cuotas" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.Cuotas" onchange="CalcularMonto()" required />
                         </div>
                     </td>
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Septiembre:</span>
-                            <input id="Septiembre" name="Septiembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Septiembre" value="@ingreso.Septiembre.ToString("C", new CultureInfo("es-AR"))" required />
+                            <span class="form-label">Monto Total:</span>
+                            <input id="MontoTotal" name="MontoTotal" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.TotalDeuda.ToString("C", new CultureInfo("es-AR"))" required />
                         </div>
                     </td>
+
                     <td>
                         <div class="form-group">
-                            <span class="form-label">Octubre:</span>
-                            <input id="Octubre" name="Octubre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Octubre" value="@ingreso.Octubre.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Noviembre:</span>
-                            <input id="Noviembre" name="Noviembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Noviembre" value="@ingreso.Noviembre.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Diciembre:</span>
-                            <input id="EnDiciembreero" name="Diciembre" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" asp-for="@ingreso.Diciembre" value="@ingreso.Diciembre.ToString("C", new CultureInfo("es-AR"))" required />
+                            <span class="form-label">Estado:</span>
+                            <select id="Estado" name="Estado" class="form-control" required>
+                                @foreach (var item in @lstEstados)
+                                {
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
                         </div>
                     </td>
                 </tr>
