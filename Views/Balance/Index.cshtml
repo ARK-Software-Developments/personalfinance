@@ -137,18 +137,18 @@
 
                     <tr style="padding-right: 20px; text-align: right; background-color: @colorFila">
                         <td scope="row" id="Id">@entidad.Concepto</td>
-                        <td scope="row" id="Enero">@entidad.Enero.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Febrero">@entidad.Febrero.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Marzo">@entidad.Marzo.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Abril">@entidad.Abril.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Mayo">@entidad.Mayo.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Junio">@entidad.Junio.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Julio">@entidad.Julio.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Agosto">@entidad.Agosto.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Septiembre">@entidad.Septiembre.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Octubre">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Noviembre">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</td>
-                        <td scope="row" id="Diciembre">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Enero" style="@(@entidad.Enero < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Enero.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Febrero" style="@(@entidad.Febrero < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Febrero.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Marzo" style="@(@entidad.Marzo < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Marzo.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Abril" style="@(@entidad.Abril < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Abril.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Mayo" style="@(@entidad.Mayo < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Mayo.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Junio" style="@(@entidad.Junio < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Junio.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Julio" style="@(@entidad.Julio < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Julio.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Agosto" style="@(@entidad.Agosto < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Agosto.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Septiembre" style="@(@entidad.Septiembre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Septiembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Octubre" style="@(@entidad.Octubre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Noviembre" style="@(@entidad.Noviembre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Diciembre" style="@(@entidad.Diciembre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</td>
                     </tr>
                 }
             </tbody>
