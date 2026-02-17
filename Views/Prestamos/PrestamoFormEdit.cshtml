@@ -11,9 +11,9 @@
 
     Prestamo prestamo = ViewBag.Prestamo;
     List<PrestamoDetalle> prestamoDetalles = ViewBag.PrestamosDetalles;
-
     List<Entidad> entidades = ViewBag.Entidades;
-
+    decimal totalPagado  = ViewBag.TotalPagado;
+    decimal totalRestante = prestamo.TotalDeuda - totalPagado;                        
     string modeView = ViewBag.ModeView ? "disabled" : "";
 
     var lstEntidades = new List<SelectListItem>();
@@ -117,6 +117,8 @@
                             </select>
                         </div>
                     </td>
+                </tr>
+                <tr>
                     <td align="center">
                         <div class="form-group">
                             <span class="form-label">Razón:</span>
@@ -129,8 +131,6 @@
                             <input id="Resumen" name="Resumen" class="form-control" type="text" value="@prestamo.Resumen" required />
                         </div>
                     </td>
-                </tr>
-                <tr>
                     <td>
                         <div class="form-group">
                             <span class="form-label">Monto Capital:</span>
@@ -148,14 +148,7 @@
                             <span class="form-label">Cuotas:</span>
                             <input id="Cuotas" name="Cuotas" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.Cuotas" onchange="CalcularMonto()" required />
                         </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <span class="form-label">Monto Total:</span>
-                            <input id="MontoTotal" name="MontoTotal" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.TotalDeuda.ToString("C", new CultureInfo("es-AR"))" required />
-                        </div>
-                    </td>
-
+                    </td>                  
                     <td>
                         <div class="form-group">
                             <span class="form-label">Estado:</span>
@@ -172,6 +165,26 @@
                                     }
                                 }
                             </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto Total:</span>
+                            <input id="MontoTotal" name="MontoTotal" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@prestamo.TotalDeuda.ToString("C", new CultureInfo("es-AR"))" required />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto Pagado:</span>
+                            <input id="MontoPagado" name="MontoPagado" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@totalPagado.ToString("C", new CultureInfo("es-AR"))" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto Restante:</span>
+                            <input id="MontoPagado" name="MontoPagado" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="@totalRestante.ToString("C", new CultureInfo("es-AR"))" readonly />
                         </div>
                     </td>
                 </tr>
@@ -198,7 +211,8 @@
                     <th colspan="2">
                         &nbsp;
                         <form method="post" asp-controller="Pedidos">
-                            <button type="submit" class="btn btn-primary" asp-controller="Pedidos" asp-action="FormAddDetail" name="action" value="addDetail">Add new Detail</button>
+                            <input type="text" id="prestamoId" name="prestamoId" value="@prestamo.Id" hidden="hidden" />
+                            <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="addDetail">Add new Detail</button>
                         </form>
                     </th>
                 </tr>
@@ -216,10 +230,10 @@
                         <td align="center">@detalle.MetodoPago</td>
                         <td align="center">@detalle.Estado</td>
                         <td>
-                            <form method="post" asp-controller="Pedidos" asp-route-id="@detalle.Id">
-                                <input type="text" id="pedidoId" name="pedidoId" value="@prestamo.Id" hidden="hidden" />
+                            <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@detalle.Id">
+                                <input type="text" id="prestamoId" name="prestamoId" value="@prestamo.Id" hidden="hidden" />
                                 <input type="text" id="detalleId" name="detalleId" value="@detalle.Id" hidden="hidden" />
-                                <button type="submit" class="btn btn-secondary" asp-controller="Pedidos" asp-action="FormEditDetail" name="action" value="openFormEditDetail">Edit Detail</button>
+                                <button type="submit" class="btn btn-secondary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="editDetail">Edit Detail</button>
                             </form>
                         </td>
                     </tr>

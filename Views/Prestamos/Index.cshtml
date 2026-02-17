@@ -71,6 +71,7 @@
                     <th scope="col" style="text-align: right; padding-right: 5px;">Monto Cuota Prom.</th>
                     <th scope="col" style="text-align: right; padding-right: 5px;">Total Deuda</th>
                     <th scope="col">Estado</th>
+                    <th scope="col">Cant. Cuotas</th>
                     <th>
                         &nbsp;
                         <form method="post" asp-controller="@ViewBag.Modulo">
@@ -119,6 +120,7 @@
                         <td scope="row" id="MontoCuota" style="padding-right: 20px; text-align: right;">@entidad.MontoCuota.ToString("C", new CultureInfo("es-AR"))</td>
                         <td scope="row" id="TotalDeuda" style="padding-right: 20px; text-align: right;">@entidad.TotalDeuda.ToString("C", new CultureInfo("es-AR"))</td>
                         <td scope="row" id="Estado">@entidad.Estado</td>
+                        <td scope="row" id="CantidadCuotas">@entidad.CantidadCuotas</td>
                         <td scope="row">
                             <form method="post" asp-controller="@ViewBag.Modulo" asp-route-id="@entidad.Id">
                                 <input type="text" name="Id" value="@entidad.Id" hidden="hidden" />

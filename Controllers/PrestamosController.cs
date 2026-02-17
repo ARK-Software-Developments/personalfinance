@@ -98,7 +98,7 @@ public class PrestamosController : BaseController
 
         _logger.LogInformation("Inicializando PrestamosController => Index()");
         ViewBag.Modulo = Modulo;
-        ViewBag.Title = "Pagos";
+        ViewBag.Title = "Prestamos";
         ViewBag.Message = $"{Gestion} {Modulo}";
         ViewBag.ModeView = false;
         ViewBag.Buscar = "Buscar";
@@ -181,10 +181,15 @@ public class PrestamosController : BaseController
                     {
                         view = "PrestamoFormAdd";
                     }
+                    
+                    decimal totalMontos = prestamoDetalles?
+                                                    .FindAll(p => p.Estado == "COMPLETADO")
+                                                    .Sum(p => p.MontoCuota) ?? 0m;
 
                     ViewBag.PrestamosDetalles = prestamoDetalles
                                                     .OrderBy(o => o.Cuota)
                                                     .ToList();
+                    ViewBag.TotalPagado = totalMontos;
 
                     return await Task.FromResult<IActionResult>(View(view, ViewBag));
 
@@ -289,6 +294,113 @@ public class PrestamosController : BaseController
 
                     return await Task.FromResult<IActionResult>(View(view, ViewBag));
 
+                case "addDetail":
+                    view = "PrestamoDetalleFormAdd";
+                    ViewBag.Title = "Detalle Prestamo";
+                    ViewBag.Message = $"{Gestion} Detalle Prestamo";
+                    ViewBag.Prestamo = prestamos?.Find(p => p.Id == int.Parse(this.Request.Form["prestamoId"])); ;
+
+                    return await Task.FromResult<IActionResult>(View(view, ViewBag));
+
+                case "editDetail":
+                    view = "PrestamoDetalleFormEdit";
+                    ViewBag.Title = "Detalle Prestamo";
+                    ViewBag.Message = $"{Gestion} Detalle Prestamo";
+
+                    prestamoDetalles = this.prestamoDetalleResponse.PrestamoDetalles?.FindAll(p => p.Id == int.Parse(this.Request.Form["detalleId"]));
+
+                    ViewBag.PrestamoDetalle = prestamoDetalles[0];
+
+                    return await Task.FromResult<IActionResult>(View(view, ViewBag));
+
+                case "actualizarDetail":
+                case "generarDetail":
+                    /*
+                     logica para actualizar el detalle del prestamo
+                     */
+
+                    var mapPrestamoDetalle = Utils.MapRequest<PrestamoDetalle>(this.Request.Form, ServicioEnum.PrestamoDetalles);
+
+                    this.generalRequest = new GeneralRequest()
+                    {
+                        Parametros =
+                        [
+                           new Parametro()
+                           {
+                               Nombre = "inLoansAssignedId",
+                               Valor = mapPrestamoDetalle.PrestamoId,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "inNumberInstallment",
+                               Valor = mapPrestamoDetalle.Cuota,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "inFeeAmount",
+                               Valor = mapPrestamoDetalle.MontoCuota,
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "inPaymentDate",
+                               Valor = mapPrestamoDetalle.FechaPagado?.ToString("yyyy-MM-dd"),
+                           },
+                            new Parametro()
+                           {
+                               Nombre = "inProofOfPayment",
+                               Valor = mapPrestamoDetalle.ComprobantePago,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "inPaymentMethod",
+                               Valor = mapPrestamoDetalle.MetodoPago,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "inStatus",
+                               Valor = mapPrestamoDetalle.Estado,
+                           },
+                           new Parametro()
+                           {
+                               Nombre = "inObservations",
+                               Valor = mapPrestamoDetalle.Observaciones,
+                           }
+                        ]
+                    };
+
+                    generalDataResponse = new GeneralDataResponse();
+
+                    if (action == "actualizarDetail")
+                    {
+                        var parametro = new Parametro()
+                        {
+                            Nombre = "inId",
+                            Valor = mapPrestamoDetalle.Id,
+                        };
+                        this.generalRequest.Parametros.Add(parametro);
+
+                        this.generalDataResponse = await this.serviceCaller.ActualizarRegistro<GeneralDataResponse>(ServicioEnum.PrestamoDetalles, this.generalRequest);
+                    }
+                    else
+                    {
+                        this.generalDataResponse = await this.serviceCaller.GenerarRegistro<GeneralDataResponse>(ServicioEnum.PrestamoDetalles, this.generalRequest);
+                    }
+                    
+                    CacheAdmin.Remove(HttpContext, ServicioEnum.PrestamoDetalles);
+
+                    this.CargarVariablesIniciales();
+                    this.prestamoDetalleResponse = await this.serviceCaller.ObtenerRegistros<PrestamoDetalleResponse>(ServicioEnum.PrestamoDetalles);
+
+                    view = "PrestamoFormEdit";
+
+                    ViewBag.Prestamo = prestamos?.Find(p => p.Id == int.Parse(this.Request.Form["PrestamoId"]));
+                    prestamoDetalles = this.prestamoDetalleResponse.PrestamoDetalles?.FindAll(p => p.PrestamoId == int.Parse(this.Request.Form["PrestamoId"]));
+                    ViewBag.PrestamosDetalles = prestamoDetalles
+                                                    .OrderBy(o => o.Cuota)
+                                                    .ToList();
+
+                    return await Task.FromResult<IActionResult>(View(view, ViewBag));
+
                 default:
                     ViewBag.Prestamos = prestamos;
 
@@ -310,5 +422,14 @@ public class PrestamosController : BaseController
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private void CargarVariablesIniciales()
+    {
+        ViewBag.Modulo = Modulo;
+        ViewBag.Title = "Prestamos";
+        ViewBag.Message = $"{Gestion} {Modulo}";
+        ViewBag.ModeView = false;
+        ViewBag.Buscar = "Buscar";
     }
 }

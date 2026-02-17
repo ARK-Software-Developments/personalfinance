@@ -231,6 +231,8 @@
    
         public static T MapRequest<T>(IFormCollection form, ServicioEnum servicioEnum)
         {
+            string estado = "ACTIVO";
+
             switch (servicioEnum)
             {
                 case ServicioEnum.GastosMensuales:
@@ -394,7 +396,6 @@
                     return (T)inversionElemento;
 
                 case ServicioEnum.Prestamos:
-                    string estado = "ACTIVO";
 
                     switch (form["Estado"])
                     {
@@ -426,6 +427,32 @@
                     };
 
                     return (T)prestamo;
+
+                case ServicioEnum.PrestamoDetalles:
+
+                    switch (form["Estado"])
+                    {
+                        case "1": estado = "PAGO AL DIA"; break;
+                        case "2": estado = "PAGO ATRAZADO"; break;
+                        case "3": estado = "COMPLETADO"; break;
+                        case "4": estado = "SIN PROYECCION"; break;
+                        case "5": estado = "PERDIDO"; break;
+                    }
+
+                    object prestamoDetalle = new PrestamoDetalle()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        FechaPagado = form.ContainsKey("FechaDeposito") ? DateTime.ParseExact(form["FechaDeposito"], "yyyy-MM-dd", cultureInfor) : DateTime.Now,
+                        Cuota = form.ContainsKey("Cuota") && !string.IsNullOrEmpty(form["Cuota"]) ? int.Parse(form["Cuota"]) : 0,
+                        MontoCuota = form.ContainsKey("MontoCuotaPromedio") && !string.IsNullOrEmpty(form["MontoCuotaPromedio"]) ? ConvertirMonto(form["MontoCuotaPromedio"]) : 0,
+                        MetodoPago = form.ContainsKey("MetodoPago") && !string.IsNullOrEmpty(form["MetodoPago"]) ? form["MetodoPago"].ToString() : string.Empty,
+                        ComprobantePago = form.ContainsKey("ComprobantePago") && !string.IsNullOrEmpty(form["ComprobantePago"]) ? form["ComprobantePago"].ToString() : string.Empty,
+                        Observaciones = form.ContainsKey("Observaciones") && !string.IsNullOrEmpty(form["Observaciones"]) ? form["Observaciones"].ToString() : string.Empty,
+                        PrestamoId = form.ContainsKey("PrestamoId") && !string.IsNullOrEmpty(form["PrestamoId"]) ? int.Parse(form["PrestamoId"]) : 0,
+                        Estado = estado,
+                    };
+
+                    return (T)prestamoDetalle;
 
                 default:
                     return (T)new object();
