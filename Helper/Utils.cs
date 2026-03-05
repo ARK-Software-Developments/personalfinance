@@ -265,6 +265,7 @@
                         Pagado = form.ContainsKey("Pagado") ? bool.Parse(form["Pagado"]) : false,
                         Reservado = form.ContainsKey("Reservado") ? bool.Parse(form["Reservado"]) : false,
                         Verificado = form.ContainsKey("Verificado") ? bool.Parse(form["Verificado"]) : false,
+                        Recurso = form["Recurso"],
                         Activo = true,
                     };
 

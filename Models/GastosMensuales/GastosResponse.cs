@@ -1,6 +1,7 @@
 namespace PersonalFinance.Models.Gastos;
 
 using Newtonsoft.Json;
+using PersonalFinanceApiNetCoreModel;
 
 public class GastosResponse : GeneralResponse
 {

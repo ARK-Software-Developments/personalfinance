@@ -11,6 +11,7 @@ using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Pagos;
+using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.Prestamos;
 using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
@@ -23,6 +24,7 @@ public class PrestamosController : BaseController
     private readonly string Gestion = "Administrar";
     private readonly string Modulo = "Prestamos";
     private readonly ILogger<PrestamosController> _logger;
+    private readonly List<SelectListItem> lstEstados = [];
 
     public PrestamosController(ILogger<PrestamosController> logger)
     {
@@ -33,77 +35,15 @@ public class PrestamosController : BaseController
         };
 
         this.prestamoResponse = new();
-    }
 
-    [HttpPost]
-    [HttpGet]
-    public async Task<IActionResult> Index([FromForm] Prestamo pago, string action)
-    {
-        this.Inicialized();
-
-        ViewBag.Modulo = Modulo;
-        ViewBag.Title = $"{Gestion}";
-        ViewBag.Message = $"Gestión de {Modulo}";
-        ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
-        ViewBag.Buscar = "Buscar";
-
-        List<Prestamo> prestamos = [];
-
-        try
-        {
-            this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
-            this.prestamoDetalleResponse = await this.serviceCaller.ObtenerRegistros<PrestamoDetalleResponse>(ServicioEnum.PrestamoDetalles);
-            
-            prestamos = this.prestamoResponse.Prestamos;
-
-            if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
+        lstEstados.Add(
+            new SelectListItem()
             {
-                string search = this.Request.Query["search"].ToString().ToUpper();
+                Value = "0",
+                Text = "PENDIENTE",
+                Selected = false,
+            });
 
-                prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Beneficiario) &&  x.Beneficiario.Contains(search));
-
-                if (prestamos?.Count == 0)
-                {
-                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Resumen) && x.Resumen.Contains(search));
-                }
-
-                if (prestamos?.Count == 0)
-                {
-                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Razon) && x.Razon.Contains(search));
-                }
-
-                if (prestamos?.Count == 0)
-                {
-                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Estado) && x.Estado.Contains(search));
-                }
-
-                ViewBag.Buscar = "Limpiar";
-            }
-
-            ViewBag.Prestamos = prestamos;
-            ViewBag.PrestamosDetalles = this.prestamoDetalleResponse.PrestamoDetalles;
-
-            return await Task.FromResult<IActionResult>(View());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogCritical(ex.ToString());
-            return await Task.FromResult<IActionResult>(View(new List<Prestamo>()));
-        }
-    }
-
-    public async Task<IActionResult> Prestamos([FromForm] Prestamo prestamo, string action)
-    {
-        this.Inicialized();
-
-        _logger.LogInformation("Inicializando PrestamosController => Index()");
-        ViewBag.Modulo = Modulo;
-        ViewBag.Title = "Prestamos";
-        ViewBag.Message = $"{Gestion} {Modulo}";
-        ViewBag.ModeView = false;
-        ViewBag.Buscar = "Buscar";
-
-        var lstEstados = new List<SelectListItem>();
         lstEstados.Add(
             new SelectListItem()
             {
@@ -143,6 +83,96 @@ public class PrestamosController : BaseController
                 Text = "PERDIDO",
                 Selected = false,
             });
+    }
+
+    [HttpPost]
+    [HttpGet]
+    public async Task<IActionResult> Index([FromForm] Prestamo pago, string action)
+    {
+        this.Inicialized();
+
+        ViewBag.Modulo = Modulo;
+        ViewBag.Title = $"{Gestion}";
+        ViewBag.Message = $"Gestión de {Modulo}";
+        ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
+        ViewBag.Buscar = "Buscar";
+
+        List<Prestamo> prestamos = [];
+
+        try
+        {
+            this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
+
+            var lstEntidades = new List<SelectListItem>();
+            foreach (var e in this.entidadesResponse?.Entidades)
+            {
+                lstEntidades.Add(
+                new SelectListItem()
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Nombre,
+                    Selected = false
+                });
+            }
+
+            this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
+            this.prestamoDetalleResponse = await this.serviceCaller.ObtenerRegistros<PrestamoDetalleResponse>(ServicioEnum.PrestamoDetalles);
+            
+            prestamos = this.prestamoResponse.Prestamos;
+
+            if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
+            {
+                string search = this.Request.Query["search"].ToString().ToUpper();
+
+                prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Beneficiario) &&  x.Beneficiario.Contains(search));
+
+                if (prestamos?.Count == 0)
+                {
+                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Numero) && x.Numero.Contains(search));
+                }
+
+                if (prestamos?.Count == 0)
+                {
+                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Resumen) && x.Resumen.Contains(search));
+                }
+
+                if (prestamos?.Count == 0)
+                {
+                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Razon) && x.Razon.Contains(search));
+                }
+
+                if (prestamos?.Count == 0)
+                {
+                    prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Estado) && x.Estado.Contains(search));
+                }
+
+                ViewBag.Buscar = "Limpiar";
+            }
+
+            ViewBag.Entidades = lstEntidades;
+            ViewBag.Estados = lstEstados;
+            ViewBag.Prestamos = prestamos?.FindAll(p => p.Estado != "PERDIDO").ToList();
+            ViewBag.PrestamosDetalles = this.prestamoDetalleResponse.PrestamoDetalles;
+
+            return await Task.FromResult<IActionResult>(View());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex.ToString());
+            return await Task.FromResult<IActionResult>(View(new List<Prestamo>()));
+        }
+    }
+
+    public async Task<IActionResult> Prestamos([FromForm] Prestamo prestamo, string action)
+    {
+        this.Inicialized();
+
+        _logger.LogInformation("Inicializando PrestamosController => Index()");
+        ViewBag.Modulo = Modulo;
+        ViewBag.Title = "Prestamos";
+        ViewBag.Message = $"{Gestion} {Modulo}";
+        ViewBag.ModeView = false;
+        ViewBag.Buscar = "Buscar";
 
         ViewBag.Estados = lstEstados;
         string view = "Index";

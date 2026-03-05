@@ -4,6 +4,7 @@
 
     using Newtonsoft.Json;
     using PersonalFinance.Models.IngresosTipo;
+    using PersonalFinanceApiNetCoreModel;
 
     /// <summary>
     /// Clase Gasto.

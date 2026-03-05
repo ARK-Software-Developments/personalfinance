@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using PersonalFinanceApiNetCoreModel;
 
 namespace PersonalFinance.Models.Balance;
 

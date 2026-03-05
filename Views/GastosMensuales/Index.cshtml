@@ -1,11 +1,12 @@
 ﻿@using PersonalFinance.Helper
-@using PersonalFinance.Models.Gastos
 @using System.Globalization
+@using PersonalFinance.Models.Pedidos
+@using PersonalFinanceApiNetCoreModel
 @{
     ViewData["Title"] = ViewBag.Title;
     ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
     List<Gasto> gastos = ViewBag.Gastos;
-
+    List<Estado> recursos = ViewBag.Recursos;
     DateTime fechaActual = DateTime.Now;
 
     string mesCompletoAnterior = Utils.LetraCapital(fechaActual.AddMonths(-1).ToString("MMMM", new CultureInfo("es-ES")));
@@ -293,6 +294,7 @@
                     <th scope="col" align="center">
                         <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#miModalP" title="Proceso de pagado general">P</button>
                     </th>
+                    <th scope="col">Recurso</th>
                     <th scope="col">Activo</th>
                     <th colspan="2">
                         &nbsp;
@@ -322,6 +324,7 @@
                     var checkedR = entidad.Reservado ? "checked" : string.Empty;
                     var checkedP = entidad.Pagado ? "checked" : string.Empty;
                     var checkedA = entidad.Activo ? "checked" : string.Empty;
+                    var recurso = recursos?.Find(r => r.Id.ToString() == entidad.Recurso)?.Nombre;
 
                     <tr>
                         <td scope="row" id="Id">@entidad.Id</td>
@@ -335,6 +338,7 @@
                         <td scope="row" id="Verificado" align="center"><input id="CVerificado" type="checkbox" @checkedV></td>
                         <td scope="row" id="Reservado" align="center"><input id="CReservado" type="checkbox" @checkedR></td>
                         <td scope="row" id="Pagado" align="center"><input id="CPagado" type="checkbox" @checkedP></td>
+                        <td scope="row" id="Recurso">@recurso</td>
                         <td scope="row" id="Activo"><input id="CPagado" type="checkbox" @checkedA></td>
                         <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                             <i class="fa" aria-hidden="false"></i>

@@ -9,6 +9,7 @@ using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
+using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Service;
 using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
@@ -47,6 +48,10 @@ public class GastosMensualesController : BaseController
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
             gastos = gastosResponse.Gastos;
 
+            // Obtener Recursos (Estados)
+            this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
+            var recursos = this.estadosResponse?.Estados?.FindAll(e => e.Tabla.Contains("BILLS")).ToList();
+
             if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
             {
                 string search = this.Request.Query["search"].ToString().ToUpper();
@@ -68,12 +73,19 @@ public class GastosMensualesController : BaseController
                     gastos = this.gastosResponse.Gastos?.FindAll(x => !string.IsNullOrEmpty(x.Observaciones) && x.Observaciones.Contains(search));
                 }
 
+                if (gastos?.Count == 0)
+                {
+                    var id = recursos?.Find(r => r.Nombre == search).Id.ToString();
+                    gastos = this.gastosResponse.Gastos?.FindAll(x => x.Recurso == id);
+                }
+
                 ViewBag.Buscar = "Limpiar";
             }
 
+            ViewBag.Recursos = recursos;
             ViewBag.Gastos = gastos;
 
-            return View(ViewBag);
+            return await Task.FromResult<IActionResult>(View("Index", ViewBag));
 
         }
         catch (Exception ex)
@@ -207,6 +219,11 @@ public class GastosMensualesController : BaseController
                          },
                          new Parametro()
                          {
+                             Nombre = "pResourcePayment",
+                             Valor = gasto.Recurso,
+                         },
+                         new Parametro()
+                         {
                              Nombre = "pActive",
                              Valor = 1,
                          },
@@ -271,6 +288,10 @@ public class GastosMensualesController : BaseController
             CacheAdmin.Remove(HttpContext, ServicioEnum.GastosMensuales);
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
 
+            // Obtener Recursos (Estados)
+            this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
+            ViewBag.Recursos = this.estadosResponse?.Estados?.FindAll(e => e.Tabla.Contains("BILLS")).ToList();
+
             ViewBag.Gastos = gastosResponse?.Gastos;
             ViewBag.Buscar = "Buscar";
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
@@ -296,13 +317,16 @@ public class GastosMensualesController : BaseController
         ViewBag.Villeteras = new List<Entidad>();
 
         // Obtener Villeteras o Entidades
-        entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades, keyValuePairs);
-        ViewBag.Villeteras = entidadesResponse?.Entidades;
+        this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades, keyValuePairs);
+        ViewBag.Villeteras = this.entidadesResponse?.Entidades;
 
         // Obtener Tipo de Gastos
-        tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
+        this.tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
+        ViewBag.TiposGastos = this.tiposGastosResponse?.TiposGastos;
 
-        ViewBag.TiposGastos = tiposGastosResponse?.TiposGastos;
+        // Obtener Recursos (Estados)
+        this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
+        ViewBag.Recursos = this.estadosResponse?.Estados?.FindAll(e => e.Tabla.Contains("BILLS")).ToList();
 
         return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
     }
@@ -334,6 +358,10 @@ public class GastosMensualesController : BaseController
                 // Obtener Tipo de Gastos
                 tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
                 ViewBag.TiposGastos = tiposGastosResponse?.TiposGastos;
+
+                // Obtener Recursos (Estados)
+                this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
+                ViewBag.Recursos = this.estadosResponse?.Estados?.FindAll(e => e.Tabla.Contains("BILLS")).ToList();
 
                 ViewBag.ModeView = action == "openFormView" ? true : false;
                 ViewBag.Gasto = gastosResponse.Gastos.Find(t => t.Id == gasto.Id);

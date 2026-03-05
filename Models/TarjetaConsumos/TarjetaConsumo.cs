@@ -1,6 +1,6 @@
 ﻿using PersonalFinance.Models.Tarjetas;
-using PersonalFinance.Models.Transacciones;
-using System.Text.Json.Serialization;
+using PersonalFinanceApiNetCoreModel;
+
 
 namespace PersonalFinance.Models.TarjetaConsumos
 {

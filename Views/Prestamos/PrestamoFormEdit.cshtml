@@ -203,6 +203,7 @@
                     <th scope="col">Observaciones</th>
                     <th scope="col">Cuota</th>
                     <th scope="col">Monto Cuota</th>
+                    <th scope="col">Fecha Vencimiento</th>
                     <th scope="col">Fecha Pago</th>
                     <th scope="col">Comprobante</th>
                     <th scope="col">Método de Pago</th>
@@ -225,6 +226,7 @@
                         <td>@detalle.Observaciones</td>
                         <td>@detalle.Cuota</td>
                         <td align="center">@detalle.MontoCuota.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td align="center">@detalle.FechaVencimiento?.ToString("dd/MM/yyyy")</td>
                         <td align="center">@detalle.FechaPagado?.ToString("dd/MM/yyyy")</td>
                         <td align="center">@detalle.ComprobantePago</td>
                         <td align="center">@detalle.MetodoPago</td>
