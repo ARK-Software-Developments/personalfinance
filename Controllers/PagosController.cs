@@ -1,6 +1,4 @@
 namespace PersonalFinance.Controllers;
-
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
@@ -36,16 +34,16 @@ public class PagosController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de {Modulo}";
-
+        ViewBag.Buscar = "Buscar";
         try
         {
 
-            return await Task.FromResult<IActionResult>(View());
+            return await Task.FromResult<IActionResult>(View(ViewBag));
         }
         catch (Exception ex)
         {
             _logger.LogCritical(ex.ToString());
-            return await Task.FromResult<IActionResult>(View(new List<Pago>()));
+            return await Task.FromResult<IActionResult>(View(ViewBag));
         }
     }
 
@@ -57,12 +55,15 @@ public class PagosController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = "Pagos";
         ViewBag.Message = $"{Gestion} {Modulo}";
+        ViewBag.Buscar = "Buscar";
+
+        List<Pago> pagos = [];
 
         try
         {
 
-            pagosResponse = await this.serviceCaller.ObtenerRegistros<PagosResponse>(ServicioEnum.Pagos);
-
+            this.pagosResponse = await this.serviceCaller.ObtenerRegistros<PagosResponse>(ServicioEnum.Pagos);
+            pagos = this.pagosResponse?.Pagos;
 
             switch (action)
             {
@@ -140,7 +141,38 @@ public class PagosController : BaseController
                     return await Task.FromResult<IActionResult>(View(ViewBag));
                 
                 default:
-                    ViewBag.Pagos = pagosResponse.Pagos;
+                    
+
+                    if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
+                    {
+                        string search = this.Request.Query["search"].ToString().ToUpper();
+
+                        pagos = this.pagosResponse?.Pagos?.FindAll(x => !string.IsNullOrEmpty(x.TipoDePago) && x.TipoDePago.Contains(search));
+
+                        if (pagos?.Count == 0)
+                        {
+                            pagos = this.pagosResponse.Pagos?.FindAll(x => x.RecursoDelPago != null && x.RecursoDelPago.Nombre.Contains(search));
+                        }
+
+                        if (pagos?.Count == 0)
+                        {
+                            pagos = this.pagosResponse.Pagos?.FindAll(x => x.RecursoDelPago != null && x.RecursoDelPago.Tipo.Contains(search));
+                        }
+
+                        if (pagos?.Count == 0)
+                        {
+                            pagos = this.pagosResponse.Pagos?.FindAll(x => x.TipoDeGasto != null && x.TipoDeGasto.Tipo.Contains(search));
+                        }
+
+                        if (pagos?.Count == 0)
+                        {
+                            pagos = this.pagosResponse?.Pagos?.FindAll(x => !string.IsNullOrEmpty(x.CodigoRegistro) && x.CodigoRegistro.Contains(search));
+                        }
+
+                        ViewBag.Buscar = "Limpiar";
+                    }
+
+                    ViewBag.Pagos = pagos;
 
                     return await Task.FromResult<IActionResult>(View(ViewBag));
             }

@@ -20,51 +20,79 @@
 </div>
 
 <div class="tab-content">
-    <table class="table myaccordion table-hover" id="accordion">
-        <thead>
-            <tr>
-                <th scope="col">Identificador interno</th>
-                <th scope="col" align="center">Fecha de Registracion</th>
-                <th scope="col" align="center">Fecha del Pago</th>
-                <th scope="col" align="center">Codigo Registro</th>
-                <th scope="col" align="center">Recurso Del Pago</th>
-                <th scope="col" align="center">Tipo Gasto / Motivo Pago</th>
-                <th scope="col" align="center">Monto Presup.</th>
-                <th scope="col" align="center">Monto Pagado</th>
-                <th scope="col" align="center">Desvio Presup.</th>
-                <th scope="col" align="center">Gasto</th>
-                <th>
-                    &nbsp;
-                    <form method="post" asp-controller="@ViewBag.Modulo">
-                        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="PagosPedidos" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
-                    </form>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var pago in @pagos)
-            {
-                var desvPresup = @pago.MontoPresupuestado - @pago.MontoPagado;
+    <div class="row">
+        <div class="datatable-top">
+            <div class="datatable-search">
 
-                var cssDesvPresup = desvPresup < 0 ? colorWarning : (desvPresup > 0 ? colorSuccess : colorInfo );
+                <form method="get">
+                    @if (@ViewBag.Buscar == "Buscar")
+                    {
+                        <input type="text"
+                               name="search"
+                               value=""
+                               placeholder="Buscar..."
+                               class="form-control"
+                               style="width: 250px; display:inline-block;" />
+                    }
 
+
+                    <button type="submit" class="btn btn-primary">
+                        @ViewBag.Buscar
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <p></p>
+    <div class="row">
+
+        <table class="table myaccordion table-hover" id="accordion">
+            <thead>
                 <tr>
-                    <td scope="row" id="Id">@pago.Id</td>
-                    <td scope="row" id="FechaRegistro">@pago.FechaRegistro?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
-                    <td scope="row" id="FechaPago">@pago.FechaPago?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
-                    <td scope="row" id="CodigoRegistro">@pago.CodigoRegistro</td>
-                    <td scope="row" id="RecursoDelPago">@pago.RecursoDelPago.Nombre-@pago.RecursoDelPago.Tipo</td>
-                    <td scope="row" id="TipoDePago">@pago.TipoDePago</td>
-                    <td scope="row" id="MontoPresupuestado">@pago.MontoPresupuestado.ToString("C", new CultureInfo("es-AR"))</td>
-                    <td scope="row" id="MontoPagado">@pago.MontoPagado.ToString("C", new CultureInfo("es-AR"))</td>                    
-                    <td scope="row" id="MontoDesvio" align="center" style="@cssDesvPresup">
-                        @desvPresup.ToString("C", new CultureInfo("es-AR"))
-                    </td>
-                    <td scope="row" id="TipoDeGasto">@pago.TipoDeGasto.Tipo</td>
+                    <th scope="col">Identificador interno</th>
+                    <th scope="col" align="center">Fecha de Registracion</th>
+                    <th scope="col" align="center">Fecha del Pago</th>
+                    <th scope="col" align="center">Codigo Registro</th>
+                    <th scope="col" align="center">Recurso Del Pago</th>
+                    <th scope="col" align="center">Tipo Gasto / Motivo Pago</th>
+                    <th scope="col" align="center">Monto Presup.</th>
+                    <th scope="col" align="center">Monto Pagado</th>
+                    <th scope="col" align="center">Desvio Presup.</th>
+                    <th scope="col" align="center">Gasto</th>
+                    <th>
+                        &nbsp;
+                        <form method="post" asp-controller="@ViewBag.Modulo">
+                            <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="PagosPedidos" name="action" value="openFormAdd">Add new @ViewBag.Modulo</button>
+                        </form>
+                    </th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var pago in @pagos)
+                {
+                    var desvPresup = @pago.MontoPresupuestado - @pago.MontoPagado;
+
+                    var cssDesvPresup = desvPresup < 0 ? colorWarning : (desvPresup > 0 ? colorSuccess : colorInfo);
+
+                    <tr>
+                        <td scope="row" id="Id">@pago.Id</td>
+                        <td scope="row" id="FechaRegistro">@pago.FechaRegistro?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
+                        <td scope="row" id="FechaPago">@pago.FechaPago?.ToString("dd/MM/yyy hh:mm:ss", new CultureInfo("es-ES"))</td>
+                        <td scope="row" id="CodigoRegistro">@pago.CodigoRegistro</td>
+                        <td scope="row" id="RecursoDelPago">@pago.RecursoDelPago.Nombre-@pago.RecursoDelPago.Tipo</td>
+                        <td scope="row" id="TipoDePago">@pago.TipoDePago</td>
+                        <td scope="row" id="MontoPresupuestado">@pago.MontoPresupuestado.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="MontoPagado">@pago.MontoPagado.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="MontoDesvio" align="center" style="@cssDesvPresup">
+                            @desvPresup.ToString("C", new CultureInfo("es-AR"))
+                        </td>
+                        <td scope="row" id="TipoDeGasto">@pago.TipoDeGasto.Tipo</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <p></p>
