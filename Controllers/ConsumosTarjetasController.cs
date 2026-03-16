@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Enums;
+using PersonalFinance.Models.Pagos;
+using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
+using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
@@ -36,11 +39,55 @@ public class ConsumosTarjetasController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de {Modulo}";
-
+        ViewBag.Buscar = "Buscar";
+        ViewBag.Estado = "1";
+        List<TarjetaConsumo> tarjetaConsumos = [];
         try
         {
-            tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
-            ViewBag.TarjetaConsumos = tarjetaConsumoResponse.TarjetaConsumos;
+            this.tarjetaConsumoResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResponse>(ServicioEnum.ConsumosTarjeta, keyValuePairs);
+            tarjetaConsumos = this.tarjetaConsumoResponse?.TarjetaConsumos;
+
+            if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
+            {
+                string search = this.Request.Query["search"].ToString().ToUpper();
+
+                tarjetaConsumos = this.tarjetaConsumoResponse?.TarjetaConsumos.FindAll(t => t.EntidadCompra.Contains(search)).ToList();
+
+                if (tarjetaConsumos?.Count == 0)
+                {
+                    tarjetaConsumos = this.tarjetaConsumoResponse.TarjetaConsumos?.FindAll(x => x.Detalle.Contains(search));
+                }
+
+                if (tarjetaConsumos?.Count == 0)
+                {
+                    tarjetaConsumos = this.tarjetaConsumoResponse.TarjetaConsumos?.FindAll(x => x.Tarjeta.Nombre.Contains(search));
+                }
+               
+
+                ViewBag.Buscar = "Limpiar";
+            }
+            else if (this.Request.Query.ContainsKey("Estado") && !string.IsNullOrEmpty(this.Request.Query["Estado"]))
+            {
+                string estado = this.Request.Query["Estado"].ToString().ToUpper();
+                
+                if (estado != "0")
+                {
+                    ViewBag.Estado = estado;
+                    tarjetaConsumos = this.tarjetaConsumoResponse.TarjetaConsumos?.FindAll(x => x.Pagado == (estado == "2" ? true : false));
+                }
+                else
+                {
+                    tarjetaConsumos = this.tarjetaConsumoResponse.TarjetaConsumos;
+                }
+
+                ViewBag.Buscar = "Limpiar";
+            }
+            else
+            {
+                tarjetaConsumos = this.tarjetaConsumoResponse.TarjetaConsumos?.FindAll(x => !x.Pagado);
+            }
+
+            ViewBag.TarjetaConsumos = tarjetaConsumos;
 
             if (this.Request.Form.ContainsKey("TransaccionId"))
             {
