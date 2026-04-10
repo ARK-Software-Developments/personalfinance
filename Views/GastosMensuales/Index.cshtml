@@ -35,6 +35,11 @@
     });
 
 
+    function CargarId(id) {
+                $('#EntidadId').val(id);
+            };
+
+
 </script>
 
 <div class="text-center">
@@ -245,6 +250,51 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="miModalA" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proceso de marcado Activado/Desactivado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Desea confirmar en Marcar el Presupuesto del Mes actual?.
+            </div>
+            <div class="modal-footer" style="display: ruby;">
+                <form method="post" asp-controller="@ViewBag.Modulo">
+                    <div class="form-group" style="display: ruby;">
+                        <table style="position: center;">
+                            <tr>
+                                <td style="width:30%;">
+                                    <div class="form-group">
+                                        <span class="form-label">Marcar como:</span>
+                                    </div>
+                                </td>
+                                <td style="width:70%;">
+                                    <div class="form-group">
+                                        <select id="Activo" name="Activo" class="form-control" required>
+                                            <option value="1" selected>Activado</option>
+                                            <option value="0">Desactivado</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" id="EntidadId" name="EntidadId" value="" hidden />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>  </td>
+                                <td style="width:50%;"><button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="GastosMensuales" name="action" value="activo">Confirmar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Estructuras del Modales -->
 
 <div class="tab-content">
@@ -339,7 +389,10 @@
                         <td scope="row" id="Reservado" align="center"><input id="CReservado" type="checkbox" @checkedR></td>
                         <td scope="row" id="Pagado" align="center"><input id="CPagado" type="checkbox" @checkedP></td>
                         <td scope="row" id="Recurso">@recurso</td>
-                        <td scope="row" id="Activo"><input id="CPagado" type="checkbox" @checkedA></td>
+                        <td scope="row" id="Activo" align="center">
+                            <input id="CActivo" type="checkbox" onclick="" @checkedA>
+                            <button type="button" id="CActivo" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#miModalA" onclick="CargarId(@entidad.Id)" title="Proceso de desactivación">A</button>
+                        </td>
                         <td data-toggle="collapse" data-target="@collapseN" aria-expanded="false" aria-controls="@collapse" class="collapsed">
                             <i class="fa" aria-hidden="false"></i>
                         </td>

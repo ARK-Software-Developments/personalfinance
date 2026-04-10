@@ -42,5 +42,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "processvrp")]
         ProcesoVRP = 107,
+
+        [Api(Method = "processad")]
+        ProcesoAD = 108,
     }
 }

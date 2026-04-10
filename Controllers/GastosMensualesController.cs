@@ -13,6 +13,7 @@ using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Service;
 using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 
 public class GastosMensualesController : BaseController
@@ -257,7 +258,6 @@ public class GastosMensualesController : BaseController
                 case "reservado":
                 case "pagado":
 
-
                     this.generalRequest = new()
                     {
                         Parametros = [
@@ -282,6 +282,29 @@ public class GastosMensualesController : BaseController
                     generalDataResponse = await this.EjecutarProceso(ServicioEnum.Procesos, MetodoEnum.ProcesoVRP);
                     break;
 
+                case "activo":
+                    var id = this.Request.Form["EntidadId"];
+                    var estado = this.Request.Form["Activo"];
+
+                    this.generalRequest = new()
+                    {
+                        Parametros = [
+                            new Parametro()
+                             {
+                                 Nombre = "pId",
+                                 Valor = int.Parse(id.ToString(), CultureInfo.InvariantCulture),
+                             },
+                             new Parametro()
+                             {
+                                 Nombre = "pActive",
+                                 Valor = int.Parse(estado.ToString(), CultureInfo.InvariantCulture),
+                             },
+                        ]
+                    };
+
+                    this.generalDataResponse = await this.EjecutarProceso(ServicioEnum.Procesos, MetodoEnum.ProcesoAD);
+
+                    break;
             }
 
 
