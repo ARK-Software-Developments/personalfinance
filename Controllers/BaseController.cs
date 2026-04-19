@@ -56,6 +56,7 @@ namespace PersonalFinance.Controllers
         public InversionTipoResponse inversionTipoResponse;
         public InversionesElementosResponse inversionesElementosResponse;
         public InversionesInstrumentosResponse inversionesInstrumentosResponse;
+        public GastoResumenCategoriaResponse gastoResumenCategoriaResponse;
 
         public HttpContext httpContext;
 

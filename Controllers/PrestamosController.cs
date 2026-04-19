@@ -36,12 +36,19 @@ public class PrestamosController : BaseController
 
         this.prestamoResponse = new();
 
+        this.CargarEstados(1);
+    }
+
+    private void CargarEstados(int selected)
+    {
+        lstEstados.Clear();
+
         lstEstados.Add(
             new SelectListItem()
             {
                 Value = "0",
                 Text = "PENDIENTE",
-                Selected = false,
+                Selected = selected == 0 ? true : false,
             });
 
         lstEstados.Add(
@@ -49,15 +56,15 @@ public class PrestamosController : BaseController
             {
                 Value = "1",
                 Text = "PAGO AL DIA",
-                Selected = false,
+                Selected = selected == 1 ? true : false,
             });
 
         lstEstados.Add(
             new SelectListItem()
             {
                 Value = "2",
-                Text = "PAGOS ATRAZADOS",
-                Selected = false,
+                Text = "PAGO ATRAZADO",
+                Selected = selected == 2 ? true : false,
             });
 
         lstEstados.Add(
@@ -65,7 +72,7 @@ public class PrestamosController : BaseController
             {
                 Value = "3",
                 Text = "COMPLETADO",
-                Selected = false,
+                Selected = selected == 3 ? true : false,
             });
 
         lstEstados.Add(
@@ -73,7 +80,7 @@ public class PrestamosController : BaseController
             {
                 Value = "4",
                 Text = "SIN PROYECCION",
-                Selected = false,
+                Selected = selected == 4 ? true : false,
             });
 
         lstEstados.Add(
@@ -81,7 +88,7 @@ public class PrestamosController : BaseController
             {
                 Value = "5",
                 Text = "PERDIDO",
-                Selected = false,
+                Selected = selected == 5 ? true : false,
             });
     }
 
@@ -96,7 +103,6 @@ public class PrestamosController : BaseController
         ViewBag.Message = $"Gestión de {Modulo}";
         ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
         ViewBag.Buscar = "Buscar";
-
         List<Prestamo> prestamos = [];
 
         try
@@ -147,6 +153,41 @@ public class PrestamosController : BaseController
                 }
 
                 ViewBag.Buscar = "Limpiar";
+            } 
+            else if (this.Request.Query.ContainsKey("Estado") && !string.IsNullOrEmpty(this.Request.Query["Estado"]))
+            {
+                var estado = this.Request.Query["Estado"];
+
+                this.CargarEstados(int.Parse(estado.ToString()));
+
+                prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Estado) && x.Estado.Contains(lstEstados.Find(x => x.Value == estado).Text));
+
+                ViewBag.Buscar = "Limpiar";
+            }
+            else if (this.Request.Query.ContainsKey("Entidad") && !string.IsNullOrEmpty(this.Request.Query["Entidad"]))
+            {
+                var entidad = this.Request.Query["Entidad"];                
+
+                prestamos = this.prestamoResponse.Prestamos?.FindAll(x => x.Entidad.Id.ToString() == entidad.ToString() && !string.IsNullOrEmpty(x.Estado) && x.Estado != "SIN PROYECCION" && x.Estado != "COMPLETADO");
+
+                lstEntidades.Clear();
+
+                foreach (var e in this.entidadesResponse?.Entidades)
+                {
+                    lstEntidades.Add(
+                    new SelectListItem()
+                    {
+                        Value = e.Id.ToString(),
+                        Text = e.Nombre,
+                        Selected = entidad.ToString() == e.Id.ToString() ? true : false,
+                    });
+                }
+
+                ViewBag.Buscar = "Limpiar";
+            }
+            else
+            {
+                prestamos = this.prestamoResponse.Prestamos?.FindAll(x => !string.IsNullOrEmpty(x.Estado) && x.Estado != "SIN PROYECCION" && x.Estado != "COMPLETADO");
             }
 
             ViewBag.Entidades = lstEntidades;
@@ -174,10 +215,12 @@ public class PrestamosController : BaseController
         ViewBag.ModeView = false;
         ViewBag.Buscar = "Buscar";
 
+        ViewBag.TotalPagado = 0;
         ViewBag.Estados = lstEstados;
         string view = "Index";
         List<Prestamo> prestamos = [];
         List<PrestamoDetalle> prestamoDetalles = [];
+        decimal totalMontos = 0;
 
         try
         {
@@ -212,7 +255,7 @@ public class PrestamosController : BaseController
                         view = "PrestamoFormAdd";
                     }
                     
-                    decimal totalMontos = prestamoDetalles?
+                    totalMontos = prestamoDetalles?
                                                     .FindAll(p => p.Estado == "COMPLETADO")
                                                     .Sum(p => p.MontoCuota) ?? 0m;
 
@@ -428,6 +471,11 @@ public class PrestamosController : BaseController
                     ViewBag.PrestamosDetalles = prestamoDetalles
                                                     .OrderBy(o => o.Cuota)
                                                     .ToList();
+
+                    totalMontos = prestamoDetalles?
+                                                    .FindAll(p => p.Estado == "COMPLETADO")
+                                                    .Sum(p => p.MontoCuota) ?? 0m;
+                    ViewBag.TotalPagado = totalMontos;
 
                     return await Task.FromResult<IActionResult>(View(view, ViewBag));
 

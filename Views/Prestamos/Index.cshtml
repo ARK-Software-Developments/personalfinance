@@ -77,19 +77,21 @@
                 <td scope="row" align="left">
                     <div class="form-group">
                         <span class="form-label">Entidades:</span>
-                        <select id="Entidad" name="Entidad" class="form-control" required>
-                            @foreach (var item in @lstEntidades)
-                            {
-                                if (item.Selected)
+                        <form method="get">
+                            <select id="Entidad" name="Entidad" class="form-control" onchange="this.form.submit()" required>
+                                @foreach (var item in @lstEntidades)
                                 {
-                                    <option value="@item.Value" selected>@item.Text</option>
+                                    if (item.Selected)
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
                                 }
-                                else
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
+                            </select>
+                        </form>
                     </div>
                 </td>
             </tr>

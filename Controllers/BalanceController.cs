@@ -12,6 +12,7 @@ using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Service;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Text;
 
 public class BalanceController : BaseController
 {
@@ -57,6 +58,8 @@ public class BalanceController : BaseController
         }
 
         await this.CargarBalance(year);
+
+        await this.CargarResumen(year);
 
         List<Balance> balances = this.balanceResponse.Balances
                         .FindAll(b => b.Concepto == "BALANCE" || b.Concepto == "INGRESO" || b.Concepto == "PRESUPUESTO")
@@ -123,6 +126,7 @@ public class BalanceController : BaseController
         }
         ViewBag.BalancesLabels = labels;
         ViewBag.BalancesVals = valsBalances;
+        ViewBag.ResumenCategorias = this.gastoResumenCategoriaResponse.ResumenCategorias;
         ViewBag.PresupuestosVals = valsPresupuestos;
         ViewBag.IngresosVals = valsIngresos;
 
@@ -147,6 +151,43 @@ public class BalanceController : BaseController
         }
     }
 
+    private async Task CargarResumen(int year)
+    {
+        this.generalRequest = new GeneralRequest()
+        {
+            Parametros = [
+                    new Parametro()
+                    {
+                        Nombre = "pYear",
+                        Valor = year,
+                    },
+                    new Parametro()
+                    {
+                        Nombre = "pActive",
+                        Valor = 1,
+                    }
+                    ]
+        };
+
+        var jsonContent = JsonConvert.SerializeObject(this.generalRequest.Parametros);
+
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // Hacer la solicitud POST a la API
+        HttpResponseMessage response = await this._httpClient.PostAsync(Microservicios.get(ServicioEnum.ResumenGastosCategoria, MetodoEnum.ResumenGastosCategoria), content);
+
+        // Ensure the request was successful
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Leer el contenido de la respuesta como una cadena JSON
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserializar la cadena JSON a un objeto o lista de objetos
+            this.gastoResumenCategoriaResponse = JsonConvert.DeserializeObject<GastoResumenCategoriaResponse>(jsonResponse);
+        }
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

@@ -2,6 +2,7 @@
 @using PersonalFinance.Models.TarjetaConsumos
 @using PersonalFinance.Models.Tarjetas
 @using System.Globalization
+@using System.Text.Json
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -11,22 +12,44 @@
     Tarjeta tarjeta = ViewBag.Tarjeta;
     List<Entidad> entidades = ViewBag.Entidades;
     List<TarjetaConsumoResumen> tarjetaConsumoResumen = ViewBag.TarjetaResumen;
+
+    var labelsArray = (string[])ViewBag.Labels; // Convertir a array
+    var labels = string.Join(",", labelsArray.Select(l => $"'{l}'"));
+
     string modeView = ViewBag.ModeView ? "disabled" : "";
     var listaEntidades = new List<SelectListItem>();
     foreach (var e in entidades)
     {
         listaEntidades.Add(
         new SelectListItem()
-        {
-            Value = e.Id.ToString(),
-            Text = e.Nombre,
-            Selected = (tarjeta.Entidad.Id == e.Id ? true : false)
-        });
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Nombre,
+                    Selected = (tarjeta.Entidad.Id == e.Id ? true : false)
+                });
     }
-    
+
+
+    decimal ene = 0;
+    decimal feb = 0;
+    decimal mar = 0;
+    decimal abr = 0;
+    decimal may = 0;
+    decimal jun = 0;
+    decimal jul = 0;
+    decimal ago = 0;
+    decimal set = 0;
+    decimal oct = 0;
+    decimal nov = 0;
+    decimal dic = 0;
+
+    var valoresArray = (int[])ViewBag.ResumenTotales.ToArray(); // Convertir a array
+    var strResumenTotales = string.Join(",", valoresArray);
+    var label = $"Resumen {@tarjeta.Nombre}";
 }
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     function CambioEntidad() {
@@ -42,6 +65,10 @@
     <h1 class="display-5">@ViewBag.Title</h1>
     <p>Actualización de @ViewBag.Modulo.</p>
 </div>
+
+<a href="/@ViewBag.Modulo/TarjetasCredito" class="btn btn-secondary">Volver</a>
+<p></p>
+<p></p>
 <div class="tab-content">
     <form method="post" asp-controller="@ViewBag.Modulo" asp-action="TarjetaFormEdit">
         <div class="form-group">
@@ -79,8 +106,6 @@
                             <input id="EntidadSel" name="EntidadSel" class="form-control" value="@tarjeta.Entidad.Id" hidden>
                         </div>
                     </td>
-                </tr>
-                <tr>
                     <td>
                         <div class="form-group">
                             <span class="form-label">Fecha Cierre:</span>
@@ -96,6 +121,37 @@
                 </tr>     
             </table>
             <p></p>
+            <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="TarjetasCredito" name="action" value="actualizar">Actualizar</button>
+            <p></p>
+            <div class="row">
+                <!-- -->
+                <canvas id="miGrafico" style="height: 500px; border: 2px;"></canvas>
+                <script>
+                    const ctx = document.getElementById('miGrafico').getContext('2d');
+                    const miGrafico = new Chart(ctx, {
+                        type: 'line', // Puedes usar 'bar' 'line', 'pie', etc.
+                        data: {
+                            labels: [@Html.Raw(labels)],
+                            datasets: [{
+                                label: @Html.Raw(JsonSerializer.Serialize(@label)),
+                                data: [@Html.Raw(strResumenTotales)],
+                                backgroundColor: '#1abc9c',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                </script>
+                <!-- -->
+            </div>
             <table class="table table-secondary">
                 <thead>
                     <tr>
@@ -118,7 +174,7 @@
                     @foreach (var detalle in @tarjetaConsumoResumen)
                     {
                         <tr>
-                            <td scope="row">@detalle.EntidadCompra</td>
+                            <td scope="row" title="@detalle.NombreReferencia">@detalle.EntidadCompra</td>
                             <td scope="row" align="right">@detalle.Enero.ToString("C", new CultureInfo("es-AR"))</td>
                             <td scope="row" align="right">@detalle.Febrero.ToString("C", new CultureInfo("es-AR"))</td>
                             <td scope="row" align="right">@detalle.Marzo.ToString("C", new CultureInfo("es-AR"))</td>
@@ -133,13 +189,25 @@
                             <td scope="row" align="right">@detalle.Diciembre.ToString("C", new CultureInfo("es-AR"))</td>
                         </tr>
                     }
+                    <tr style="font-weight: bold; background-color: #90b3ff">
+                        <td scope="row">Total:</td>
+                        <td scope="row" align="right">@valoresArray[0].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[1].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[2].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[3].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[4].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[5].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[6].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[7].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[8].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[9].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[10].ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" align="right">@valoresArray[11].ToString("C", new CultureInfo("es-AR"))</td>
+                    </tr>
                 </tbody>
 
             </table>
-        </div>
-        <button type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="TarjetasCredito" name="action" value="actualizar">Actualizar</button>
+        </div>        
     </form>
 </div>
 <p></p>
-
-<a href="/@ViewBag.Modulo/TarjetasCredito" class="btn btn-secondary">Volver</a>

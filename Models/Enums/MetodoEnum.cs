@@ -45,5 +45,8 @@ namespace PersonalFinance.Models.Enums
 
         [Api(Method = "processad")]
         ProcesoAD = 108,
+
+        [Api(Method = "monthlybudgetbycategory")]
+        ResumenGastosCategoria = 109,
     }
 }

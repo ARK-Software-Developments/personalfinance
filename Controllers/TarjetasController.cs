@@ -218,8 +218,11 @@ public class TarjetasController : BaseController
     {
         this.Inicialized();
 
-        // Procesa los datos del formulario que están en el objeto 'model'
-        // Por ejemplo, guarda en una base de datos  
+        var labels = new[] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
+
+
+
+        ViewBag.Labels = labels;
         ViewBag.Modulo = Modulo;
         ViewBag.Action = action;
 
@@ -257,11 +260,54 @@ public class TarjetasController : BaseController
                 this.tarjetaConsumoResumenResponse = await this.serviceCaller.ObtenerRegistros<TarjetaConsumoResumenResponse>(ServicioEnum.ConsumosTarjetaResumen, this.generalRequest, MetodoEnum.TarjetaConsumoResumen);
 
 
+                List<int> valsResumenes = [];
+                decimal ene = 0;
+                decimal feb = 0;
+                decimal mar = 0;
+                decimal abr = 0;
+                decimal may = 0;
+                decimal jun = 0;
+                decimal jul = 0;
+                decimal ago = 0;
+                decimal set = 0;
+                decimal oct = 0;
+                decimal nov = 0;
+                decimal dic = 0;
+
+                foreach (var item in this.tarjetaConsumoResumenResponse?.TarjetaConsumoResumenes)
+                {
+                    ene = ene + item.Enero;
+                    feb = feb + item.Febrero;
+                    mar = mar + item.Marzo;
+                    abr = abr + item.Abril;
+                    may = may + item.Mayo;
+                    jun = jun + item.Junio;
+                    jul = jul + item.Julio;
+                    ago = ago + item.Agosto;
+                    set = set + item.Septiembre;
+                    oct = oct + item.Octubre;
+                    nov = nov + item.Noviembre;
+                    dic = dic + item.Diciembre;
+                }
+
+                valsResumenes.Add((int)ene);
+                valsResumenes.Add((int)feb);
+                valsResumenes.Add((int)mar);
+                valsResumenes.Add((int)abr);
+                valsResumenes.Add((int)may);
+                valsResumenes.Add((int)jun);
+                valsResumenes.Add((int)jul);
+                valsResumenes.Add((int)ago);
+                valsResumenes.Add((int)set);
+                valsResumenes.Add((int)oct);
+                valsResumenes.Add((int)nov);
+                valsResumenes.Add((int)dic);
+
+                ViewBag.ResumenTotales = valsResumenes;
                 ViewBag.ModeView = action == "openFormView" ? true : false;
                 ViewBag.Tarjeta = entidad;
                 ViewBag.TarjetaResumen = this.tarjetaConsumoResumenResponse.TarjetaConsumoResumenes;
                 ViewBag.Entidades = entidadesResponse.Entidades;
-
                 return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página
 
             default:

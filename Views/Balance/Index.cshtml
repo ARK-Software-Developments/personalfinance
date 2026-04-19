@@ -3,10 +3,11 @@
 @using System.Globalization
 @using PersonalFinance.Models.Balance
 @using PersonalFinance.Models.Gastos
+@using PersonalFinanceApiNetCoreModel
 @{
 
     List<Balance> balances = ViewBag.Balances;
-
+    List<GastoResumenCategoria> gastoResumenCategorias = ViewBag.ResumenCategorias;
     var labelsArray = (string[])ViewBag.BalancesLabels; // Convertir a array
     var labels = string.Join(",", labelsArray.Select(l => $"'{l}'"));
     var valoresArray = (int[])ViewBag.BalancesVals.ToArray(); // Convertir a array
@@ -96,6 +97,8 @@
 
 <div class="text-center">
     <div class="row">
+        <h2>Resumen por Concepto</h2>
+        <hr />
         <table class="table myaccordion table-hover" id="accordion">
             <thead>
                 <tr style="padding-right: 20px; text-align: right;">
@@ -156,6 +159,8 @@
     </div>
     <p></p>
     <p></p>
+
+
     <div class="row">
         
         <!-- -->
@@ -207,6 +212,55 @@
     </div>
     <p></p>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" title="Proceso de cierre del mes">Asentar Balance</button>
+    <p></p>
+    <p></p>
+    <div class="row">
+        <h2>Resumen por Categoria</h2>
+        <hr />
+        <table class="table myaccordion table-hover" id="accordion">
+            <thead>
+                <tr style="padding-right: 20px; text-align: right;">
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Enero</th>
+                    <th scope="col">Febrero</th>
+                    <th scope="col">Marzo</th>
+                    <th scope="col">Abril</th>
+                    <th scope="col">Mayo</th>
+                    <th scope="col">Junio</th>
+                    <th scope="col">Julio</th>
+                    <th scope="col">Agosto</th>
+                    <th scope="col">Septiembre</th>
+                    <th scope="col">Octubre</th>
+                    <th scope="col">Noviembre</th>
+                    <th scope="col">Diciembre</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entidad in @gastoResumenCategorias)
+                {
+                    var colorFila = "#E6F5F0";
+
+
+                    <tr style="padding-right: 20px; text-align: right; background-color: @colorFila">
+                        <td scope="row" id="Categoria">@entidad.Categoria</td>
+                        <td scope="row" id="Enero" style="@(@entidad.Enero < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Enero.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Febrero" style="@(@entidad.Febrero < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Febrero.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Marzo" style="@(@entidad.Marzo < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Marzo.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Abril" style="@(@entidad.Abril < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Abril.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Mayo" style="@(@entidad.Mayo < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Mayo.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Junio" style="@(@entidad.Junio < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Junio.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Julio" style="@(@entidad.Julio < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Julio.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Agosto" style="@(@entidad.Agosto < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Agosto.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Septiembre" style="@(@entidad.Septiembre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Septiembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Octubre" style="@(@entidad.Octubre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Octubre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Noviembre" style="@(@entidad.Noviembre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Noviembre.ToString("C", new CultureInfo("es-AR"))</td>
+                        <td scope="row" id="Diciembre" style="@(@entidad.Diciembre < 0 ? "color: #f44236; font-weight: bold;" : string.Empty)">@entidad.Diciembre.ToString("C", new CultureInfo("es-AR"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script src="~/js/jquery.min.js"></script>

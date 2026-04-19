@@ -111,5 +111,9 @@ namespace PersonalFinance.Models.Enums
         [Api(Route = "loandetails", Cache = "cacheDataPrestamoDetalles")]
         [Description("PrestamoDetalles")]
         PrestamoDetalles = 27,
+
+        [Api(Route = "balance", Cache = "cacheDataResumenGastosCategoria")]
+        [Description("ResumenGastosCategoria")]
+        ResumenGastosCategoria = 28,
     }
 }
