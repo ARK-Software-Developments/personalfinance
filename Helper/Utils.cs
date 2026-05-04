@@ -18,6 +18,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text.RegularExpressions;
+    using PersonalFinance.Models.Pedidos;
 
     public static class Utils
     {
@@ -455,10 +456,27 @@
 
                     return (T)prestamoDetalle;
 
+                case ServicioEnum.Pedidos:
+                    object pedido = new Pedido()
+                    {
+                        Id = form.ContainsKey("Id") && !string.IsNullOrEmpty(form["Id"]) ? int.Parse(form["Id"]) : 0,
+                        Estado = new Estado()
+                        {
+                            Id = int.Parse(form["EstadoSel"]),
+                        },
+                        FechaPagado = !string.IsNullOrEmpty(form["FechaPagado"]) ? DateTime.ParseExact(form["FechaPagado"], "yyyy-MM-dd", cultureInfor) : null,
+                        FechaRecibido = !string.IsNullOrEmpty(form["FechaRecibido"]) ?  DateTime.ParseExact(form["FechaRecibido"], "yyyy-MM-dd", cultureInfor) : null,
+                        FechaPedido = !string.IsNullOrEmpty(form["FechaPedido"]) ?  DateTime.ParseExact(form["FechaPedido"], "yyyy-MM-dd", cultureInfor) : null,                        
+                        MontoTotal = ConvertirMonto(form["MontoTotal"]).ToString(),
+                        Numero = int.Parse(form["Numero"]),
+                        TipoRecurso = form["TipoRecurso"].ToString(),
+                    };
+
+                    return (T)pedido;
+
                 default:
                     return (T)new object();
             }
-            
         }
         
         public static string LetraCapital(string cadena)

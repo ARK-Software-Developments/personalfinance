@@ -8,6 +8,7 @@
     using PersonalFinance.Models;
     using PersonalFinance.Models.Enums;
     using PersonalFinance.Models.Pedidos;
+    using PersonalFinanceApiNetCoreModel;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -102,9 +103,6 @@
             ViewBag.Message = "Gestión de Pedidos";
             ViewBag.Modulo = Modulo;
             ViewBag.Title = $"Formulario de {Modulo}";
-            string montoTotal = string.Empty;
-            decimal decena = 0;
-            decimal decimales = 0;
 
             _logger.LogInformation("Inicializando PedidosController => Index()");
 
@@ -116,21 +114,7 @@
                 {
                     case "generar":
 
-                        pedido.Estado = estadosResponse.Estados.Find(e => e.Id == EstadoSel);
-
-                        montoTotal = pedido.MontoTotal.Replace("$ ", string.Empty);
-                        decena = 0;
-                        decimales = 0;
-
-                        if (montoTotal.Contains(","))
-                        {
-                            decena = decimal.Parse(montoTotal.Split(",")[0]);
-                            decimales = decimal.Parse(montoTotal.Split(",")[1]);
-                        }
-                        else
-                        {
-                            decena = decimal.Parse(montoTotal);
-                        }
+                        pedido = Utils.MapRequest<Pedido>(this.Request.Form, ServicioEnum.Pedidos);
 
                         this.generalRequest = new ()
                         {
@@ -149,7 +133,7 @@
                                  new Parametro()
                                  {
                                      Nombre = "pMontoTotal",
-                                     Valor = decimal.Parse($"{decena.ToString()},{decimales.ToString()}"),
+                                     Valor = pedido.MontoTotal,
                                  },
                                  new Parametro()
                                  {
@@ -159,7 +143,7 @@
                                  new Parametro()
                                  {
                                      Nombre = "pEstado",
-                                     Valor = 2,
+                                     Valor = pedido.Estado.Id,
                                  }
                              ],
                         };
@@ -169,8 +153,8 @@
                         break;
 
                     case "editOrder":
-                        
-                        pedido.Estado = this.estadosResponse.Estados.Find(e => e.Id == EstadoSel);
+
+                        pedido = Utils.MapRequest<Pedido>(this.Request.Form, ServicioEnum.Pedidos);
 
                         this.generalRequest = new()
                         {
@@ -476,7 +460,7 @@
             }
 
             this.pedidosResponse.Pedidos = [];
-            this.pedidosResponse.Pedidos = lstPedidos;
+            this.pedidosResponse.Pedidos = lstPedidos.OrderByDescending(o => o.Id).ToList();
 
             CacheAdmin.Remove(httpContext, ServicioEnum.Pedidos);
             CacheAdmin.Set(httpContext, ServicioEnum.Pedidos, JsonConvert.SerializeObject(this.pedidosResponse));

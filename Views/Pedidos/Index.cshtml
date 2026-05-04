@@ -40,7 +40,27 @@
             {
                 var collapseN = "#collapse" + @pedido.Id;
                 var collapse = "collapse" + @pedido.Id;
-                var imgTipo = @pedido.TipoRecurso == "AVON" ? "avon.png" : "natura.png";
+
+                var imgTipo = string.Empty;
+                switch(@pedido.TipoRecurso)
+                {
+                    case "AVON":
+                        imgTipo = "avon.png";
+                    break;
+
+                    case "NATURA":
+                        imgTipo = "natura.png";
+                        break;
+
+                    case "SERVICIO NIÑENA":
+                        imgTipo = "ninera.png";
+                        break;
+
+                    case "ROPA-ROXANA":
+                        imgTipo = "vestimenta.png";
+                        break;
+                }
+
                 var cssTipo = @pedido.TipoRecurso == "AVON" ? "height: 30px; width: 50px" : "height: 35px; width: 45px";
                 <tr>
                     <th scope="row" id="Id">@pedido.Id</th>
