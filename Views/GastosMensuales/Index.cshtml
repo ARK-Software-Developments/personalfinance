@@ -7,22 +7,37 @@
     ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
     List<Gasto> gastos = ViewBag.Gastos;
     List<Estado> recursos = ViewBag.Recursos;
+    List<SelectListItem> lstEstados = ViewBag.Estados;
+
     DateTime fechaActual = DateTime.Now;
 
     string mesCompletoAnterior = Utils.LetraCapital(fechaActual.AddMonths(-1).ToString("MMMM", new CultureInfo("es-ES")));
     string mesCompletoActual = Utils.LetraCapital(fechaActual.ToString("MMMM", new CultureInfo("es-ES")));
     string mesCompletoSiguiente = Utils.LetraCapital(fechaActual.AddMonths(1).ToString("MMMM", new CultureInfo("es-ES")));
 
-    List<SelectListItem> meses = new List<SelectListItem>();
+    List<SelectListItem> mesesDesde = new List<SelectListItem>();
+    List<SelectListItem> mesesHasta = new List<SelectListItem>();
     for (int i = 1; i <= 12; i++)
     {
         // Formatea el número del mes para obtener el nombre (ej: "Enero", "Febrero")
         string nombreMes = new DateTime(2023, i, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
-        meses.Add(new SelectListItem { Text = nombreMes, Value = i.ToString() });
+        mesesDesde.Add(new SelectListItem
+        {
+            Text = nombreMes,
+            Value = i.ToString(),
+            Selected = DateTime.Now.Month == i ? true : false,
+        });
+
+        mesesHasta.Add(new SelectListItem
+        {
+            Text = nombreMes,
+            Value = i.ToString(),
+            Selected = DateTime.Now.Month + 1 == i ? true : false,
+        });
     }
 
-    int anoAnterior = DateTime.Now.Year - 1;
-    int anoActual = DateTime.Now.Year;
+    int anoAnterior = DateTime.Now.Month == 1 ? DateTime.Now.Year - 1 : DateTime.Now.Year;
+    int anoActual = DateTime.Now.Month == 12 ? DateTime.Now.Year + 1 : DateTime.Now.Year;
 
 }
 
@@ -67,7 +82,7 @@
                                     <div class="form-group">
                                         <span class="form-label">Mes desde:</span>
                                         <select id="MesDesde" name="MesDesde" class="form-control" required>
-                                            @foreach (var item in @meses)
+                                            @foreach (var item in @mesesDesde)
                                             {
                                                 if (item.Selected)
                                                 {
@@ -94,7 +109,7 @@
                                     <div class="form-group">
                                         <span class="form-label">Mes hasta:</span>
                                         <select id="MesHasta" name="MesHasta" class="form-control" required>
-                                            @foreach (var item in @meses)
+                                            @foreach (var item in @mesesHasta)
                                             {
                                                 if (item.Selected)
                                                 {
@@ -299,28 +314,69 @@
 
 <div class="tab-content">
     <div class="row">
-        <div class="datatable-top">
+        @if (@ViewBag.Buscar == "Buscar")
+        {
+            <table align="left">
+                <tr>
+                    <td scope="row" align="left">
+                        <div class="datatable-search">
+                            <form method="get">
+                                @if (@ViewBag.Buscar == "Buscar")
+                                {
+                                    <input type="text"
+                                           name="search"
+                                           value=""
+                                           placeholder="Buscar..."
+                                           class="form-control"
+                                           style="width: 250px; display:inline-block;" />
+                                }
+
+
+                                <button type="submit" class="btn btn-primary">
+                                    @ViewBag.Buscar
+                                </button>
+                            </form>
+
+                        </div>
+                    </td>
+                    <td scope="row" align="left">&nbsp;|&nbsp;</td>
+                    <td scope="row" align="left">
+                        <div class="form-group">
+                            @if (@ViewBag.Buscar == "Buscar")
+                            {
+                                <span class="form-label">Estados:</span>
+                                <form method="get">
+                                    <select id="Estado" name="Estado" class="form-control" onchange="this.form.submit()" required>
+                                        @foreach (var item in @lstEstados)
+                                        {
+                                            if (item.Selected)
+                                            {
+                                                <option value="@item.Value" selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </form>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+        else        
+        {
             <div class="datatable-search">
-
                 <form method="get">
-                    @if (@ViewBag.Buscar == "Buscar")
-                    {
-                        <input type="text"
-                               name="search"
-                               value=""
-                               placeholder="Buscar..."
-                               class="form-control"
-                               style="width: 250px; display:inline-block;" />
-                    }
-
-
                     <button type="submit" class="btn btn-primary">
                         @ViewBag.Buscar
                     </button>
                 </form>
 
             </div>
-        </div>
+        }        
     </div>
     <p></p>
     <div class="row">

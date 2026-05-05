@@ -4,6 +4,7 @@ namespace PersonalFinance.Controllers;
 #pragma warning disable CS8600 // Se va a convertir un literal nulo o un posible valor nulo en un tipo que no acepta valores NULL
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Entidades;
@@ -21,6 +22,7 @@ public class GastosMensualesController : BaseController
     private readonly string Gestion = "Administrar";
     private readonly string Modulo = "GastosMensuales";
     private readonly ILogger<GastosMensualesController> _logger;
+    private readonly List<SelectListItem> lstEstados = [];
 
     public GastosMensualesController(ILogger<GastosMensualesController> logger)
     {
@@ -47,11 +49,13 @@ public class GastosMensualesController : BaseController
         try
         {
             gastosResponse = await this.serviceCaller.ObtenerRegistros<GastosResponse>(ServicioEnum.GastosMensuales, keyValuePairs);
-            gastos = gastosResponse.Gastos;
+            gastos = gastosResponse.Gastos.FindAll(x => x.Activo);
 
             // Obtener Recursos (Estados)
             this.estadosResponse = await this.serviceCaller.ObtenerRegistros<EstadosResponse>(ServicioEnum.Estados);
             var recursos = this.estadosResponse?.Estados?.FindAll(e => e.Tabla.Contains("BILLS")).ToList();
+
+            this.CargarEstados(3);
 
             if (this.Request.Query.ContainsKey("search") && !string.IsNullOrEmpty(this.Request.Query["search"]))
             {
@@ -80,12 +84,25 @@ public class GastosMensualesController : BaseController
                     gastos = this.gastosResponse.Gastos?.FindAll(x => x.Recurso == id);
                 }
 
+                gastos = gastos.FindAll(x => x.Activo == true);
+
+                ViewBag.Buscar = "Limpiar";
+            }
+            else if (this.Request.Query.ContainsKey("Estado") && !string.IsNullOrEmpty(this.Request.Query["Estado"]))
+            {
+                var estadoId = int.Parse(this.Request.Query["Estado"].ToString());
+                var estado = estadoId == 0 ? true : false;
+
+                this.CargarEstados(estadoId);
+
+                gastos = this.gastosResponse.Gastos?.FindAll(x => x.Activo == estado);
+
                 ViewBag.Buscar = "Limpiar";
             }
 
             ViewBag.Recursos = recursos;
             ViewBag.Gastos = gastos;
-
+            ViewBag.Estados = lstEstados;
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
 
         }
@@ -104,7 +121,7 @@ public class GastosMensualesController : BaseController
         ViewBag.Modulo = Modulo;
         ViewBag.Title = "Gastos";
         ViewBag.Message = $"{Gestion} {Modulo}";
-
+        this.CargarEstados(3);
         try
         {
 
@@ -317,6 +334,7 @@ public class GastosMensualesController : BaseController
 
             ViewBag.Gastos = gastosResponse?.Gastos;
             ViewBag.Buscar = "Buscar";
+            ViewBag.Estados = lstEstados;
             return await Task.FromResult<IActionResult>(View("Index", ViewBag));
 
         }
@@ -402,5 +420,27 @@ public class GastosMensualesController : BaseController
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private void CargarEstados(int selected)
+    {
+        lstEstados.Clear();
+
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "0",
+                Text = "Activado",
+                Selected = selected == 0 ? true : false,
+            });
+
+        lstEstados.Add(
+            new SelectListItem()
+            {
+                Value = "1",
+                Text = "Desactivo",
+                Selected = selected == 1 ? true : false,
+            });
+
     }
 }

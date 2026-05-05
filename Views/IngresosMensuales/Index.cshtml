@@ -16,16 +16,29 @@
     var colorMayor = "background-color: #A7C282;";
     var colorNeutro = "background-color: #F5EFC6;";
 
-    List<SelectListItem> meses = new List<SelectListItem>();
+    List<SelectListItem> mesesDesde = new List<SelectListItem>();
+    List<SelectListItem> mesesHasta = new List<SelectListItem>();
     for (int i = 1; i <= 12; i++)
     {
         // Formatea el número del mes para obtener el nombre (ej: "Enero", "Febrero")
         string nombreMes = new DateTime(2023, i, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
-        meses.Add(new SelectListItem { Text = nombreMes, Value = i.ToString() });
+        mesesDesde.Add(new SelectListItem
+        {
+            Text = nombreMes,
+            Value = i.ToString(),
+            Selected = DateTime.Now.Month == i ? true : false,
+        });
+
+        mesesHasta.Add(new SelectListItem
+        {
+            Text = nombreMes,
+            Value = i.ToString(),
+            Selected = DateTime.Now.Month + 1 == i ? true : false,
+        });
     }
 
-    int anoAnterior = DateTime.Now.Year - 1;
-    int anoActual = DateTime.Now.Year;
+    int anoAnterior = DateTime.Now.Month == 1 ? DateTime.Now.Year - 1 : DateTime.Now.Year;
+    int anoActual = DateTime.Now.Month == 12 ? DateTime.Now.Year + 1 : DateTime.Now.Year;
 }
 
 
@@ -64,7 +77,7 @@
                                     <div class="form-group">
                                         <span class="form-label">Mes desde:</span>
                                         <select id="MesDesde" name="MesDesde" class="form-control" required>
-                                            @foreach (var item in @meses)
+                                            @foreach (var item in @mesesDesde)
                                             {
                                                 if (item.Selected)
                                                 {
@@ -91,7 +104,7 @@
                                     <div class="form-group">
                                         <span class="form-label">Mes hasta:</span>
                                         <select id="MesHasta" name="MesHasta" class="form-control" required>
-                                            @foreach (var item in @meses)
+                                            @foreach (var item in @mesesHasta)
                                             {
                                                 if (item.Selected)
                                                 {
