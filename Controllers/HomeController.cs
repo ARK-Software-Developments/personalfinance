@@ -44,7 +44,7 @@ public class HomeController : BaseController
         ViewBag.Year = year;
 
 
-        await this.CargarNotificaciones();
+        await this.CargarNotificaciones();        
         ViewBag.Notificaciones = this.notificacionResponse.Notificaciones;
 
 

@@ -25,6 +25,8 @@ public class PrestamosController : BaseController
     private readonly string Modulo = "Prestamos";
     private readonly ILogger<PrestamosController> _logger;
     private readonly List<SelectListItem> lstEstados = [];
+    List<Prestamo> prestamos = [];
+    List<SelectListItem> lstEntidades = new List<SelectListItem>();
 
     public PrestamosController(ILogger<PrestamosController> logger)
     {
@@ -102,14 +104,13 @@ public class PrestamosController : BaseController
         ViewBag.Title = $"{Gestion}";
         ViewBag.Message = $"Gestión de {Modulo}";
         ViewBag.Ruta = $"{ViewBag.Modulo} > {ViewBag.Title}";
-        ViewBag.Buscar = "Buscar";
-        List<Prestamo> prestamos = [];
+        ViewBag.Buscar = "Buscar";   
 
         try
         {
             this.entidadesResponse = await this.serviceCaller.ObtenerRegistros<EntidadesResponse>(ServicioEnum.Entidades);
 
-            var lstEntidades = new List<SelectListItem>();
+            
             foreach (var e in this.entidadesResponse?.Entidades)
             {
                 lstEntidades.Add(
@@ -363,6 +364,20 @@ public class PrestamosController : BaseController
                     this.prestamoResponse = await this.serviceCaller.ObtenerRegistros<PrestamoResponse>(ServicioEnum.Prestamos);
                     prestamos = this.prestamoResponse.Prestamos;
 
+
+                    lstEntidades.Clear();
+
+                    foreach (var e in this.entidadesResponse?.Entidades)
+                    {
+                        lstEntidades.Add(
+                        new SelectListItem()
+                        {
+                            Value = e.Id.ToString(),
+                            Text = e.Nombre,
+                        });
+                    }
+
+                    ViewBag.Entidades = lstEntidades;
                     ViewBag.Prestamos = prestamos;
 
                     return await Task.FromResult<IActionResult>(View(view, ViewBag));

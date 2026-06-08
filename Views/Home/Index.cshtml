@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using PersonalFinance.Helper
 @using System.Globalization
+@using PersonalFinance.Models.Notificaciones
 @using PersonalFinanceApiNetCoreModel
 @{
     ViewData["Title"] = "Home Page";
@@ -11,7 +12,9 @@
     var ingresos = ViewBag.Ingresos.ToString("C", new CultureInfo("es-AR"));
     var gastos = ViewBag.Gastos.ToString("C", new CultureInfo("es-AR"));
     var pendientePago = ViewBag.PendientePago.ToString("C", new CultureInfo("es-AR"));
-    var notificacionesJson = JsonConvert.SerializeObject(ViewBag.Notificaciones);
+    var notificacionesAlert = ((List<Notificacion>)ViewBag.Notificaciones).FindAll(x => x.FechaNotificacion.AddDays(-4) < DateTime.Now);
+
+    var notificacionesJson = JsonConvert.SerializeObject(notificacionesAlert);
 
     List<Gasto> gastosMensualesPendientes = ViewBag.GastosMensualesPendientes;
 
@@ -46,8 +49,31 @@
         var datos = JSON.parse(textoDecodificado);
         let ocultar = parseInt(datos.length + 4 + "000");
         // Usamos for...of para poder usar await correctamente
-        for (const item of datos) {            
-            notifier.show(item.Titulo, item.Mensaje, '', '~/../images/' + item.Imagen, ocultar);
+        for (const item of datos) {
+            
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0); // quitar hora
+
+            const fecha = new Date(item.FechaNotificacion);
+            fecha.setHours(0, 0, 0, 0); // quitar hora
+
+            const dias = Math.floor((fecha - hoy) / (1000 * 60 * 60 * 24));
+
+            let ico = null;
+                if (dias < 0)
+                {
+                    ico = "high_priority-48.png";   // vencido
+                }
+                else if (dias == 0)
+                {
+                    ico = "medium_priority-49.png"; // hoy
+                }
+                else if (dias <= 4)
+                {
+                    ico = "medium_priority-48.png"; // próximos días
+                }
+                console.log(dias)
+            notifier.show(item.Titulo, item.Mensaje, '', '~/../images/' + ico, ocultar);
             await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos antes de la siguiente notificación
         }
 
@@ -202,16 +228,22 @@
                 var css = "text-success mb-0";
                 var ico = "ok-48.png";
 
-                if (vto.Day < fechaActual.Day)
+                int dias = (vto.Date - DateTime.Today).Days;
+
+                if (dias < 0)
                 {
-                    css = "text-danger mb-0";
-                    ico = "high_priority-48.png";
+                    ico = "high_priority-48.png";   // vencido
                 }
-                else if (vto.Day == fechaActual.Day)
+                else if (dias == 0)
                 {
-                    css = "text-warning mb-0";
-                    ico = "medium_priority-48.png";
+                    ico = "medium_priority-49.png"; // hoy
                 }
+                else if (dias <= 4)
+                {
+                    ico = "medium_priority-48.png"; // próximos días
+                }
+
+
                 <tr>
                     <td scope="row" align="left">
                         <div class="flex-grow-1 ms-3">

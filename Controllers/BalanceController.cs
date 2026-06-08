@@ -36,7 +36,7 @@ public class BalanceController : BaseController
 
         int year = Utils.GetYear(HttpContext);
 
-        if(!string.IsNullOrEmpty(action) && action == "asentar")
+        if (!string.IsNullOrEmpty(action) && action == "asentar")
         {
             this.generalRequest = new GeneralRequest()
             {
@@ -53,7 +53,7 @@ public class BalanceController : BaseController
                     }
                     ]
             };
-            
+
             await this.serviceCaller.EjecutarProceso<GeneralDataResponse>(ServicioEnum.Procesos, this.generalRequest, MetodoEnum.IniciarBalanceMensual);
         }
 
