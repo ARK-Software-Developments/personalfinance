@@ -133,7 +133,7 @@
                                  new Parametro()
                                  {
                                      Nombre = "pMontoTotal",
-                                     Valor = pedido.MontoTotal,
+                                     Valor = decimal.Parse(pedido.MontoTotal.Replace("$", string.Empty).Replace(" ", string.Empty)),
                                  },
                                  new Parametro()
                                  {

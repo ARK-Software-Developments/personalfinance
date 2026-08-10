@@ -102,7 +102,7 @@ public class HomeController : BaseController
         }
 
         ViewBag.GastosMensualesPendientes = g
-            .OrderBy(o => o.Vencimientos != null && o.Vencimientos.Any()
+            .OrderBy(o => o.Activo && o.Vencimientos != null && o.Vencimientos.Any()
                 ? o.Vencimientos.Min(v => v.FechaVencimiento.GetValueOrDefault(DateTime.MaxValue))
                 : DateTime.MaxValue)
             .ToList();
