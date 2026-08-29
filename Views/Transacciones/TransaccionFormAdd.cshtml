@@ -64,6 +64,12 @@
                 </td>
                 <td>
                     <div class="form-group">
+                        <span class="form-label">Monto:</span>
+                        <input id="Monto" name="Monto" class="form-control" type="text" min="0.00" max="1000000.00" step="0.01" value="0" required />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
                         <span class="form-label">Consumo de Tarjeta:</span>
                         <input id="ConsumoTarjeta" name="ConsumoTarjeta" class="form-control" type="number" value="@ViewBag.TarjetaConsumoId" readonly>
                     </div>
@@ -106,6 +112,12 @@
                     <div class="form-group">
                         <span class="form-label">Observaciones:</span>
                         <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="" required >
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <span class="form-label">Mes:</span>
+                        <input type="text" id="Mes" name="Mes" class="form-control" value="" required>
                     </div>
                 </td>
             </tr>

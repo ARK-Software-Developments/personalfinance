@@ -7339,6 +7339,16 @@ button.bg-brand-color-2:focus {
     background-color: #2980b9 !important;
 }
 
+.bg-brand-color-3 {
+    background-color: #ff9800 !important;
+}
+
+a.bg-brand-color-3:hover, a.bg-brand-color-3:focus,
+button.bg-brand-color-3:hover,
+button.bg-brand-color-3:focus {
+    background-color: #2980b9 !important;
+}
+
 .bg-white {
     background-color: #fff !important;
 }

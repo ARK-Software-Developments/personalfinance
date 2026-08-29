@@ -91,6 +91,9 @@ public class HomeController : BaseController
 
         ViewBag.PendientePago = presupuestoActual - gastosActual;
 
+        ViewBag.PendientePagoReal = Utils.ConvertirMonto(difMeses["actual"].ToString());
+        ViewBag.PendientePagoRealRestante = ingresoActual - Utils.ConvertirMonto(difMeses["actual"].ToString());
+
         await this.CargarGastosMensuales();
 
         var g = this.gastosResponse?.Gastos?.FindAll(x => x.Pagado == false);

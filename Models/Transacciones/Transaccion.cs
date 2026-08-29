@@ -5,6 +5,7 @@
     using Newtonsoft.Json;
     using PersonalFinance.Models.Tarjetas;
     using PersonalFinanceApiNetCoreModel;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Clase Transaccion.
@@ -65,5 +66,17 @@
         /// </summary>
         [JsonProperty("tarjetaConsumoId")]
         public int TarjetaConsumoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets propiedad Monto.
+        /// </summary>
+        [JsonProperty("monto")]
+        public decimal Monto { get; set; }
+
+        /// <summary>
+        /// Gets or sets propiedad TarjetaConsumoId.
+        /// </summary>
+        [JsonProperty("month")]
+        public int Mes { get; set; }
     }
 }

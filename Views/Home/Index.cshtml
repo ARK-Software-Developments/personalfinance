@@ -50,7 +50,7 @@
         let ocultar = parseInt(datos.length + 4 + "000");
         // Usamos for...of para poder usar await correctamente
         for (const item of datos) {
-            
+
             const hoy = new Date();
             hoy.setHours(0, 0, 0, 0); // quitar hora
 
@@ -83,7 +83,7 @@
         }, 25000);
     }
 
-            
+
 </script>
 
 <div class="text-center">
@@ -186,7 +186,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-sm-grow-1">
-                            <h6 class="mb-2 text-white">Pendiente de Pago @mesActual</h6>
+                            <h6 class="mb-2 text-white">Pendiente de Pago Presup.</h6>
                             <h4 class="text-white mb-0 f-w-300">@pendientePago</h4>
                             <p class="text-white-50 mb-0">
                                 <h7>&nbsp;</h7>
@@ -198,6 +198,25 @@
             </div>
         </div>
 
+        <div class="col-md-6 col-xl-2">
+            <div class="card bg-brand-color-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-sm-grow-1">
+                            <h6 class="mb-2 text-white">Pagado @mesActual</h6>
+                            <h4 class="text-white mb-0 f-w-300">@ViewBag.PendientePagoReal.ToString("C", new CultureInfo("es-AR"))</h4>
+                            <p class="text-white-50 mb-0">
+                                <h7>@ViewBag.PendientePagoRealRestante.ToString("C", new CultureInfo("es-AR")) restante</h7>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p></p>
+    <div class="row">
         <div class="col-md-6 col-xl-2">
             <div class="card bg-brand-color-2">
                 <div class="card-body">
@@ -290,7 +309,7 @@
                             @foreach (var gmp in @gastosMensualesPendientes)
                             {
                                 decimal saldoMesActual = 0;
-                                switch(DateTime.Now.Month)
+                                switch (DateTime.Now.Month)
                                 {
                                     case 1: saldoMesActual = gmp.Enero; break;
                                     case 2: saldoMesActual = gmp.Febrero; break;
@@ -306,7 +325,7 @@
                                     case 12: saldoMesActual = gmp.Diciembre; break;
                                 }
                                 <tr>
-                                    <td scope ="row">
+                                    <td scope="row">
                                         <div class="d-flex align-items-center">
                                             <div>
                                                 <h6 class="mb-0">@gmp.TipoGasto?.Tipo?.Trim()</h6>

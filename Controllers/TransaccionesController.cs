@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PersonalFinance.Helper;
 using PersonalFinance.Models;
 using PersonalFinance.Models.Enums;
+using PersonalFinance.Models.Pedidos;
 using PersonalFinance.Models.TarjetaConsumos;
 using PersonalFinance.Models.Tarjetas;
 using PersonalFinance.Models.Transacciones;
@@ -119,6 +120,16 @@ public class TransaccionesController : BaseController
                              Nombre = "pCreditCardsPendingId",
                              Valor = int.Parse(httpContext.Request.Form["ConsumoTarjeta"].ToString()),
                          },
+                         new Parametro()
+                         {
+                             Nombre = "pAmount",
+                             Valor = decimal.Parse(httpContext.Request.Form["Monto"].ToString().Replace("$", string.Empty).Replace(" ", string.Empty)),
+                         },
+                         new Parametro()
+                         {
+                             Nombre = "pMonth",
+                             Valor = int.Parse(httpContext.Request.Form["Mes"].ToString())
+                         },
                      ],
                 };
                 
@@ -147,7 +158,8 @@ public class TransaccionesController : BaseController
             ViewBag.Transacciones = transaccionesResponse?.Transacciones;
             
             if (bolFromConsumoTC)
-            { 
+            {
+                CacheAdmin.Remove(HttpContext, ServicioEnum.ConsumosTarjeta);
                 return await Task.FromResult<IActionResult>(RedirectToAction("Index", "ConsumosTarjetas"));
             }
 

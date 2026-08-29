@@ -73,6 +73,12 @@
                             <input id="FechaTransaccion" name="FechaTransaccion" class="form-control" type="date" data-language='es' value="@transaccion.FechaTransaccion.ToString("yyyy-MM-dd")" required @modeView>
                         </div>
                     </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Monto:</span>
+                            <input id="Monto" name="Monto" class="form-control" type="date" data-language='es' value="@transaccion.Monto" required>
+                        </div>
+                    </td>
                    
                 </tr>
                 <tr>
@@ -112,6 +118,12 @@
                         <div class="form-group">
                             <span class="form-label">Observaciones:</span>
                             <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="@transaccion.Observaciones" required @modeView>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <span class="form-label">Mes:</span>
+                            <input type="text" id="Mes" name="Mes" class="form-control" value="@transaccion.Mes" required @modeView>
                         </div>
                     </td>
                 </tr>     
