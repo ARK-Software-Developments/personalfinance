@@ -22,7 +22,7 @@ public class HomeController : BaseController
 {
     private readonly ILogger<HomeController> _logger;
     private readonly HttpClient _httpClient;
-    private readonly string _urlEstados = "https://localhost:443/api/v1/status/getall";
+    private readonly string _urlEstados = "https://personalfinance.com/api/v1/status/getall";
 
     public HomeController(ILogger<HomeController> logger)
     {
