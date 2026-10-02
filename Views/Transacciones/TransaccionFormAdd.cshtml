@@ -27,10 +27,26 @@
 <link rel="stylesheet" href="~/css/personalfinance.styles.css">
 
 <script>
-    function CambioTarjeta() {
+            function CambioTarjeta() {
                 console.log($('#Tarjeta :selected').val());
 
                 $('#TarjetaSel').val($('#Tarjeta :selected').val());
+            };
+
+            function CambioFecha() {
+                let fechaStr = $('#FechaTransaccion').val();
+                console.log(fechaStr);
+
+                let fecha = new Date(fechaStr);
+
+                // Mes actual (0-11)
+                let mesActual = fecha.getMonth();
+
+                // Mes siguiente (1-12)
+                let mesSiguiente = ((mesActual + 1) % 12) + 1;
+
+                console.log("Mes siguiente:", mesSiguiente);
+                $('#Mes').val(mesSiguiente);
             };
 
 </script>
@@ -59,7 +75,7 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Fecha de Transaccion:</span>
-                        <input id="FechaTransaccion" name="FechaTransaccion" class="form-control" type="date" data-language='es' value="" required >
+                        <input id="FechaTransaccion" name="FechaTransaccion" class="form-control" type="date" data-language='es' value="" onchange="CambioFecha()" required >
                     </div>
                 </td>
                 <td>
@@ -79,7 +95,7 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Entidad Asociada:</span>
-                        <input type="text" id="EntidadAsociada" name="EntidadAsociada" class="form-control" value="" required>
+                        <input type="text" id="EntidadAsociada" name="EntidadAsociada" class="form-control" value="@ViewBag.Entidad" required>
                     </div>
                 </td>
                 <td>
@@ -111,7 +127,7 @@
                 <td>
                     <div class="form-group">
                         <span class="form-label">Observaciones:</span>
-                        <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="" required >
+                        <input type="text" id="Observaciones" name="Observaciones" class="form-control" value="@ViewBag.Detalle" required >
                     </div>
                 </td>
                 <td>

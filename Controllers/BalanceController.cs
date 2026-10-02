@@ -62,7 +62,7 @@ public class BalanceController : BaseController
         await this.CargarResumen(year);
 
         List<Balance> balances = this.balanceResponse.Balances
-                        .FindAll(b => b.Concepto == "BALANCE" || b.Concepto == "INGRESO" || b.Concepto == "PRESUPUESTO")
+                        .FindAll(b => b.Concepto == "BALANCE" || b.Concepto == "INGRESO" || b.Concepto == "PRESUPUESTO" || b.Concepto == "EGRESO")
                         .OrderByDescending(o => o.Concepto)
                         .ToList();
 
@@ -72,6 +72,7 @@ public class BalanceController : BaseController
         List<int> valsBalances = [];
         List<int> valsPresupuestos = [];
         List<int> valsIngresos = [];
+        List<int> valsEgresos = [];
 
         foreach (var item in balances)
         {
@@ -122,6 +123,21 @@ public class BalanceController : BaseController
                     valsPresupuestos.Add((int)item.Diciembre);
                     break;
 
+                case "EGRESO":
+                    valsEgresos.Add((int)item.Enero);
+                    valsEgresos.Add((int)item.Febrero);
+                    valsEgresos.Add((int)item.Marzo);
+                    valsEgresos.Add((int)item.Abril);
+                    valsEgresos.Add((int)item.Mayo);
+                    valsEgresos.Add((int)item.Junio);
+                    valsEgresos.Add((int)item.Julio);
+                    valsEgresos.Add((int)item.Agosto);
+                    valsEgresos.Add((int)item.Septiembre);
+                    valsEgresos.Add((int)item.Octubre);
+                    valsEgresos.Add((int)item.Noviembre);
+                    valsEgresos.Add((int)item.Diciembre);
+                    break;
+
             }
         }
         ViewBag.BalancesLabels = labels;
@@ -129,6 +145,7 @@ public class BalanceController : BaseController
         ViewBag.ResumenCategorias = this.gastoResumenCategoriaResponse.ResumenCategorias;
         ViewBag.PresupuestosVals = valsPresupuestos;
         ViewBag.IngresosVals = valsIngresos;
+        ViewBag.EgresosVals = valsEgresos;
 
         return await Task.FromResult<IActionResult>(View("Index", ViewBag));
     }

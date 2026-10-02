@@ -190,8 +190,10 @@ public class TransaccionesController : BaseController
 
         ViewBag.TarjetaConsumoId = this.Request.Form.ContainsKey("TarjetaConsumoId") ? int.Parse(this.Request.Form["TarjetaConsumoId"]) : 0;
         ViewBag.FromConsumoTC = this.Request.Form.ContainsKey("fromConsumoTC") ? bool.Parse(this.Request.Form["fromConsumoTC"]) : false;
-        ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaSel") ? int.Parse(this.Request.Form["TarjetaSel"]) : 0;
-        
+        ViewBag.TarjetaSel = this.Request.Form.ContainsKey("TarjetaId") ? int.Parse(this.Request.Form["TarjetaId"]) : 0;
+        ViewBag.Entidad = this.Request.Form.ContainsKey("Entidad") ? this.Request.Form["Entidad"].ToString() : string.Empty;
+        ViewBag.Detalle = this.Request.Form.ContainsKey("Detalle") ? this.Request.Form["Detalle"].ToString() : string.Empty;
+
         ViewBag.Tarjetas = tarjetasResponse?.Tarjetas;
 
         return await Task.FromResult<IActionResult>(View(ViewBag)); // Redirige a otra página

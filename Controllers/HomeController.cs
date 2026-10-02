@@ -96,7 +96,7 @@ public class HomeController : BaseController
 
         await this.CargarGastosMensuales();
 
-        var g = this.gastosResponse?.Gastos?.FindAll(x => x.Pagado == false);
+        var g = this.gastosResponse?.Gastos?.FindAll(x => x.Activo && x.Pagado == false);
 
         foreach (var i in g)
         {
