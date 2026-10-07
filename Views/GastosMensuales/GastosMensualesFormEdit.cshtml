@@ -155,8 +155,23 @@
                             </select>
                         </div>
                     </td>
-                </tr>               
+                </tr>                         
                 <tr>
+                    <td colspan="2" align="center">
+                        <div class="form-group">
+                            <form method="post" asp-controller="Pagos">
+                                &nbsp;<button id="submit"
+                                    name="openFormAdd"
+                                    type="submit" 
+                                    class="btn btn-primary" 
+                                    asp-controller="Pagos" 
+                                    asp-action="PagosPedidos" 
+                                    asp-route-action="openFormAdd">
+                                    Registrar Pago
+                                </button>&nbsp;
+                            </form>
+                        </div>
+                    </td>
                     <td colspan="2" align="center">
                         <div class="form-group">
                             <span class="form-label">Verificado:</span>
@@ -286,12 +301,13 @@
             </table>
             <p></p>
         </div>
-        @if (string.IsNullOrEmpty(@modeView))
-        {
-            <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="actualizar">Actualizar</button>
-        }
-
-    </form>
+        <div>   
+            @if (string.IsNullOrEmpty(@modeView))
+            {
+                <button id="submit" type="submit" class="btn btn-primary" asp-controller="@ViewBag.Modulo" asp-action="@ViewBag.Modulo" name="action" value="actualizar">Actualizar</button>
+            }
+        </div>
+    </form>   
 </div>
 <p></p>
 

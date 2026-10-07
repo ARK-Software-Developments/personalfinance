@@ -6,6 +6,7 @@ using PersonalFinance.Models.Entidades;
 using PersonalFinance.Models.Enums;
 using PersonalFinance.Models.Gastos;
 using PersonalFinance.Models.Pagos;
+using PersonalFinanceApiNetCoreModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
@@ -64,6 +65,14 @@ public class PagosController : BaseController
 
             this.pagosResponse = await this.serviceCaller.ObtenerRegistros<PagosResponse>(ServicioEnum.Pagos);
             pagos = this.pagosResponse?.Pagos;
+            Gasto gastoMensual = null;
+            if (this.Request.HasFormContentType && this.Request.Form.ContainsKey("openFormAdd"))
+            {
+                action = "openFormAdd";
+                gastoMensual = Utils.MapRequest<Gasto>(this.Request.Form, ServicioEnum.GastosMensuales);
+
+            }
+
 
             switch (action)
             {
@@ -75,8 +84,10 @@ public class PagosController : BaseController
                     tiposGastosResponse = await this.serviceCaller.ObtenerRegistros<TiposGastosResponse>(ServicioEnum.TipoGastos, keyValuePairs);
 
                     ViewBag.Gasto = gasto;
+                    ViewBag.GastoMensual = gastoMensual;
                     ViewBag.Entidades = entidadesResponse.Entidades;
                     ViewBag.TiposGastos = tiposGastosResponse.TiposGastos;
+
                     return await Task.FromResult<IActionResult>(View("PagosPedidosFormAdd", ViewBag));
 
                 case "generar":
